@@ -1,5 +1,4 @@
 const { v4: uuidv4 } = require('uuid');
-const expect = require('chai').expect;
 
 describe('Wallet API - Bonus Engine - Wagering Template Tests', () => {
     const walletAPIHost = '10.10.32.23:8080';
@@ -9,7 +8,7 @@ describe('Wallet API - Bonus Engine - Wagering Template Tests', () => {
     it('GET - Should contain default template as first element in response', () => {
         cy.request(`${walletAPIHost}/bonus-engine/wagering`)
             .then((res) => {
-                expect(res.statusCode).to.be.eq(200);
+                expect(res.status).to.be.eq(200);
                 expect(res.body).not.to.be.empty;
                 expect(res.body).to.be.a('array');
                 expect(res.body.length).to.be.greaterThanOrEqual(1);
@@ -22,6 +21,7 @@ describe('Wallet API - Bonus Engine - Wagering Template Tests', () => {
                 expect(actualTemplate.gameCategoryWagering).to.be.a('object');
             });
     });
+
 
     it('POST - Should successfully create Wagering Template and return correct response', () => {
         const testPayload = {
@@ -38,7 +38,7 @@ describe('Wallet API - Bonus Engine - Wagering Template Tests', () => {
 
         cy.request('POST', `${walletAPIHost}/bonus-engine/wagering`, testPayload)
             .then((res) => {
-                expect(res.statusCode).to.be.eq(200);
+                expect(res.status).to.be.eq(200);
                 expect(res.body).not.to.be.empty;
                 expect(res.body).to.be.a('object');
                 const actualTemplate = res.body;
@@ -68,7 +68,7 @@ describe('Wallet API - Bonus Engine - Wagering Template Tests', () => {
 
         cy.request('PUT', `${walletAPIHost}/bonus-engine/wagering/${createdTemplateId}`, testPayload)
             .then((res) => {
-                expect(res.statusCode).to.be.eq(200);
+                expect(res.status).to.be.eq(200);
                 expect(res.body).not.to.be.empty;
                 expect(res.body).to.be.a('object');
                 const actualTemplate = res.body;
@@ -85,7 +85,7 @@ describe('Wallet API - Bonus Engine - Wagering Template Tests', () => {
     it('DELETE - Should successfully delete Wagering Template and return correct response', () => {
         cy.request('DELETE', `${walletAPIHost}/bonus-engine/wagering/${createdTemplateId}`)
             .then((res) => {
-                expect(res.statusCode).to.be.eq(204);
+                expect(res.status).to.be.eq(204);
             });
     })
 });
