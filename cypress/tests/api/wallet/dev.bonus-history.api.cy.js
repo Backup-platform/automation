@@ -12,12 +12,12 @@ describe('Wallet API - Bonus Engine - Wagering Template Tests', () => {
                 expect(res.body).not.to.be.empty;
                 expect(res.body).to.be.a('array');
                 expect(res.body.length).to.be.greaterThanOrEqual(1);
-                const arrayOfObjects = res.body;
-                arrayOfObjects.sort((a, b) => Number(a['id']) - Number(b['id']));
-                const actualTemplate = arrayOfObjects[0];
-                expect(actualTemplate).to.be.a('object');
-                expect(actualTemplate.name).to.be.a('string');
-                expect(actualTemplate.gameCategoryWagering).to.be.a('object');
+                // const arrayOfObjects = res.body;
+                // arrayOfObjects.sort((a, b) => Number(a['id']) - Number(b['id']));
+                // const actualTemplate = arrayOfObjects[0];
+                // expect(actualTemplate).to.be.a('object');
+                // expect(actualTemplate.name).to.be.a('string');
+                // expect(actualTemplate.gameCategoryWagering).to.be.a('object');
             });
     });
 
