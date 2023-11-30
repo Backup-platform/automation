@@ -1,12 +1,20 @@
-const { v4: uuidv4 } = require('uuid');
-
 describe('Wallet API - Bonus Engine - Wagering Template Tests', () => {
-    const walletAPIHost = '10.10.32.23:8080';
-    const testUniqueId = uuidv4();
+    const testConfiguration = {};
+
+    before(() => {
+        cy.fixture('api/environment.json').then((environment) => {
+            testConfiguration.walletAPIHost = environment.hosts.wallet;
+        });
+
+        cy.fixture('api/wallet/bonus-history.fixture.json').then((bonusHistoryTestData) => {
+            testConfiguration.bonusHistoryTestData = bonusHistoryTestData;
+        });
+    });
+
     let createdTemplateId = null;
 
     it('GET - Should contain default template as first element in response', () => {
-        cy.request(`${walletAPIHost}/bonus-engine/wagering`)
+        cy.request(`${testConfiguration.walletAPIHost}/bonus-engine/wagering`)
             .then((res) => {
                 expect(res.status).to.be.eq(200);
                 expect(res.body).not.to.be.empty;
@@ -22,19 +30,9 @@ describe('Wallet API - Bonus Engine - Wagering Template Tests', () => {
 
 
     it('POST - Should successfully create Wagering Template and return correct response', () => {
-        const testPayload = {
-            "name": "[Automation - Please delete] Test Template - " + testUniqueId,
-            "gameCategoryWagering": {
-                "Slots": 50,
-                "XGames": 50,
-                "Live casino": 50,
-                "Scratch cards": 50,
-                "Table games": 50
-            },
-            "defaultTemplate": false
-        };
+        const testPayload = testConfiguration.bonusHistoryTestData.testCreatePayload;
 
-        cy.request('POST', `${walletAPIHost}/bonus-engine/wagering`, testPayload)
+        cy.request('POST', `${testConfiguration.walletAPIHost}/bonus-engine/wagering`, testPayload)
             .then((res) => {
                 expect(res.status).to.be.eq(200);
                 expect(res.body).not.to.be.empty;
@@ -53,18 +51,9 @@ describe('Wallet API - Bonus Engine - Wagering Template Tests', () => {
     })
 
     it('PUT - Should successfully update Wagering Template and return correct response', () => {
-        const testPayload = {
-            "name": "[Automation - Please delete] Test Template Updated - " + testUniqueId,
-            "gameCategoryWagering": {
-                "Slots": 25,
-                "XGames": 25,
-                "Live casino": 25,
-                "Scratch cards": 25,
-                "Table games": 25
-            }
-        };
+        const testPayload = testConfiguration.bonusHistoryTestData.testUpdatePayload;
 
-        cy.request('PUT', `${walletAPIHost}/bonus-engine/wagering/${createdTemplateId}`, testPayload)
+        cy.request('PUT', `${testConfiguration.walletAPIHost}/bonus-engine/wagering/${createdTemplateId}`, testPayload)
             .then((res) => {
                 expect(res.status).to.be.eq(200);
                 expect(res.body).not.to.be.empty;
@@ -81,7 +70,7 @@ describe('Wallet API - Bonus Engine - Wagering Template Tests', () => {
     })
 
     it('DELETE - Should successfully delete Wagering Template and return correct response', () => {
-        cy.request('DELETE', `${walletAPIHost}/bonus-engine/wagering/${createdTemplateId}`)
+        cy.request('DELETE', `${testConfiguration.walletAPIHost}/bonus-engine/wagering/${createdTemplateId}`)
             .then((res) => {
                 expect(res.status).to.be.eq(204);
             });

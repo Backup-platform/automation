@@ -1,14 +1,8 @@
-const getTargetTestTypeFolder = () => {
-  return process.env.TARGET_TEST_TYPE || "**";
-}
-
-const getTargetTestFlag = () => {
-  return process.env.TARGET_TEST_FLAG ? process.env.TARGET_TEST_FLAG + ".*." : "*.";
-}
+const { getTargetTestTypeFolder, getTargetTestFlag } = require("./util/environment-functions");
 
 module.exports = {
   e2e: {
-    specPattern: `cypress/tests/${getTargetTestTypeFolder()}/**/${getTargetTestFlag()}cy.{js,jsx,ts,tsx}`,
+    specPattern: `cypress/tests/${getTargetTestTypeFolder()}/**/*.cy${getTargetTestFlag()}.{js,jsx,ts,tsx}`,
     setupNodeEvents(on, config) {
       on("task", {
         log(args) {

@@ -1,0 +1,23 @@
+{
+  "testCreatePayload": {
+    "name": "[Automation - Please delete] Test Template",
+    "gameCategoryWagering": {
+      "Slots": 50,
+      "XGames": 50,
+      "Live casino": 50,
+      "Scratch cards": 50,
+      "Table games": 50
+    },
+    "defaultTemplate": false
+  },
+  "testUpdatePayload": {
+    "name": "[Automation - Please delete] Test Template Updated",
+    "gameCategoryWagering": {
+      "Slots": 25,
+      "XGames": 25,
+      "Live casino": 25,
+      "Scratch cards": 25,
+      "Table games": 25
+    }
+  }
+}
