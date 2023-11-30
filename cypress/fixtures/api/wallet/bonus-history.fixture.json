@@ -1,5 +1,5 @@
 {
-  "testCreatePayload": {
+  "createPayload": {
     "name": "[Automation - Please delete] Test Template",
     "gameCategoryWagering": {
       "Slots": 50,
@@ -10,7 +10,7 @@
     },
     "defaultTemplate": false
   },
-  "testUpdatePayload": {
+  "updatePayload": {
     "name": "[Automation - Please delete] Test Template Updated",
     "gameCategoryWagering": {
       "Slots": 25,

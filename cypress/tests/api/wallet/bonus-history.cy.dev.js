@@ -30,7 +30,7 @@ describe('Wallet API - Bonus Engine - Wagering Template Tests', () => {
 
 
     it('POST - Should successfully create Wagering Template and return correct response', () => {
-        const testPayload = testConfiguration.bonusHistoryTestData.testCreatePayload;
+        const testPayload = testConfiguration.bonusHistoryTestData.createPayload;
 
         cy.request('POST', `${testConfiguration.walletAPIHost}/bonus-engine/wagering`, testPayload)
             .then((res) => {
@@ -51,7 +51,7 @@ describe('Wallet API - Bonus Engine - Wagering Template Tests', () => {
     })
 
     it('PUT - Should successfully update Wagering Template and return correct response', () => {
-        const testPayload = testConfiguration.bonusHistoryTestData.testUpdatePayload;
+        const testPayload = testConfiguration.bonusHistoryTestData.updatePayload;
 
         cy.request('PUT', `${testConfiguration.walletAPIHost}/bonus-engine/wagering/${createdTemplateId}`, testPayload)
             .then((res) => {

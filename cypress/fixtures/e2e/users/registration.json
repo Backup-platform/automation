@@ -1,0 +1,71 @@
+{
+  "validPayloads": {
+    "primaryPayload": {
+      "email": "test.auto.1.sbt@gmail.com",
+      "password": "Test123!!",
+      "firstName": "Automation Testing",
+      "lastName": "Automation Testing",
+      "dateOfBirth": "01/01/2001",
+      "gender": "Male",
+      "country": "Canada",
+      "city": "Toronto",
+      "address": "bul. Automation Testing 1",
+      "postcode": "A1A 1A1",
+      "phone": "+32/123456789"
+    }
+  },
+  "invalidPayloads": {
+    "invalidEmail": {
+      "email": "test.auto.1.sbt!gmail.com",
+      "password": "Test123!!",
+      "firstName": "Automation Testing",
+      "lastName": "Automation Testing",
+      "dateOfBirth": "01/01/2001",
+      "gender": "Male",
+      "country": "Canada",
+      "city": "Toronto",
+      "address": "bul. Automation Testing 1",
+      "postcode": "A1A 1A1",
+      "phone": "+32/123456789"
+    },
+    "invalidPassword": {
+      "email": "test.auto.1.sbt@gmail.com",
+      "password": "blablabla",
+      "firstName": "Automation Testing",
+      "lastName": "Automation Testing",
+      "dateOfBirth": "01/01/2001",
+      "gender": "Male",
+      "country": "Canada",
+      "city": "Toronto",
+      "address": "bul. Automation Testing 1",
+      "postcode": "A1A 1A1",
+      "phone": "+32/123456789"
+    },
+    "invalidFirstName": {
+      "email": "test.auto.1.sbt@gmail.com",
+      "password": "Test123!!",
+      "firstName": "A     ",
+      "lastName": "Automation Testing",
+      "dateOfBirth": "01/01/2001",
+      "gender": "Male",
+      "country": "Canada",
+      "city": "Toronto",
+      "address": "bul. Automation Testing 1",
+      "postcode": "A1A 1A1",
+      "phone": "+32/123456789"
+    },
+    "invalidLastName": {
+      "email": "test.auto.1.sbt@gmail.com",
+      "password": "Test123!!",
+      "firstName": "Automation Testing",
+      "lastName": "A        ",
+      "dateOfBirth": "01/01/2001",
+      "gender": "Male",
+      "country": "Canada",
+      "city": "Toronto",
+      "address": "bul. Automation Testing 1",
+      "postcode": "A1A 1A1",
+      "phone": "+32/123456789"
+    }
+  }
+}
