@@ -11,7 +11,9 @@ export class LandingPage {
 
 	//Locators
 	readonly loginButton = () => this.page.locator('#header-log-in-btn');
-	readonly acceptCookiesButton = () => this.page.getByRole('button', {name: 'Accept'});
+	readonly acceptCookiesButton = () => this.page.getByRole('button', { name: 'Accept' });
+	readonly cookiesBanner = () => this.page.getByRole('heading', { name: 'We use cookies to improve your experience.' });
+
 	//Actions
 	public async clickLoginButton(): Promise<void> {
 		await this.loginButton().click();
@@ -21,7 +23,16 @@ export class LandingPage {
 		await expect(this.loginButton()).toBeVisible();
 	}
 
-	public async clickAcceptCookiesButton(): Promise <void> {
+	public async clickAcceptCookiesButton(): Promise<void> {
 		await this.acceptCookiesButton().click();
+	}
+
+	public async acceptCookiesBannerRandom(): Promise<void> {
+		await test.step('Click Accept if cookies banner is visible', async () => {
+			await this.page.addLocatorHandler(
+				this.cookiesBanner(), async () => {
+					await this.acceptCookiesButton().click();
+				});
+		});
 	}
 }

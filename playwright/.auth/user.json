@@ -1,0 +1,351 @@
+{
+  "cookies": [
+    {
+      "name": "AUTH_SESSION_ID",
+      "value": "31717c59-cc48-4db2-be40-5206f3d293fc.keycloak-79589cdcc5-rv795-56430",
+      "domain": "stage-keycloak.spacefortuna1.com",
+      "path": "/auth/realms/casino/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "AUTH_SESSION_ID_LEGACY",
+      "value": "31717c59-cc48-4db2-be40-5206f3d293fc.keycloak-79589cdcc5-rv795-56430",
+      "domain": "stage-keycloak.spacefortuna1.com",
+      "path": "/auth/realms/casino/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "KEYCLOAK_LOCALE",
+      "value": "en",
+      "domain": "stage-keycloak.spacefortuna1.com",
+      "path": "/auth/realms/casino/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "KEYCLOAK_IDENTITY",
+      "value": "eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI1MzAwMGU5Ny1mMGUzLTQwYjUtYWE5OS0wYzU4NWVhMDdhZWYifQ.eyJleHAiOjE3MTIyODU5MzAsImlhdCI6MTcxMjI3ODczMCwianRpIjoiNjQ0ZjY4YzAtZDU1OS00OWVjLWE5NGYtNGI0ZGVkN2YyNDNmIiwiaXNzIjoiaHR0cHM6Ly9zdGFnZS1rZXljbG9hay5zcGFjZWZvcnR1bmExLmNvbS9hdXRoL3JlYWxtcy9jYXNpbm8iLCJzdWIiOiI0NTRmNDZlZi0wNTllLTQ4OWMtYTY4Ny04YzU4MWFhZTNmZWIiLCJ0eXAiOiJTZXJpYWxpemVkLUlEIiwic2Vzc2lvbl9zdGF0ZSI6IjMxNzE3YzU5LWNjNDgtNGRiMi1iZTQwLTUyMDZmM2QyOTNmYyIsInNpZCI6IjMxNzE3YzU5LWNjNDgtNGRiMi1iZTQwLTUyMDZmM2QyOTNmYyIsInN0YXRlX2NoZWNrZXIiOiJvNkpJRVdXU3IxekU1Nmd6YmxUU3l2LUhncC1VSnMtM01QRFBLaEpEWFBJIn0.trhaWkj7ISOxpLH3b6NY3Rtp4OhRvS7evfYijnG0c90",
+      "domain": "stage-keycloak.spacefortuna1.com",
+      "path": "/auth/realms/casino/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "KEYCLOAK_IDENTITY_LEGACY",
+      "value": "eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI1MzAwMGU5Ny1mMGUzLTQwYjUtYWE5OS0wYzU4NWVhMDdhZWYifQ.eyJleHAiOjE3MTIyODU5MzAsImlhdCI6MTcxMjI3ODczMCwianRpIjoiNjQ0ZjY4YzAtZDU1OS00OWVjLWE5NGYtNGI0ZGVkN2YyNDNmIiwiaXNzIjoiaHR0cHM6Ly9zdGFnZS1rZXljbG9hay5zcGFjZWZvcnR1bmExLmNvbS9hdXRoL3JlYWxtcy9jYXNpbm8iLCJzdWIiOiI0NTRmNDZlZi0wNTllLTQ4OWMtYTY4Ny04YzU4MWFhZTNmZWIiLCJ0eXAiOiJTZXJpYWxpemVkLUlEIiwic2Vzc2lvbl9zdGF0ZSI6IjMxNzE3YzU5LWNjNDgtNGRiMi1iZTQwLTUyMDZmM2QyOTNmYyIsInNpZCI6IjMxNzE3YzU5LWNjNDgtNGRiMi1iZTQwLTUyMDZmM2QyOTNmYyIsInN0YXRlX2NoZWNrZXIiOiJvNkpJRVdXU3IxekU1Nmd6YmxUU3l2LUhncC1VSnMtM01QRFBLaEpEWFBJIn0.trhaWkj7ISOxpLH3b6NY3Rtp4OhRvS7evfYijnG0c90",
+      "domain": "stage-keycloak.spacefortuna1.com",
+      "path": "/auth/realms/casino/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "KEYCLOAK_SESSION",
+      "value": "casino/454f46ef-059e-489c-a687-8c581aae3feb/31717c59-cc48-4db2-be40-5206f3d293fc",
+      "domain": "stage-keycloak.spacefortuna1.com",
+      "path": "/auth/realms/casino/",
+      "expires": 1712285930.349491,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "KEYCLOAK_SESSION_LEGACY",
+      "value": "casino/454f46ef-059e-489c-a687-8c581aae3feb/31717c59-cc48-4db2-be40-5206f3d293fc",
+      "domain": "stage-keycloak.spacefortuna1.com",
+      "path": "/auth/realms/casino/",
+      "expires": 1712285930.349522,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "X_Noto_Devid",
+      "value": "819acbae-c24c-48aa-a08a-b424314708a8",
+      "domain": "stage-noto-api.spacefortuna1.com",
+      "path": "/1.0",
+      "expires": 1746838726.278029,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "CR-Country-Code",
+      "value": "BG",
+      "domain": "stage.spacefortuna1.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "CR-Device-Type",
+      "value": "desktop",
+      "domain": "stage.spacefortuna1.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "CR-Referer",
+      "value": "Direct-Access",
+      "domain": "stage.spacefortuna1.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "CR-Accept-Language",
+      "value": "en-US",
+      "domain": "stage.spacefortuna1.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "__cf_bm",
+      "value": "_T4GbGr2a0pH72jwUCOzJBmrkXGSkK4xy1BEVamvhh4-1712278719-1.0.1.1-16Pgl3hIobUQh9v5sC5N9n2PrUvCn5_l2vNLSg_xkQ0tRnKVxmnGS1Ez5nV6LyMKK7VXr83Ej7cJLH458RRCRQ",
+      "domain": ".spacefortuna.com",
+      "path": "/",
+      "expires": 1712280520.0113,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "io_token_7c6a6574-f011-4c9a-abdd-9894a102ccef",
+      "value": "Wa+Yz9x0L42uELTbNb42PhIW9tGJ4S7Dtfl7m0O2rGY=",
+      "domain": "mpsnare.iesnare.com",
+      "path": "/",
+      "expires": 1743814733.576252,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "_gid",
+      "value": "GA1.2.1942348732.1712278722",
+      "domain": ".spacefortuna1.com",
+      "path": "/",
+      "expires": 1712365134,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_gat_UA-245772254-1",
+      "value": "1",
+      "domain": ".spacefortuna1.com",
+      "path": "/",
+      "expires": 1712278781,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "optiMonkClientId",
+      "value": "72628447-528b-a881-2d82-f027159a2e5b",
+      "domain": "stage.spacefortuna1.com",
+      "path": "/",
+      "expires": 1743814721,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "optiMonkSession",
+      "value": "1712278722",
+      "domain": "stage.spacefortuna1.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "AWSALBCORS",
+      "value": "N3FUr7BDFOwZ5cTZ5CSpPf05EbLSAC2VqA8erHZePFVRtEaNG/wupNwfRhE9/b705hh3UiHS2i+r0IWHRtVHeMx4tioD+xE9cm0JkZ17TwhOdbP80UzoLWNIfc6P",
+      "domain": "widget-mediator.zopim.com",
+      "path": "/",
+      "expires": 1712883527.294198,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "__zlcmid",
+      "value": "1L8mcYt69OZD9hL",
+      "domain": ".spacefortuna1.com",
+      "path": "/",
+      "expires": 1743814729,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "ndi",
+      "value": "33292bef-e53a-4d52-99e7-8dc1fab963fe",
+      "domain": "stage.spacefortuna1.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "ndiRealIp",
+      "value": "94.156.220.116",
+      "domain": "stage.spacefortuna1.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "cdin",
+      "value": "eyJsYW5ndWFnZSI6ImVuLVVTIiwiY291bnRyeSI6IkJ1bGdhcmlhIn0",
+      "domain": "stage.spacefortuna1.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "kcToken",
+      "value": "ZXlKaGJHY2lPaUpTVXpJMU5pSXNJblI1Y0NJZ09pQWlTbGRVSWl3aWEybGtJaUE2SUNKcVJEZHFaV1ZtUVdoTlEyNVJXWEE0WldSVmQzSm9jakJwTFU1all6QlpjamhUZFdkUmRXRlFVbTl2SW4wLmV5SmxlSEFpT2pFM01USXlPREl6TXpNc0ltbGhkQ0k2TVRjeE1qSTNPRGN6TXl3aVlYVjBhRjkwYVcxbElqb3hOekV5TWpjNE56TXdMQ0pxZEdraU9pSmtPRE13WkRCa01pMDJNbU14TFRSaVpEWXRZbUkxTmkwME9UQTNObUl6WXpVeFpqWWlMQ0pwYzNNaU9pSm9kSFJ3Y3pvdkwzTjBZV2RsTFd0bGVXTnNiMkZyTG5Od1lXTmxabTl5ZEhWdVlURXVZMjl0TDJGMWRHZ3ZjbVZoYkcxekwyTmhjMmx1YnlJc0ltRjFaQ0k2SW1GalkyOTFiblFpTENKemRXSWlPaUkwTlRSbU5EWmxaaTB3TlRsbExUUTRPV010WVRZNE55MDRZelU0TVdGaFpUTm1aV0lpTENKMGVYQWlPaUpDWldGeVpYSWlMQ0poZW5BaU9pSm1jbTl1ZEc5bVptbGpaUzFqYkdsbGJuUWlMQ0p1YjI1alpTSTZJak5rT1RFeU1EUXdMVFl5WVdRdE5HSXlOeTFoWXpCaExUa3dZakZtWTJRMVkyVXdNQ0lzSW5ObGMzTnBiMjVmYzNSaGRHVWlPaUl6TVRjeE4yTTFPUzFqWXpRNExUUmtZakl0WW1VME1DMDFNakEyWmpOa01qa3pabU1pTENKaGJHeHZkMlZrTFc5eWFXZHBibk1pT2xzaWFIUjBjSE02THk5emRHRm5aUzV6Y0dGalpXWnZjblIxYm1FeExtTnZiU0lzSW1oMGRIQnpPaTh2YzNCaFkyVm5ZV3hoWTNScFkyRXVZMjl0SWl3aWFIUjBjSE02THk5emRHRm5aUzV6Y0dGalpXWnZjblIxYm1FMExtTnZiU0lzSW1oMGRIQTZMeTlzYjJOaGJHaHZjM1E2TXpBd01DSXNJbWgwZEhCek9pOHZjM0JoWTJWaGRuSnZjbUV1WTI5dElpd2lhSFIwY0hNNkx5OXpkR0ZuWlM1emNHRmpaV2RoYkdGamRHbGpZUzVqYjIwaUxDSm9kSFJ3Y3pvdkwzTjBZV2RsTFdaeUxuTndZV05sWm05eWRIVnVZVEV1WTI5dElpd2lhSFIwY0hNNkx5OXpkR0ZuWlM1emNHRmpaV1p2Y25SMWJtRXVZMjl0SWl3aWFIUjBjSE02THk5emRHRm5aUzV6Y0dGalpXRjBhR1Z1WVM1amIyMGlMQ0pvZEhSd2N6b3ZMM04wWVdkbExuTndZV05sWm05eWRIVnVZVEl1WTI5dElpd2lhSFIwY0hNNkx5OXpkR0ZuWlM1emNHRmpaV1p2Y25SMWJtRTFMbU52YlNJc0ltaDBkSEJ6T2k4dmMzUmhaMlV1YzNCaFkyVm1iM0owZFc1aE55NWpiMjBpTENKb2RIUndjem92TDNOMFlXZGxMbk53WVdObFptOXlkSFZ1WVRNdVkyOXRJaXdpYUhSMGNITTZMeTl6Y0dGalpXRnVaSEp2YldWa1lTNWpiMjBpTENKb2RIUndjem92THlvdWMzQmhZMlZuWVd4aFkzUnBZMkV1WTI5dElpd2lhSFIwY0hNNkx5OXpkR0ZuWlMxclpYbGpiRzloYXk1emNHRmpaV2RoYkdGamRHbGpZUzVqYjIwaVhTd2ljbVZoYkcxZllXTmpaWE56SWpwN0luSnZiR1Z6SWpwYkltOW1abXhwYm1WZllXTmpaWE56SWl3aWRXMWhYMkYxZEdodmNtbDZZWFJwYjI0aUxDSmtaV1poZFd4MExYSnZiR1Z6TFdOaGMybHVieUlzSW5WelpYSWlYWDBzSW5KbGMyOTFjbU5sWDJGalkyVnpjeUk2ZXlKaFkyTnZkVzUwSWpwN0luSnZiR1Z6SWpwYkltMWhibUZuWlMxaFkyTnZkVzUwSWl3aWJXRnVZV2RsTFdGalkyOTFiblF0YkdsdWEzTWlMQ0oyYVdWM0xYQnliMlpwYkdVaVhYMTlMQ0p6WTI5d1pTSTZJbTl3Wlc1cFpDQndjbTltYVd4bElISnZiR1Z6SUdWdFlXbHNJaXdpYzJsa0lqb2lNekUzTVRkak5Ua3RZMk0wT0MwMFpHSXlMV0psTkRBdE5USXdObVl6WkRJNU0yWmpJaXdpWTI5MWJuUnllU0k2SWtKbGJHZHBkVzBpTENKbGJXRnBiRjkyWlhKcFptbGxaQ0k2ZEhKMVpTd2libUZ0WlNJNkluUmxjM1FnZFhObGNpSXNJbkJ5WldabGNuSmxaRjkxYzJWeWJtRnRaU0k2SW1kcGRHRm5OemMxTlRGQVlYcGtkV0Z1TG1OdmJTSXNJbWRwZG1WdVgyNWhiV1VpT2lKMFpYTjBJaXdpYkc5allXeGxJam9pWlc0aUxDSm1ZVzFwYkhsZmJtRnRaU0k2SW5WelpYSWlMQ0psYldGcGJDSTZJbWRwZEdGbk56YzFOVEZBWVhwa2RXRnVMbU52YlNKOS5OR01wX1R0N2xOX0FQTUMyMmxOQWM1azRFWlhJQzVMcVd4eGlmRHhaMVJ1Tk1FQ25IN0x1Y3ZqcHZWTFpCZ0YyaHJJRTVpM2hIcnotc2VIdUducV9USThPWmUtQ2RoOU9YRTJvQW4yYzdwMXh6TzluYmNXU2FwUXVvSEdsUC1QN1B2YlBHWFYwSDlMdE9wNzRHODh4OUd3ZUZBY1hoaE5rajZYaVkxM0VrXzd6dHUzY3lwT2IzTkt1T3pFN0ZnaC1qdWlJUTNHaEttZGVDRjdQdjlYTkNlTWNieDY5UlBkdm9EMC1UbF8waGR0R1F3XzRsYU5qZl9mclRnMjJmNHp6N082VU9fWUZBbkVyVUlBQWxRYnNwMVNfNlNaWFF4ZldMRnJNMWR1MDhDd2d3N1l0VmNHbnhKLXk1VTFvR0c4WnNmcnl2eGpJdGxvV29FaDU1NW1fRlE=",
+      "domain": "stage.spacefortuna1.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "kcIdToken",
+      "value": "ZXlKaGJHY2lPaUpTVXpJMU5pSXNJblI1Y0NJZ09pQWlTbGRVSWl3aWEybGtJaUE2SUNKcVJEZHFaV1ZtUVdoTlEyNVJXWEE0WldSVmQzSm9jakJwTFU1all6QlpjamhUZFdkUmRXRlFVbTl2SW4wLmV5SmxlSEFpT2pFM01USXlPREl6TXpNc0ltbGhkQ0k2TVRjeE1qSTNPRGN6TXl3aVlYVjBhRjkwYVcxbElqb3hOekV5TWpjNE56TXdMQ0pxZEdraU9pSmlORGsxTnpNMU9DMHlaRFZpTFRSbU16Z3RPRFJrWkMweU1XVm1abVkwWWpnNFkyVWlMQ0pwYzNNaU9pSm9kSFJ3Y3pvdkwzTjBZV2RsTFd0bGVXTnNiMkZyTG5Od1lXTmxabTl5ZEhWdVlURXVZMjl0TDJGMWRHZ3ZjbVZoYkcxekwyTmhjMmx1YnlJc0ltRjFaQ0k2SW1aeWIyNTBiMlptYVdObExXTnNhV1Z1ZENJc0luTjFZaUk2SWpRMU5HWTBObVZtTFRBMU9XVXRORGc1WXkxaE5qZzNMVGhqTlRneFlXRmxNMlpsWWlJc0luUjVjQ0k2SWtsRUlpd2lZWHB3SWpvaVpuSnZiblJ2Wm1acFkyVXRZMnhwWlc1MElpd2libTl1WTJVaU9pSXpaRGt4TWpBME1DMDJNbUZrTFRSaU1qY3RZV013WVMwNU1HSXhabU5rTldObE1EQWlMQ0p6WlhOemFXOXVYM04wWVhSbElqb2lNekUzTVRkak5Ua3RZMk0wT0MwMFpHSXlMV0psTkRBdE5USXdObVl6WkRJNU0yWmpJaXdpWVhSZmFHRnphQ0k2SW1RMVVFc3hZMWwwWDNSTVFqbG5lamg1VWtGMlRYY2lMQ0p6YVdRaU9pSXpNVGN4TjJNMU9TMWpZelE0TFRSa1lqSXRZbVUwTUMwMU1qQTJaak5rTWprelptTWlMQ0pqYjNWdWRISjVJam9pUW1Wc1oybDFiU0lzSW1WdFlXbHNYM1psY21sbWFXVmtJanAwY25WbExDSnVZVzFsSWpvaWRHVnpkQ0IxYzJWeUlpd2ljSEpsWm1WeWNtVmtYM1Z6WlhKdVlXMWxJam9pWjJsMFlXYzNOelUxTVVCaGVtUjFZVzR1WTI5dElpd2laMmwyWlc1ZmJtRnRaU0k2SW5SbGMzUWlMQ0pzYjJOaGJHVWlPaUpsYmlJc0ltWmhiV2xzZVY5dVlXMWxJam9pZFhObGNpSXNJbVZ0WVdsc0lqb2laMmwwWVdjM056VTFNVUJoZW1SMVlXNHVZMjl0SW4wLlUxNFRIU0ZZX2Y5R1BMd1JWSjduQ2VCcm5tSmZXWFpSenZpMUdyUHFKaEp6MzRMc29yTnRULVV5dzZYVzlfVkpSU1B4bV9UbDNaQ1BIbFQyVFo2MG5aLUd4OUpnX2hjTEZnSVZzNUFYN1prckhYZUV2bG9KTWN1anhPOEFKX2pUc2xDci1DdUpkdFR3SkhMUlI3WGlmVVU3M0haYlo3WmN5QngxM0lTaUFlUVJMQ2QweGZFd29SZ0dweGp5M2wySXhxQ05GdXpBVkotVFJydjNGMEgwbkFaNnVfZDZRb1otZWVLVmR4RVFieUlFRkdFODNBdi1RQmVuQmdhU2p5NVQxaWxQQ19xdTBNcWRDcXNOWG9QdFRXSlF2MnFad0g4ZnpUR1ktVHlJRmVqUGdHY0EzZ2dHVTJUQ2RwQk15WHZkZlZXRHI4T3BWVGpYOEIza0FJZUVzUQ==",
+      "domain": "stage.spacefortuna1.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "kcRefreshToken",
+      "value": "ZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJZ09pQWlTbGRVSWl3aWEybGtJaUE2SUNJMU16QXdNR1U1TnkxbU1HVXpMVFF3WWpVdFlXRTVPUzB3WXpVNE5XVmhNRGRoWldZaWZRLmV5SmxlSEFpT2pFM01USXlPRFU1TXpBc0ltbGhkQ0k2TVRjeE1qSTNPRGN6TXl3aWFuUnBJam9pWVdKaE5XVTJOVFV0TVRJMVppMDBNamd6TFRreFpqWXRaRE5rTmpSak1ETmlaRGt4SWl3aWFYTnpJam9pYUhSMGNITTZMeTl6ZEdGblpTMXJaWGxqYkc5aGF5NXpjR0ZqWldadmNuUjFibUV4TG1OdmJTOWhkWFJvTDNKbFlXeHRjeTlqWVhOcGJtOGlMQ0poZFdRaU9pSm9kSFJ3Y3pvdkwzTjBZV2RsTFd0bGVXTnNiMkZyTG5Od1lXTmxabTl5ZEhWdVlURXVZMjl0TDJGMWRHZ3ZjbVZoYkcxekwyTmhjMmx1YnlJc0luTjFZaUk2SWpRMU5HWTBObVZtTFRBMU9XVXRORGc1WXkxaE5qZzNMVGhqTlRneFlXRmxNMlpsWWlJc0luUjVjQ0k2SWxKbFpuSmxjMmdpTENKaGVuQWlPaUptY205dWRHOW1abWxqWlMxamJHbGxiblFpTENKdWIyNWpaU0k2SWpOa09URXlNRFF3TFRZeVlXUXROR0l5TnkxaFl6QmhMVGt3WWpGbVkyUTFZMlV3TUNJc0luTmxjM05wYjI1ZmMzUmhkR1VpT2lJek1UY3hOMk0xT1Mxall6UTRMVFJrWWpJdFltVTBNQzAxTWpBMlpqTmtNamt6Wm1NaUxDSnpZMjl3WlNJNkltOXdaVzVwWkNCd2NtOW1hV3hsSUhKdmJHVnpJR1Z0WVdsc0lpd2ljMmxrSWpvaU16RTNNVGRqTlRrdFkyTTBPQzAwWkdJeUxXSmxOREF0TlRJd05tWXpaREk1TTJaakluMC5ETGg2NWttLUU2Zks3MzVKbm9FUXM4X1JJUkYxeEdYd1NSTzFPUnpMUTJB",
+      "domain": "stage.spacefortuna1.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "optiMonkClient",
+      "value": "N4IgjAnATArGAsIBcoDGBDZwC+AaEAZgG7JgDsYUUZAHGVfgDYlLmXV0DMMAdPJ/HwA7APYAHFlGzYgA",
+      "domain": "stage.spacefortuna1.com",
+      "path": "/",
+      "expires": 1743814735,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_ga_CPKHV2066P",
+      "value": "GS1.1.1712278721.1.1.1712278735.0.0.0",
+      "domain": ".spacefortuna1.com",
+      "path": "/",
+      "expires": 1746838735.522512,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_ga",
+      "value": "GA1.1.1396231365.1712278722",
+      "domain": ".spacefortuna1.com",
+      "path": "/",
+      "expires": 1746838735.523895,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "cookiesAccepted",
+      "value": "{%22expirationDate%22:1743814736499%2C%22version%22:0}",
+      "domain": "stage.spacefortuna1.com",
+      "path": "/",
+      "expires": 1743814736,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "https://stage.spacefortuna1.com",
+      "localStorage": [
+        {
+          "name": "OptiMonkShopAttributes",
+          "value": "{}"
+        },
+        {
+          "name": "fp_f604be51-ccf5-4d26-9cc2-3c44e1fdceb9",
+          "value": "U+gL28T8/FVaPAGwBbQKA404/QmwQatDa8ewn9ngxOA="
+        },
+        {
+          "name": "28214019-fad0-4a25-8f60-19885fb32f22",
+          "value": "MjAyNC8wNC8wNSAwMDo1ODo0MS4wNjc7N2UzMWQ1ZjktMDIwOS05ZDQzLWZjOGUtNGFmNTdiNzM5ZTc1O2NyPzRlNmZhZmNiMzE5ODdkNWQ2YTBmYTVlYjA3MDgxYjBjYTM0NWQwNzQ="
+        },
+        {
+          "name": "OptiMonkVisitorAttributes",
+          "value": "{\"is_mobile\":\"false\",\"is_mobile_text\":\"false\",\"_country_code\":\"BG\",\"_country_en\":\"Bulgaria\",\"_country_hu\":\"Bulg%C3%A1ria\",\"_country_de\":\"Bulgarien\",\"_source_referrer\":\"direct\",\"_source_url\":\"https%3A%2F%2Fstage.spacefortuna1.com%2Fen\"}"
+        },
+        {
+          "name": "__zlcstore",
+          "value": "{\"fmWjQloy1jaiGLQNWSul5EB1KBrLq9G9\":{\"web_sdk_last_host\":\"widget-mediator.zopim.com\",\"timestamp\":1712278728759,\"account_status\":\"online\"}}"
+        },
+        {
+          "name": "ZD-suid",
+          "value": "{\"id\":\"5fe458faf5b84ac29249c3a15a18847d\",\"expiry\":1712279636334,\"tabs\":{\"count\":1,\"expiry\":0}}"
+        },
+        {
+          "name": "om-country",
+          "value": "{\"value\":\"BG\",\"timestamp\":1712278735431}"
+        },
+        {
+          "name": "io_f604be51-ccf5-4d26-9cc2-3c44e1fdceb9",
+          "value": "Wa+Yz9x0L42uELTbNb42PhIW9tGJ4S7Dtfl7m0O2rGY="
+        },
+        {
+          "name": "ZD-buid",
+          "value": "cc84d04761234f129d7b978debe6a62e"
+        },
+        {
+          "name": "ZD-store",
+          "value": "{\"activeEmbed\":\"ticketSubmissionForm\",\"widgetShown\":false,\"is_chatting\":false}"
+        }
+      ]
+    }
+  ]
+}

@@ -53,6 +53,55 @@ export default defineConfig({
 			testMatch: '**/*.mobile.setup.ts', 
 		},
 		{
+			name: 'promotions.desktop.1440',
+			testMatch: '**/*promotions/desktop.*',
+			use: {
+				...devices['Desktop Chrome'],
+				storageState: 'playwright/.auth/user.json',
+				viewport: { width: 1440, height: 1024 },
+			},
+			dependencies: ['setupDesk'],
+		},
+		{
+			name: 'promotions.mobile.1024.chrome',
+			testMatch: '**/*promotions/desktop.*',
+			use: {
+				...devices['iPad Mini landscape'], //width: 1024, height: 768
+				browserName: 'chromium',
+				storageState: 'playwright/.auth/user.json', 
+			},
+			dependencies: ['setupMobile'],
+		},
+		{
+			name: 'promotions.mobile.375.chrome',
+			testMatch: '**/*promotions/mobile.*',
+			use: {
+				...devices['iPhone 11 Pro'],
+				browserName: 'chromium',
+				storageState: 'playwright/.auth/mobileUser.json', //width: 375 height:812
+			},
+			dependencies: ['setupMobile'],
+		},
+		{
+			name: 'promotions.mobile.1024.safari',
+			testMatch: '**/*promotions/desktop.*',
+			use: {
+				...devices['iPad Mini landscape'], //width: 1024, height: 768
+				storageState: 'playwright/.auth/user.json', 
+			},
+			dependencies: ['setupMobile'],
+		},
+		{
+			name: 'promotions.mobile.375.safari',
+			testMatch: '**/*promotions/mobile.*',
+			use: {
+				...devices['iPhone 11 Pro'],
+				storageState: 'playwright/.auth/mobileUser.json', //width: 375 height:812
+			},
+			dependencies: ['setupMobile'],
+		},
+		
+		{
 			name: 'chromium',
 			testMatch: '**/*desktop/*',
 			use: {

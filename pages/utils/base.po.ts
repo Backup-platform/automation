@@ -5,6 +5,9 @@ import { HeaderMenuDesktop } from '../headerMenuDesktop.po';
 import { FooterMenuMobile } from '../footerMenuMobile.po';
 import { GameProviders } from '../gameProviders.po';
 import { Banner } from '../banner.po';
+import { Promotions } from '../promotions.po';
+import { PromotionDetails } from '../promotion.details.po';
+import { PromotionTabs } from '../promotionTabs.po';
 
 type pages = {
 	logInIFrame: LogInIFrame;
@@ -13,6 +16,9 @@ type pages = {
 	footerMenuMobile: FooterMenuMobile;
 	gameProviders: GameProviders;
 	banner: Banner;
+	promotions: Promotions;
+	promotionDetails: PromotionDetails;
+	promotionTabs: PromotionTabs;
 }
 
 const test = base.extend<pages>({
@@ -33,6 +39,15 @@ const test = base.extend<pages>({
 	},
 	banner: async ({ page }, use) => {
 		await use(new Banner(page));
+	},
+	promotions: async ({ page }, use) => {
+		await use(new Promotions(page));
+	},
+	promotionDetails: async ({ page }, use) => {
+		await use(new PromotionDetails(page));
+	},
+	promotionTabs: async ({ page }, use) => {
+		await use(new PromotionTabs(page));
 	},
 });
 

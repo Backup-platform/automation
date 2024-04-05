@@ -1,0 +1,27 @@
+[
+
+	{
+		"cardNumber": 0,
+		"title": "GALACTIC WELCOME PACK",
+		"subtitle": "€2,000 + 200 Free Spins",
+		"memberTextButton": "Deposit",
+		"guestTextButton": "Sign Up",
+		"readMoreURL": "galactic-welcome-pack"
+	},
+	{
+		"cardNumber": 1,
+		"title": "NO-DEPOSIT FREE SPINS",
+		"subtitle": "Your Monthly Fun Mission",
+		"memberTextButton": "Deposit",
+		"guestTextButton": "Sign Up",
+		"readMoreURL": "monthly_fs"
+	},
+	{
+		"cardNumber": 2,
+		"title": "VIP CASHBACK",
+		"subtitle": "Bounce back with Space Fortuna!",
+		"memberTextButton": "Deposit",
+		"guestTextButton": "Sign Up",
+		"readMoreURL": "vip-cashback"
+	}
+]

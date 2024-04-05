@@ -10,7 +10,7 @@ import { LogInIFrame } from '../pages/logInIFrame.po';
 const authFileMobile = 'playwright/.auth/mobileUser.json';
 
 setup('Authenticate for Mobile', async ({ page }) => {
-	await page.setViewportSize(devices['Pixel 5'].viewport);
+	await page.setViewportSize(devices['iPhone 11 Pro'].viewport);
 
 	const landingPage = new LandingPage(page);
 	const logInIFrame = new LogInIFrame(page);

@@ -7,8 +7,9 @@
     "test:game": "npx playwright test --project=mobiGameTest --headed &; allure generate allure-results -o allure-report --clean && allure open allure-report",
     "test:screenshot:headed": "npx playwright test --project=screenshots --headed",
     "test:screenshot": "npx playwright test --project=screenshots",
-    "test:desktop": "npx playwright test --project=chromium --project=firefox &; npx allure generate allure-results -o allure-report --clean && allure open allure-report",
-    "test:desktop:headed": "npx playwright test --project=chromium --headed &; allure generate allure-results -o allure-report --clean && allure open allure-report",
+    "test:desktop": "npx playwright test --project=promotions.desktop.1440 --project=promotions.mobile.1024.chrome &; npx allure generate allure-results -o allure-report --clean && allure open allure-report",
+    "test:promotions": "npx playwright test --project=promotions.desktop.1440 --project=promotions.mobile.1024.chrome --project=promotions.mobile.375.chrome &; npx allure generate allure-results -o allure-report --clean && allure open allure-report",
+    "test:desktop:headed": "npx playwright test --project=promotions.desktop.1440 --project=promotions.mobile.1024.chrome --headed &; allure generate allure-results -o allure-report --clean && allure open allure-report",
     "test:headed": "npx playwright test --headed",
     "test:all": "npx playwright test &; allure generate allure-results -o allure-report --clean && allure open allure-report"
   },

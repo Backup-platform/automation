@@ -18,7 +18,7 @@ setup('Authenticate for Desktop', async ({ page }) => {
 	await page.goto(`${process.env.URL}`);
 	await landingPage.clickLoginButton();
 	await logInIFrame.actionLogin(`${process.env.USER}`, `${process.env.PASS}`);
-	await page.waitForURL(process.env.URL!);
+	await page.waitForURL(process.env.URL!, {waitUntil: "domcontentloaded"});
 	await headerMenuDesktop.validateLogoVisible();
 	await headerMenuDesktop.validateGamesButtonVisible();
 	await headerMenuDesktop.validateMyProfileVisible(); //expect(page.locator('#desktop-profile-icon')).toBeVisible({timeout: 20000});
