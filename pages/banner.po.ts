@@ -10,15 +10,16 @@ export class Banner {
 	}
 
 	//Locators
-	readonly skipHiThere = () => this.page.locator('a.introjs-button:nth-child(1)');
-	readonly skipNewDesign = () => this.page.locator('a.introjs-button:nth-child(1)');
-	readonly bannerNewDesign = () => this.page.getByRole('heading', { name: 'A New Universe Of Fun' });
-	readonly bannerHiThere = () => this.page.getByRole('heading', { name: 'Hi There!' });
+	readonly skipHiThere = () => this.page.locator('.introjs-customskipbutton');
+	readonly skipNewDesign = () => this.page.locator('.introjs-customskipbutton');
+	readonly bannerNewDesign = () => this.page.locator(".introjs-tooltip-title") //.getByText('A New Universe Of Fun'); //this.page.getByRole('heading', { name: 'A New Universe Of Fun' });
+	readonly bannerHiThere = () => this.page.locator(".introjs-tooltip-title") //.getByText('Hi There!');//this.page.getByRole('heading', { name: 'Hi There!' });
 
 	//Actions
 	public async randomBannerNewDesign(): Promise<void> {
 		await test.step('Click skip new design if visible', async () => {
-			await this.page.addLocatorHandler(this.bannerNewDesign(), async () => {
+			await this.page.addLocatorHandler( this.bannerNewDesign(), 
+			async () => {
 				await this.skipNewDesign().click();
 			});
 		});
@@ -26,7 +27,7 @@ export class Banner {
 
 	public async randomBannerHiThere(): Promise<void> {
 		await test.step('Click skip Hi there if visible', async () => {
-			await this.page.addLocatorHandler(this.bannerHiThere(), async () => {
+			await this.page.addLocatorHandler( this.bannerHiThere(), async () => {
 				await this.skipHiThere().click();
 			});
 		});

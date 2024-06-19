@@ -8,6 +8,7 @@ import { Banner } from '../banner.po';
 import { Promotions } from '../promotions.po';
 import { PromotionDetails } from '../promotion.details.po';
 import { PromotionTabs } from '../promotionTabs.po';
+import { SignUp } from '../signUp.po';
 
 type pages = {
 	logInIFrame: LogInIFrame;
@@ -19,6 +20,7 @@ type pages = {
 	promotions: Promotions;
 	promotionDetails: PromotionDetails;
 	promotionTabs: PromotionTabs;
+	signUp: SignUp;
 }
 
 const test = base.extend<pages>({
@@ -48,6 +50,9 @@ const test = base.extend<pages>({
 	},
 	promotionTabs: async ({ page }, use) => {
 		await use(new PromotionTabs(page));
+	},
+	signUp: async ({ page }, use) => {
+		await use(new SignUp(page));
 	},
 });
 

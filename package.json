@@ -11,16 +11,17 @@
     "test:promotions": "npx playwright test --project=promotions.desktop.1440 --project=promotions.mobile.1024.chrome --project=promotions.mobile.375.chrome &; npx allure generate allure-results -o allure-report --clean && allure open allure-report",
     "test:desktop:headed": "npx playwright test --project=promotions.desktop.1440 --project=promotions.mobile.1024.chrome --headed &; allure generate allure-results -o allure-report --clean && allure open allure-report",
     "test:headed": "npx playwright test --headed",
-    "test:all": "npx playwright test &; allure generate allure-results -o allure-report --clean && allure open allure-report"
+    "test:all": "npx playwright test &; allure generate allure-results -o allure-report --clean && allure open allure-report",
+    "wip": "npx playwright test --project=wip --project=wip2 &; allure generate allure-results -o allure-report --clean && allure open allure-report"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@playwright/test": "^1.42.0",
+    "@playwright/test": "^1.43.1",
     "@types/node": "^20.11.16",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "allure-commandline": "^2.27.0",
+    "allure-commandline": "^2.29.0",
     "allure-playwright": "^2.13.0",
     "eslint": "^8.57.0",
     "eslint-config-standard-with-typescript": "^43.0.1",

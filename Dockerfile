@@ -45,4 +45,4 @@ CMD npx playwright test --project=chromium && \
     npx allure serve allure-results -h 0.0.0.0 -p $PORT
     # npx allure generate allure-results -o allure-report --clean && \
     # npx allure open allure-report -h localhost -p $PORT
-#ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/bin/java
+    # ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/bin/java

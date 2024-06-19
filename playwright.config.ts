@@ -140,6 +140,30 @@ export default defineConfig({
 		  //testIgnore: '**/*login.mobile.spec.ts',
 		},
 		{
+			name: 'wip',
+			testMatch: '**/*signUp.spec.ts',
+			use: {
+			// ...devices['Pixel 7'],
+			  ...devices['Desktop Chrome'],
+			//storageState: 'playwright/.auth/mobileUser.json',
+			viewport: { width: 1440, height: 1024 },
+			},
+			//dependencies: ['setupMobile'],
+			//testIgnore: '**/*login.mobile.spec.ts',
+		  },
+		{
+		  name: 'wip2',
+		  testMatch: '**/*signUp.spec.ts',
+		  use: {
+		  ...devices['Pixel 7'],
+			//...devices['Desktop Chrome'],
+		  //storageState: 'playwright/.auth/mobileUser.json',
+		  //viewport: { width: 1440, height: 1024 },
+		  },
+		  //dependencies: ['setupMobile'],
+		  //testIgnore: '**/*login.mobile.spec.ts',
+		},
+		{
 			name: 'Pixel7',
 			testMatch: '**/*mobile.spec.ts',
 			use: {

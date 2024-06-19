@@ -35,11 +35,19 @@ export class HeaderMenuDesktop {
 	private readonly VIP = () => this.page.getByRole('link', { name: 'VIP', exact: true });
 	private readonly deposit = () => this.page.getByRole('button', { name: 'Deposit' });
 	private readonly sfLogo = () => this.page.getByRole('link', { name: 'SpaceFortuna Logo' });
+	private readonly signUpButton = () => this.page.locator("#header-sign-up-btn");
 
 
 	//Actions
 	async clickGames(): Promise<void> {
 		await this.games().click();
+	}
+
+	public async clickSignUpButton() {
+		await test.step('I click the sign up button in the menu', async () => {
+			await expect(this.signUpButton(),'Expect sign up button to be visible').toBeVisible();
+			await this.signUpButton().click();
+		});
 	}
 
 	private async handleMobleAndDesktopMenuButtons(desktopButtonLocator: Locator, mobileButtonLocator: Locator) {
@@ -92,6 +100,10 @@ export class HeaderMenuDesktop {
 		await this.validatePromotionsVisible();
 		await this.validateVIPVisible();
 		await this.validateDepositVisible();
+	}
+
+	public async isLoginVisible () : Promise <boolean> {
+		return await this.signUpButton().isVisible();
 	}
 
 	public async validateMyProfileVisible() {

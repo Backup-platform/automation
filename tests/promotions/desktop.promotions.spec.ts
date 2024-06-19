@@ -8,8 +8,8 @@ test.beforeEach(async ({ page, banner, headerMenuDesktop, landingPage  }) => {
 	await test.step('go to url', async () => {
 		await page.goto(`${process.env.URL}`);
 	});
-	await banner.bannerNewDesign();
-	await banner.bannerHiThere();
+	banner.bannerNewDesign();
+	banner.bannerHiThere();
 	await landingPage.acceptCookiesBannerRandom();
 	await headerMenuDesktop.validateLogoVisible();
 });
@@ -54,13 +54,13 @@ test.describe('Testing Promotion Tabs as a member', async () => {
 
 test.describe('Testing Promotion Tabs as a guest', async () => {
 	test.use({ storageState: 'playwright/.auth/noAuthentication.json' });
-	test('Validate Home Page', async ({ promotionTabs, headerMenuDesktop }) => {
+	test('Validate Loyalty Page', async ({ promotionTabs, headerMenuDesktop }) => {
 		await headerMenuDesktop.clickLoyalty();
 		await promotionTabs.validateCardElements(promotionTabs.loyaltyPageLocator());
 	});
 
 	test.use({ storageState: 'playwright/.auth/noAuthentication.json' });
-	test('Validate Loyalty Page', async ({ promotionTabs }) => {
+	test('Validate Home Page', async ({ promotionTabs }) => {
 		await promotionTabs.validateCardElements(promotionTabs.homePageLocator());
 	});
 });
