@@ -1,0 +1,12 @@
+apiVersion: tests.testkube.io/v3
+kind: Test
+metadata:
+  name: playwrite-tests
+  namespace: testkube
+spec:
+  type:  playwright-container/test
+  executionRequest:
+  args:
+    - npm 
+    - run
+    - wip

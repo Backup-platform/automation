@@ -9,6 +9,8 @@ test.beforeEach(async ({ page, banner, headerMenuDesktop, landingPage, promotion
 	});
 	await banner.bannerNewDesign();
 	await banner.bannerHiThere();
+	await banner.randomClickEscape();
+	await banner.randomClickSkipSomething();
 	await landingPage.acceptCookiesBannerRandom();
 	await headerMenuDesktop.validateLogoVisible();
 });

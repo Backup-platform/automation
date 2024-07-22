@@ -6,6 +6,7 @@ import { test as setup } from '@playwright/test';
 import { devices } from '@playwright/test';
 import { LandingPage } from '../pages/landingPage.po';
 import { LogInIFrame } from '../pages/logInIFrame.po';
+import { Banner } from '../pages/banner.po';
 
 const authFileMobile = 'playwright/.auth/mobileUser.json';
 
@@ -14,6 +15,10 @@ setup('Authenticate for Mobile', async ({ page }) => {
 
 	const landingPage = new LandingPage(page);
 	const logInIFrame = new LogInIFrame(page);
+	const banner = new Banner(page);
+
+	await banner.randomClickEscape();
+	await banner.randomClickSkipSomething();
 
 	await page.goto(`${process.env.URL}`);
 	await landingPage.clickLoginButton();

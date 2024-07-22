@@ -30,21 +30,20 @@ export class LogInIFrame {
 	// }
 
 	public async clickLoginButton(): Promise<void> {
-		await this.iFrameWindow().locator(this.loginButton()).click();
+		await this.loginButton().click();
 	}
 	public async fillUsername(username: string): Promise<void> {
-		await this.iFrameWindow().locator(this.username()).fill(username);
+		await this.username().fill(username);
 	}
 
 	public async fillPassword(password: string): Promise<void> {
-		await this.iFrameWindow().locator(this.password()).fill(password);
+		await this.password().fill(password);
 	}
 
 	public async validateWrongPasswordUsed(): Promise<any> {
-		await expect(this.iFrameWindow().locator(this.wrongUsername())).toBeVisible();
+		await expect(this.wrongUsername()).toBeVisible();
 		//TODO: enable assertion when localisation is stable
-		await expect(this.iFrameWindow().locator(this.wrongUsername())).
-			toHaveText('Invalid username or password.', {ignoreCase: true})
+		await expect(this.wrongUsername()).toHaveText('Invalid username or password.', {ignoreCase: true})
 	}
 
 	public async actionLogin(username: string, password: string): Promise<void> {

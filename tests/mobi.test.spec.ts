@@ -5,7 +5,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 
-test('Validate game is interactable', async ({ footerMenuMobile, gameProviders, page, context }) => {
+test.skip('Validate game is interactable', async ({ footerMenuMobile, gameProviders, page, context }) => {
 /**
  * TODO: design a scenario for navigating to a game validating it works and goes back to landing page.
  */

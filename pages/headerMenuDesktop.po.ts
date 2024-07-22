@@ -26,7 +26,7 @@ export class HeaderMenuDesktop {
 	private readonly myProfile = () => this.page.getByText('My ProfileMy');
 	private readonly balance = () => this.page.getByText('Balance:');
 	private readonly crash = () => this.page.getByRole('link', { name: 'Crash' });
-	private readonly live = () => this.page.getByRole('link', { name: 'Live' });
+	private readonly live = () => this.page.getByRole('link', { name: 'Live',  exact: true });
 	private readonly home = () => this.page.getByRole('link', { name: 'Home' });
 	private readonly gamesOLD = () => this.page.getByRole('link', { name: 'Games' });
 	private readonly games = () => this.page.getByRole('link', { name: 'Games', exact: true });
@@ -34,7 +34,8 @@ export class HeaderMenuDesktop {
 	private readonly loyalty = () => this.page.locator('#desktop-nav-link-Loyalty');
 	private readonly VIP = () => this.page.getByRole('link', { name: 'VIP', exact: true });
 	private readonly deposit = () => this.page.getByRole('button', { name: 'Deposit' });
-	private readonly sfLogo = () => this.page.getByRole('link', { name: 'SpaceFortuna Logo' });
+	private readonly sfLogo = () => this.page.locator('img[title*="logo-spacefortuna"]').
+									or(this.page.locator('img[title*="spacefortuna-logo"]'));
 	private readonly signUpButton = () => this.page.locator("#header-sign-up-btn");
 
 
@@ -107,37 +108,53 @@ export class HeaderMenuDesktop {
 	}
 
 	public async validateMyProfileVisible() {
+		await test.step('I validate MyProfile is visible', async () => {
 		await expect(this.myProfile()).toBeVisible({ timeout: 15000 });
+		});
 	}
 
 	public async validateShortcutVisible(): Promise<void> {
+		await test.step('I validate Shortcut is visible', async () => {
 		await expect(this.shortcutButton()).toBeVisible();
+		});
 	}
 
 	public async validateGamesButtonVisible(): Promise<void> {
+		await test.step('I validate Games button is visible', async () => {
 		await expect(this.games()).toBeVisible();
+		});
 	}
 
 	public async validateBalanceVisible(): Promise<void> {
+		await test.step('I validate Balance is visible', async () => {
 		await expect(this.balance()).toBeVisible();
+		});
 	}
 
 	public async validateCrashVisible(): Promise<void> {
+		await test.step('I validate Crash is visible', async () => {
 		await expect(this.crash()).toBeVisible();
+		});
 	}
 
 	public async validateLiveVisible(): Promise<void> {
-		await expect(this.live()).toBeVisible();
+		await test.step('I validate Live is visible', async () => {
+			await expect(this.live()).toBeVisible();
+		});
 	}
 
 	public async validateHomeVisible(): Promise<void> {
+		await test.step('I validate home is visible', async () => {
 		await expect(this.home().or(this.mobileMenuButton()),
 			'Expect either mobile menu or desktop menu to be visible').toBeVisible();
+		});
 	}
 
 	public async validatePromotionsVisible(): Promise<void> {
+		await test.step('I validate Promotions is visible', async () => {
 		await expect(this.promotions().or(this.mobileMenuButton()),
 			'Expect either mobile menu or desktop menu to be visible').toBeVisible();
+		});
 	}
 
 	public async validateLoyaltyVisible(): Promise<void> {
@@ -146,11 +163,15 @@ export class HeaderMenuDesktop {
 	}
 
 	public async validateVIPVisible(): Promise<void> {
+		await test.step('I validate VIP is visible', async () => {
 		await expect(this.VIP()).toBeVisible();
+		});
 	}
 
 	public async validateDepositVisible(): Promise<void> {
+		await test.step('I validate Deposit is visible', async () => {
 		await expect(this.deposit()).toBeVisible();
+		});
 	}
 
 	public async validateSfLogoVisible(): Promise<void> {

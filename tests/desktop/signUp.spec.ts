@@ -3,22 +3,21 @@ import test, { expect } from '../../pages/utils/base.po';
 
 test.beforeEach(async ({ page, banner, headerMenuDesktop }) => {
     await page.goto('https://stage.spacefortuna1.com/en');
-    await banner.bannerNewDesign();
-    await banner.bannerHiThere();
     if(await headerMenuDesktop.isLoginVisible()) {
         await headerMenuDesktop.clickSignUpButton();
     } else {
         await page.locator('a[class*="styles_buttons_"]').click()
     }
-    //await headerMenuDesktop.clickSignUpButton(); //TODO: Desktop
-    //await page.locator('a[class*="styles_buttons_"]').click(); //TODO: Mobile
+    await banner.randomClickEscape();
+	await banner.randomClickSkipSomething();
+    await banner.bannerNewDesign();
+	await banner.bannerHiThere();
 });
 
 test.describe('Signup Smoke Tests Desktop', () => {
-    //TODO: make a test for duplicate emails 
-    test('Validate SignUp', async ({ signUp, banner }) => {
-        await banner.bannerNewDesign();
-        await banner.bannerHiThere();
+    //TODO: make a test for duplicate emails
+    test.use({ storageState: 'playwright/.auth/noAuthentication.json' });
+    test('Validate SignUp', async ({ signUp }) => {
         await signUp.fillFirstStep("Somemail@something.com", 'Password@');
         await signUp.clickNextButton();
         await signUp.fillSecondStep('firstName', 'lastName', '02/05/2001', 'Male');
@@ -28,26 +27,24 @@ test.describe('Signup Smoke Tests Desktop', () => {
         await signUp.validateRegistrationEmailSent();
     });
 
-    test('Validate SignUp with no credentials', async ({ signUp, banner }) => {
-        banner.bannerNewDesign();
-        banner.bannerHiThere();
+    test.use({ storageState: 'playwright/.auth/noAuthentication.json' });
+    test('Validate SignUp with no credentials', async ({ signUp }) => {
         await signUp.validateNextButtonEnabled(false);
     });
 
-    test('Validate SignUp with no email', async ({ signUp , banner}) => {
-        await banner.bannerNewDesign();
-        await banner.bannerHiThere();
+    test.use({ storageState: 'playwright/.auth/noAuthentication.json' });
+    test('Validate SignUp with no email', async ({ signUp }) => {
         await signUp.fillPassword('Password@1');
         await signUp.validateNextButtonEnabled(false);
     });
 
-    test('Validate SignUp with no password', async ({ signUp , banner}) => {
-        await banner.bannerNewDesign();
-        await banner.bannerHiThere();
+    test.use({ storageState: 'playwright/.auth/noAuthentication.json' });
+    test('Validate SignUp with no password', async ({ signUp }) => {
         await signUp.fillEmail('abc@abv.bg');
         await signUp.validateNextButtonEnabled(false);
     });
 
+    
     test.describe('Validate SignUp with Missing Second Stage field', () => {
         const seconStepFields = [
             { scenario: 'Missing First Name', firstName: undefined, lastName: 'lastName', DOB: '02/05/2001', gender: 'Female' },
@@ -56,9 +53,8 @@ test.describe('Signup Smoke Tests Desktop', () => {
             { scenario: 'Missing Gender', firstName: 'firstName', lastName: 'lastName', DOB: '02/05/2001', gender: undefined },
         ];
         for (const fields of seconStepFields) {
-            test(`Test ${fields.scenario}`, async ({ signUp , banner }) => {
-                await banner.bannerNewDesign();
-                await banner.bannerHiThere();
+            test.use({ storageState: 'playwright/.auth/noAuthentication.json' });
+            test(`Test ${fields.scenario}`, async ({ signUp }) => {
                 await signUp.fillFirstStep("Somemail@something.com", 'Password@1');
                 await signUp.clickNextButton();
                 await signUp.fillPartialSecondStep(fields as secondStepFields );
@@ -76,9 +72,8 @@ test.describe('Signup Smoke Tests Desktop', () => {
             { scenario: 'Uncheck Age Checkbox', city: 'Toronto', address: '1337 Blvrd', postcode: '42', countryCode: '+1', phone: '3065344301', checkbox: false, country: 'Canada' },
         ];
         for (const fields of thirdStepFields) {
-            test(`Test ${fields.scenario}`, async ({ signUp, banner }) => {
-                await banner.bannerNewDesign();
-                await banner.bannerHiThere();
+            test.use({ storageState: 'playwright/.auth/noAuthentication.json' });
+            test(`Test ${fields.scenario}`, async ({ signUp }) => {
                 await signUp.fillFirstStep("Somemail@something.com", 'Password@');
                 await signUp.clickNextButton();
                 await signUp.fillSecondStep('firstName', 'lastName', '02/05/2001', 'Male');
@@ -103,9 +98,8 @@ test.describe('Sign up regression Tests Desktop', () => {
         ];
 
         for (const fields of thirdStepFields) {
-            test(`Test ${fields.scenario} `, async ({ signUp, banner }) => {
-                await banner.bannerNewDesign();
-                await banner.bannerHiThere();
+            test.use({ storageState: 'playwright/.auth/noAuthentication.json' });
+            test(`Test ${fields.scenario} `, async ({ signUp }) => {
                 await signUp.fillEmail(fields.email);
                 await signUp.fillPassword('Password@1');
                 await signUp.validateNextButtonEnabled(false);
@@ -123,9 +117,8 @@ test.describe('Sign up regression Tests Desktop', () => {
             //TODO: 'Removal of complians reminders when you fulfill them'
         ];
         for (const fields of thirdStepFields) {
-            test(`Test ${fields.scenario} `, async ({ signUp, banner }) => {
-                await banner.bannerNewDesign();
-                await banner.bannerHiThere();
+            test.use({ storageState: 'playwright/.auth/noAuthentication.json' });
+            test(`Test ${fields.scenario} `, async ({ signUp }) => {
                 await signUp.fillPassword(fields.password);
                 await signUp.fillEmail('abv@abv.bg');
                 await signUp.validatePasswordMinus(fields.passReminder);
@@ -143,9 +136,8 @@ test.describe('Sign up regression Tests Desktop', () => {
             { scenario: 'One Letter and space', firstName: 'a ', lastName: 'a ', DOB: '02/05/2001', gender: 'Female' },
         ];
         for (const fields of secondStepFields) {
-            test(`Validate fields with non compliant text ${fields.scenario}`, async ({ signUp, banner }) => {
-                await banner.bannerNewDesign();
-                await banner.bannerHiThere();
+            test.use({ storageState: 'playwright/.auth/noAuthentication.json' });
+            test(`Validate fields with non compliant text ${fields.scenario}`, async ({ signUp }) => {
                 await signUp.fillFirstStep("Somemail@something.com", 'Password@1');
                 await signUp.clickNextButton();
                 await signUp.fillPartialSecondStep(fields as secondStepFields);
@@ -162,9 +154,8 @@ test.describe('Sign up regression Tests Desktop', () => {
             { scenario: 'One Letter and space',  country: 'Canada' , city: 'a ', address: 'a ', postcode: 'a ', countryCode: '+1' , phone: '3065344301', checkbox: true },
         ];
         for (const fields of thirdStepFields) {
-            test(`Validate fields with non compliant text ${fields.scenario}`, async ({ signUp, banner }) => {
-                await banner.bannerNewDesign();
-                await banner.bannerHiThere();
+            test.use({ storageState: 'playwright/.auth/noAuthentication.json' });
+            test(`Validate fields with non compliant text ${fields.scenario}`, async ({ signUp }) => {
                 await signUp.fillFirstStep("Somemail@something.com", 'Password@1');
                 await signUp.clickNextButton();
                 await signUp.fillSecondStep('firstName', 'lastName', '02/05/2001', 'Male');

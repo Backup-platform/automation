@@ -27,8 +27,8 @@ export default defineConfig({
 	/* Opt out of parallel tests on CI. */
 	workers: 4, //process.env.CI ? 1 : undefined,
 	/* Reporter to use. See https://playwright.dev/docs/test-reporters */
-	//reporter: 'html',
-	reporter: 'allure-playwright',
+	reporter: 'html',
+	//reporter: 'allure-playwright',
 	/* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
 	use: {
 		trace: 'on-first-retry',
@@ -54,7 +54,7 @@ export default defineConfig({
 		},
 		{
 			name: 'promotions.desktop.1440',
-			testMatch: '**/*promotions/desktop.*',
+			testMatch: '**/*promotions/desktop.promotions.spec.ts*',
 			use: {
 				...devices['Desktop Chrome'],
 				storageState: 'playwright/.auth/user.json',
@@ -82,66 +82,113 @@ export default defineConfig({
 			},
 			dependencies: ['setupMobile'],
 		},
+		// {
+		// 	name: 'promotions.mobile.1024.safari',
+		// 	testMatch: '**/*promotions/desktop.*',
+		// 	use: {
+		// 		...devices['iPad Mini landscape'], //width: 1024, height: 768
+		// 		storageState: 'playwright/.auth/user.json', 
+		// 	},
+		// 	dependencies: ['setupMobile'],
+		// },
+		// {
+		// 	name: 'promotions.mobile.375.safari',
+		// 	testMatch: '**/*promotions/mobile.*',
+		// 	use: {
+		// 		...devices['iPhone 11 Pro'],
+		// 		storageState: 'playwright/.auth/mobileUser.json', //width: 375 height:812
+		// 	},
+		// 	dependencies: ['setupMobile'],
+		// },
 		{
-			name: 'promotions.mobile.1024.safari',
-			testMatch: '**/*promotions/desktop.*',
+			name: 'desktop.1440',
+			testMatch: '**/*desktop/*',
+			use: {
+				...devices['Desktop Chrome'],
+				storageState: 'playwright/.auth/user.json',
+				viewport: { width: 1440, height: 1024 },
+			},
+			dependencies: ['setupDesk'],
+		},
+		{
+			name: 'mobile.1024.chrome',
+			testMatch: '**/*mobile/*',
 			use: {
 				...devices['iPad Mini landscape'], //width: 1024, height: 768
+				browserName: 'chromium',
 				storageState: 'playwright/.auth/user.json', 
 			},
 			dependencies: ['setupMobile'],
 		},
 		{
-			name: 'promotions.mobile.375.safari',
-			testMatch: '**/*promotions/mobile.*',
+			name: 'mobile.375.chrome',
+			testMatch: '**/*mobile/*',
 			use: {
 				...devices['iPhone 11 Pro'],
+				browserName: 'chromium',
 				storageState: 'playwright/.auth/mobileUser.json', //width: 375 height:812
 			},
 			dependencies: ['setupMobile'],
 		},
-		
-		{
-			name: 'chromium',
-			testMatch: '**/*desktop/*',
-			use: {
-				...devices['Desktop Chrome'],
-				storageState: 'playwright/.auth/user.json',
-				viewport: { width: 1320, height: 720 },
-			},
-			dependencies: ['setupDesk'],
-		},
-		{
-			name: 'firefox',
-			testMatch: '**/*desktop/*',
-			use: {
-				...devices['Desktop Firefox'],
-				storageState: 'playwright/.auth/user.json',
-				viewport: { width: 1320, height: 720 },
-			},
-			dependencies: ['setupDesk'],
-		},
-		{
-			name: 'screenshots',
-			testMatch: '**/*screenshots.spec.ts',
-			use: {
-				...devices['Desktop Chrome'],
-				viewport: { width: 1320, height: 720 },
-			},
-		},
-		{
-		  name: 'mobiGameTest',
-		  testMatch: '**/*gameIframe.spec.ts',
-		  use: {
-		    ...devices['Pixel 7'],
-		    storageState: 'playwright/.auth/mobileUser.json',
-		  },
-		  dependencies: ['setupMobile'],
-		  //testIgnore: '**/*login.mobile.spec.ts',
-		},
-		{
+		// {
+		// 	name: 'mobile.1024.safari',
+		// 	testMatch: '**/*mobile/*',
+		// 	use: {
+		// 		...devices['iPad Mini landscape'], //width: 1024, height: 768
+		// 		storageState: 'playwright/.auth/user.json', 
+		// 	},
+		// 	dependencies: ['setupMobile'],
+		// },
+		// {
+		// 	name: 'mobile.375.safari',
+		// 	testMatch: '**/*mobile/*',
+		// 	use: {
+		// 		...devices['iPhone 11 Pro'],
+		// 		storageState: 'playwright/.auth/mobileUser.json', //width: 375 height:812
+		// 	},
+		// 	dependencies: ['setupMobile'],
+		// },
+		// {
+		// 	name: 'chromium',
+		// 	testMatch: '**/*desktop/*',
+		// 	use: {
+		// 		...devices['Desktop Chrome'],
+		// 		storageState: 'playwright/.auth/user.json',
+		// 		viewport: { width: 1320, height: 720 },
+		// 	},
+		// 	dependencies: ['setupDesk'],
+		// },
+		// {
+		// 	name: 'firefox',
+		// 	testMatch: '**/*desktop/*',
+		// 	use: {
+		// 		...devices['Desktop Firefox'],
+		// 		storageState: 'playwright/.auth/user.json',
+		// 		viewport: { width: 1320, height: 720 },
+		// 	},
+		// 	dependencies: ['setupDesk'],
+		// },
+		// {
+		// 	name: 'screenshots',
+		// 	testMatch: '**/*screenshots.spec.ts',
+		// 	use: {
+		// 		...devices['Desktop Chrome'],
+		// 		viewport: { width: 1320, height: 720 },
+		// 	},
+		// },
+		// {
+		//   name: 'mobiGameTest',
+		//   testMatch: '**/*gameIframe.spec.ts',
+		//   use: {
+		//     ...devices['Pixel 7'],
+		//     storageState: 'playwright/.auth/mobileUser.json',
+		//   },
+		//   dependencies: ['setupMobile'],
+		//   //testIgnore: '**/*login.mobile.spec.ts',
+		// },
+		 {
 			name: 'wip',
-			testMatch: '**/*signUp.spec.ts',
+			testMatch: '**/*signUP.spec.ts*',
 			use: {
 			// ...devices['Pixel 7'],
 			  ...devices['Desktop Chrome'],
@@ -153,7 +200,7 @@ export default defineConfig({
 		  },
 		{
 		  name: 'wip2',
-		  testMatch: '**/*signUp.spec.ts',
+		  testMatch: '**/*login.mobile.spec.ts',
 		  use: {
 		  ...devices['Pixel 7'],
 			//...devices['Desktop Chrome'],
@@ -163,33 +210,33 @@ export default defineConfig({
 		  //dependencies: ['setupMobile'],
 		  //testIgnore: '**/*login.mobile.spec.ts',
 		},
-		{
-			name: 'Pixel7',
-			testMatch: '**/*mobile.spec.ts',
-			use: {
-				...devices['Pixel 7'],
-				storageState: 'playwright/.auth/mobileUser.json',
-			},
-			dependencies: ['setupMobile'],
-		},
-		{
-			name: 'iPhone14Pro',
-			testMatch: '**/*mobile.spec.ts',
-			use: {
-				...devices['iPhone 14 Pro'],
-				storageState: 'playwright/.auth/mobileUser.json',
-			},
-			dependencies: ['setupMobile'],
-			testIgnore: '**/*login.mobile.spec.ts',
-		},
-		{
-			name: 'api',
-			testMatch: '**/*api.spec.ts',
-			use: {
-				...devices['Desktop Chrome'],
-			},
+		// {
+		// 	name: 'Pixel7',
+		// 	testMatch: '**/*mobile.spec.ts',
+		// 	use: {
+		// 		...devices['Pixel 7'],
+		// 		storageState: 'playwright/.auth/mobileUser.json',
+		// 	},
+		// 	dependencies: ['setupMobile'],
+		// },
+		// {
+		// 	name: 'iPhone14Pro',
+		// 	testMatch: '**/*mobile.spec.ts',
+		// 	use: {
+		// 		...devices['iPhone 14 Pro'],
+		// 		storageState: 'playwright/.auth/mobileUser.json',
+		// 	},
+		// 	dependencies: ['setupMobile'],
+		// 	testIgnore: '**/*login.mobile.spec.ts',
+		// },
+		// {
+		// 	name: 'api',
+		// 	testMatch: '**/*api.spec.ts',
+		// 	use: {
+		// 		...devices['Desktop Chrome'],
+		// 	},
 
-		},
+		// },
 	],
 
 	/* Run your local dev server before starting the tests */

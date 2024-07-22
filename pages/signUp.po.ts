@@ -27,7 +27,7 @@ export class SignUp {
     private readonly mobileGenderDropdown = () => this.page.locator('select[class*="select_dropdownButton_"]'); 
     private readonly desktopGenderDropdown = () => this.page.locator('button[class*="select_dropdownButton_"]'); 
     private readonly almostDoneButton = () => this.page.locator("#registration-enter-universe-btn");
-    private readonly desktopCountryButton = () => this.page.getByRole('button', { name: 'Country' });
+    private readonly desktopCountryButton = () => this.page.getByRole('button', { name: 'Country', exact: true  });
     private readonly mobileCountryButton = () => this.page.locator('#country');
     private readonly desktopCountryCodeButton = () => this.page.locator(".mt-4 button[class*='styles_button_']");
     private readonly desktopCountryCodeList = () => this.page.locator(".mt-4 ul[class*='styles_list_']");

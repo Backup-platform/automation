@@ -5,6 +5,7 @@ import { test as setup } from '@playwright/test';
 import { LandingPage } from '../pages/landingPage.po';
 import { LogInIFrame } from '../pages/logInIFrame.po';
 import { HeaderMenuDesktop } from '../pages/headerMenuDesktop.po';
+import { Banner } from '../pages/banner.po';
 
 const authFile = 'playwright/.auth/user.json';
 
@@ -14,6 +15,10 @@ setup('Authenticate for Desktop', async ({ page }) => {
 	const landingPage = new LandingPage(page);
 	const logInIFrame = new LogInIFrame(page);
 	const headerMenuDesktop = new HeaderMenuDesktop(page);
+	const banner = new Banner(page);
+
+	await banner.randomClickEscape();
+	await banner.randomClickSkipSomething();
 
 	await page.goto(`${process.env.URL}`);
 	await landingPage.clickLoginButton();

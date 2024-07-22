@@ -1,8 +1,10 @@
 import { GameProviders } from '../../pages/gameProviders.po';
 import test, { expect } from '../../pages/utils/base.po';
 
-test.beforeEach(async ({ page }) => {
-	await page.goto('https://stage.spacefortuna1.com');
+test.beforeEach(async ({ page, banner }) => {
+	await page.goto('https://stage.spacefortuna1.com/en');
+	await banner.randomClickEscape();
+	await banner.randomClickSkipSomething();
 });
 
 test.describe('Test mobile game is responsive', () => {
@@ -11,9 +13,7 @@ test.describe('Test mobile game is responsive', () => {
 		[GameProviders.providers.booming, GameProviders.providers.yggdrasil]
 	];
 	for (const game of providers) {
-		test(`Validate ${game} Opens`, async ({ footerMenuMobile, gameProviders, banner }) => {
-			await banner.bannerNewDesign();
-			await banner.bannerHiThere();
+		test(`Validate ${game} Opens`, async ({ footerMenuMobile, gameProviders }) => {
 			await footerMenuMobile.validateLogoVisible();
 			await footerMenuMobile.validateBottomNavVisible();
 			await footerMenuMobile.clickGames();
