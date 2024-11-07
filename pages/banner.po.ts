@@ -17,7 +17,9 @@ export class Banner {
 	readonly escapeOptIn = () => this.page.locator(".inbox .close-btn");
 	readonly optIn = () => this.page.locator(".inbox");
 	readonly skipButtonSomething = () => this.page.locator(".introjs-button.introjs-customskipbutton");
-	readonly bannerSomething = () => this.page.locator(".introjs-tooltip.introjs-user-home-desktop-first-step").or(this.page.locator(".introjs-guest-home-mobile-first-step.introjs-tooltip"));
+	readonly bannerGuestSomething = () => this.page.locator(".introjs-tooltip.introjs-guest-home-desktop-first-step").or(this.page.locator(".introjs-guest-home-mobile-first-step.introjs-tooltip"));
+	readonly bannerUserSomething = () => this.page.locator(".introjs-tooltip.introjs-user-home-desktop-first-step").or(this.page.locator(".introjs-user-home-mobile-first-step.introjs-tooltip"));
+	readonly bannerSomething = () => this.bannerUserSomething().or(this.bannerGuestSomething());
 	readonly sideBanner = () => this.page.locator('.small-notifications-wrapper');
 	readonly sideBannerCloseBtn = () => this.page.locator('.small-notifications-wrapper .close-btn');
 	
@@ -27,6 +29,7 @@ export class Banner {
 			await this.page.addLocatorHandler(this.bannerNewDesign(),
 				async () => {
 					await this.skipNewDesign().click();
+					//await this.bannerNewDesign().waitFor({state: 'hidden'});
 				});
 		});
 	}
@@ -36,15 +39,19 @@ export class Banner {
 			await this.page.addLocatorHandler(this.optIn(),
 				async () => {
 					await this.escapeOptIn().click();
+					await this.optIn().waitFor({state: 'hidden'});
 				});
 		});
 	}
 
 	public async randomClickSkipSomething() {
 		await test.step('Click skip in Something', async () => {
-			await this.page.addLocatorHandler(this.bannerSomething(),
+			await this.page.addLocatorHandler(this.bannerUserSomething().or(this.bannerGuestSomething()),
 				async () => {
+					const currentBanner = () => this.bannerUserSomething().or(this.bannerGuestSomething());
 					await this.skipButtonSomething().click();
+					await currentBanner().waitFor({state: 'hidden'});
+					//await this.bannerSomething().waitFor({state: 'hidden'});
 				});
 		});
 	}
@@ -56,6 +63,7 @@ export class Banner {
 					var countRows = await this.sideBannerCloseBtn().count();
 					for(var i = 0; i < countRows; ++i ){
 						await this.sideBannerCloseBtn().nth(i).click();
+						await this.sideBanner().waitFor({state: 'hidden'});
 					}
 				});
 		});
@@ -65,6 +73,7 @@ export class Banner {
 		await test.step('Click skip Hi there if visible', async () => {
 			await this.page.addLocatorHandler(this.bannerHiThere(), async () => {
 				await this.skipHiThere().click();
+				await this.bannerHiThere().waitFor({state: 'hidden'});
 			});
 		});
 	}

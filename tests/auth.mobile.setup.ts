@@ -25,7 +25,7 @@ setup('Authenticate for Mobile', async ({ page }) => {
 	await logInIFrame.actionLogin(`${process.env.USER}`, `${process.env.PASS}`);
 	await page.waitForURL(`${process.env.URL}`);
 	await expect(page.locator('img[src*="Mobile_Bottom_Nav_My_Bonuses_icon_f21202f625.svg"]')).toBeVisible({ timeout: 20000 });
-	await landingPage.clickAcceptCookiesButton();
+	//TODO: FIX ME await landingPage.clickAcceptCookiesButton();
 
 	await page.context().storageState({ path: authFileMobile });
 });
