@@ -11,12 +11,22 @@ export class LandingPage {
 
 	//Locators
 	readonly loginButton = () => this.page.locator('#header-log-in-btn');
+	readonly resetPasswordButton = () => this.page.locator('#kc-password-reset-link');
+	readonly submitButton = ()  => this.page.locator('.pf-c-button reset-email-submit pf-m-primary pf-m-block btn-lg');
 	readonly acceptCookiesButton = () => this.page.getByRole('button', { name: 'Accept' });
 	readonly cookiesBanner = () => this.page.getByRole('heading', { name: 'We use cookies to improve your experience.' });
 
 	//Actions
 	public async clickLoginButton(): Promise<void> {
 		await this.loginButton().click();
+	}
+
+	public async clickResetPasswordButton(): Promise<void> {
+		await this.resetPasswordButton().click();
+	}
+
+	public async clickSubmitButton(): Promise<void> {
+		await this.submitButton().click();
 	}
 
 	public async isLoginButtonVisible(): Promise<void> {

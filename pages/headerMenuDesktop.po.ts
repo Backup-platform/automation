@@ -37,6 +37,8 @@ export class HeaderMenuDesktop {
 	private readonly sfLogo = () => this.page.locator('img[title*="logo-spacefortuna"]').
 									or(this.page.locator('img[title*="spacefortuna-logo"]'));
 	private readonly signUpButton = () => this.page.locator("#header-sign-up-btn");
+	//TODO: figureout when should we use get by role and when locator
+	private readonly walletModal = () => this.page.locator('#wallet-modal-open-btn');
 
 
 	//Actions
@@ -176,5 +178,8 @@ export class HeaderMenuDesktop {
 
 	public async validateSfLogoVisible(): Promise<void> {
 		await expect(this.sfLogo()).toBeVisible();
+	}
+	public async walletModalVisible(): Promise<void> {
+		await expect(this.walletModal()).toBeVisible();
 	}
 }

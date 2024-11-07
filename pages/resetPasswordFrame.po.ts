@@ -1,7 +1,7 @@
 import { FrameLocator, Locator, Page } from '@playwright/test';
-import test, { expect } from '../pages/utils/base.po';
+import test, { expect } from './utils/base.po';
 
-export class LogInIFrame {
+export class ResetPasswordFrame {
 	readonly page: Page;
 
 	readonly locators = {
@@ -14,7 +14,7 @@ export class LogInIFrame {
 	}
 
 	//Locators
-	readonly loginWindow = () => this.page.locator('.kc-content-container');
+	readonly iFrameWindow = () => this.page.frameLocator('iframe[src*=\'auth?client_id=frontoffice-client&redirect_uri\']');
 	readonly username = () => this.page.locator('#username');
 	readonly resetEmail = () => this.page.getByPlaceholder('enter email address');
 	readonly password = () => this.page.locator('#password');
@@ -35,33 +35,34 @@ export class LogInIFrame {
 	// }
 
 	public async clickLoginButton(): Promise<void> {
-		await this.loginButton().click();
+		await this.iFrameWindow().locator(this.loginButton()).click();
 	}
 
 	public async clickResetPasswordButton(): Promise<void> {
-		await this.loginWindow().locator(this.resetPasswordButton()).click();
+		await this.iFrameWindow().locator(this.resetPasswordButton()).click();
 	}
 
 	public async clickSubmitButton(): Promise<void> {
-		await this.loginWindow().locator(this.submitButton()).click();
+		await this.iFrameWindow().locator(this.submitButton()).click();
 	}
 
-	public async fillUsername(username: string): Promise<void> {
-		await this.username().fill(username);
+	public async fillUsername(username: string ): Promise<void> {
+		await this.iFrameWindow().locator(this.username()).fill(username);
 	}
 
 	public async fillResetEmail(username: string): Promise<void> {
-		await this.loginWindow().locator(this.resetEmail()).fill(username);
+		await this.iFrameWindow().locator(this.resetEmail()).fill(username);
 	}
 
 	public async fillPassword(password: string): Promise<void> {
-		await this.password().fill(password);
+		await this.iFrameWindow().locator(this.password()).fill(password);
 	}
 
 	public async validateWrongPasswordUsed(): Promise<any> {
-		await expect(this.wrongUsername()).toBeVisible();
+		await expect(this.iFrameWindow().locator(this.wrongUsername())).toBeVisible();
 		//TODO: enable assertion when localisation is stable
-		await expect(this.wrongUsername()).toHaveText('Invalid username or password.', {ignoreCase: true})
+		await expect(this.iFrameWindow().locator(this.wrongUsername())).
+			toHaveText(' Invalid username or password. ', { ignoreCase: true })
 	}
 
 	public async actionLogin(username: string, password: string): Promise<void> {
@@ -70,31 +71,39 @@ export class LogInIFrame {
 		await this.clickLoginButton();
 	}
 	public async validateNoUsernameUsed(): Promise<any> {
-		await expect(this.loginWindow().locator(this.noUsername())).toBeVisible();
-		await expect(this.loginWindow().locator(this.noUsername())).
+		await expect(this.iFrameWindow().locator(this.noUsername())).toBeVisible();
+		await expect(this.iFrameWindow().locator(this.noUsername())).
 			toHaveText('Invalid username.', { ignoreCase: true })
 	}
 
 	public async validateErrorMessage(expectedErrorTest: string): Promise<any> {
-		await expect(this.loginWindow().locator(this.noUsername())).toBeVisible();
-		await expect(this.loginWindow().locator(this.noUsername())).
+		await expect(this.iFrameWindow().locator(this.noUsername())).toBeVisible();
+		await expect(this.iFrameWindow().locator(this.noUsername())).
 			toHaveText(expectedErrorTest, { ignoreCase: true })
 	}
 
 	public async validateNoPasswordUsed(): Promise<any> {
-		await expect(this.loginWindow().locator(this.noPassword())).toBeVisible();
-		await expect(this.loginWindow().locator(this.noPassword())).
+		await expect(this.iFrameWindow().locator(this.noPassword())).toBeVisible();
+		await expect(this.iFrameWindow().locator(this.noPassword())).
 			toHaveText('Invalid username or password.', { ignoreCase: true })
 	}
 
 	public async validateSendEmail(): Promise<any> {
-		await expect(this.loginWindow().locator(this.username())).toBeVisible(); //TODO: 
+		await expect(this.iFrameWindow().locator(this.username())).toBeVisible(); //TODO: 
 	}
 
 	public async validateWrongUsernameUsed(): Promise<any> {
-		await expect(this.loginWindow().locator(this.wrongUsername())).toBeVisible();
-		await expect(this.loginWindow().locator(this.wrongUsername())).
+		await expect(this.iFrameWindow().locator(this.wrongUsername())).toBeVisible();
+		await expect(this.iFrameWindow().locator(this.wrongUsername())).
 			toHaveText('Invalid username or password.', { ignoreCase: true })
+	}
+
+	public async validateBrowserErrorIsShown (email: Locator, expectedText: string ) {
+		const validationMessage = await email.evaluate((element) => {
+			const input = element as HTMLInputElement
+			return input.validationMessage
+		  });
+		await expect(validationMessage).toContain(expectedText);
 	}
 
 }

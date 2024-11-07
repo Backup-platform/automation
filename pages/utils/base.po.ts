@@ -9,6 +9,8 @@ import { Promotions } from '../promotions.po';
 import { PromotionDetails } from '../promotion.details.po';
 import { PromotionTabs } from '../promotionTabs.po';
 import { SignUp } from '../signUp.po';
+import { WalletModal } from '../walletModal.po';
+import { ResetPasswordFrame } from '../resetPasswordFrame.po';
 
 type pages = {
 	logInIFrame: LogInIFrame;
@@ -21,6 +23,8 @@ type pages = {
 	promotionDetails: PromotionDetails;
 	promotionTabs: PromotionTabs;
 	signUp: SignUp;
+	walletModal: WalletModal;
+	resetPasswordFrame: ResetPasswordFrame;
 }
 
 const test = base.extend<pages>({
@@ -53,6 +57,12 @@ const test = base.extend<pages>({
 	},
 	signUp: async ({ page }, use) => {
 		await use(new SignUp(page));
+	},
+	walletModal: async ({ page }, use) => {
+		await use(new WalletModal(page));
+	},
+	resetPasswordFrame: async ({ page }, use) => {
+		await use(new ResetPasswordFrame(page));
 	},
 });
 

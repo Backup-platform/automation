@@ -25,7 +25,7 @@ export default defineConfig({
 	/* Retry on CI only */
 	retries: process.env.CI ? 2 : 0,
 	/* Opt out of parallel tests on CI. */
-	workers: 4, //process.env.CI ? 1 : undefined,
+	workers: 6, //process.env.CI ? 1 : undefined,
 	/* Reporter to use. See https://playwright.dev/docs/test-reporters */
 	reporter: 'html',
 	//reporter: 'allure-playwright',
@@ -195,9 +195,36 @@ export default defineConfig({
 			//storageState: 'playwright/.auth/mobileUser.json',
 			viewport: { width: 1440, height: 1024 },
 			},
-			//dependencies: ['setupMobile'],
-			//testIgnore: '**/*login.mobile.spec.ts',
-		  },
+			dependencies: ['setupDesk'],
+		},
+		{
+			name: 'wip',
+			testMatch: '*/desktop/desktop.login.spec.ts',
+			use: {
+				...devices['Desktop Chrome'],
+				//storageState: 'playwright/.auth/user.json',
+				viewport: { width: 1320, height: 720 },
+			}
+			//dependencies: ['setupDesk'],
+		},
+		{
+			name: 'firefox',
+			testMatch: '**/*desktop/*',
+			use: {
+				...devices['Desktop Firefox'],
+				storageState: 'playwright/.auth/user.json',
+				viewport: { width: 1320, height: 720 },
+			},
+			dependencies: ['setupDesk'],
+		},
+		{
+			name: 'screenshots',
+			testMatch: '**/*screenshots.spec.ts',
+			use: {
+				...devices['Desktop Chrome'],
+				viewport: { width: 1320, height: 720 },
+			},
+		},
 		{
 		  name: 'wip2',
 		  testMatch: '**/*signUP.spec.ts',
