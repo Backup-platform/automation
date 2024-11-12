@@ -12,8 +12,7 @@
     "test:desktop:headed": "npx playwright test --project=promotions.desktop.1440 --project=promotions.mobile.1024.chrome --headed &; allure generate allure-results -o allure-report --clean && allure open allure-report",
     "test:headed": "npx playwright test --headed",
     "test:all": "npx playwright test &; allure generate allure-results -o allure-report --clean && allure open allure-report",
-    "wip": "npx playwright test --project=mobile.375.chrome &; allure generate allure-results -o allure-report --clean && allure open allure-report",
-    "wip2": "npx playwright test --project=wip",
+    "wip": "npx playwright test --project=wip4",
     "test": "npx playwright test",
     "report": "allure generate allure-results -o allure-report --clean && allure open allure-report"
   },

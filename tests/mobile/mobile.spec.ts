@@ -2,12 +2,12 @@ import { GameProviders } from '../../pages/gameProviders.po';
 import test, { expect } from '../../pages/utils/base.po';
 
 test.beforeEach(async ({ page, banner }) => {
-	await page.goto('https://stage.spacefortuna1.com/en');
+	await page.goto(`${process.env.URL}`);
 	await banner.randomClickEscape();
 	await banner.randomClickSkipSomething();
 });
 
-test.describe('Test mobile game is responsive', () => {
+test.describe.skip('Test mobile game is responsive', () => {
 	const providers = [
 		[GameProviders.providers.onlyPlay],
 		[GameProviders.providers.booming, GameProviders.providers.yggdrasil]

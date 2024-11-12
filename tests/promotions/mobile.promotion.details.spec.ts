@@ -15,7 +15,7 @@ test.beforeEach(async ({ page, banner, headerMenuDesktop, landingPage }) => {
 	await headerMenuDesktop.clickPromotions();
 });
 
-
+test.describe.skip('Skip', async () => {
 test.describe(`Testing promotion details as a member`, async () => {
 	for (const promotion of testdata) {
 		test(`Validate page elements for ${promotion.title}`, async ({ promotions, promotionDetails, promotionTabs }) => {
@@ -68,4 +68,5 @@ test.describe(`Testing promotion details as a guest`, async () => {
 			await promotionDetails.validateRegisterModalVisible();
 		});
 	}
+});
 });

@@ -1,7 +1,7 @@
 import { Locator, Page } from '@playwright/test';
 import test, { expect } from './utils/base.po';
 
-export type Gender = 'Male' | 'Female';
+export type Gender = 'MALE' | 'FEMALE';
 export type Country = 'France' | 'Canada';
 export type CountryCode = '+33' | '+1';
 export type ErrorFieldsLocator = 'email' | 'password' | 'firstName' | 'lastName' | 'city' | 'address' | 'zipCode'
@@ -22,16 +22,24 @@ export class SignUp {
     private readonly firstName = () => this.page.locator("#firstName");
     private readonly lastName = () => this.page.locator("#lastName");
     private readonly dateOfBirthTextArea = () => this.page.locator(".react-datepicker__input-container .p-1");
-    private readonly genderDropdown = () => this.page.locator("#gender").getByText('Gender');
-    private readonly genderGeneral = () => this.page.locator("#gender");
+
+    //TODO: check if this is still needed //private readonly genderDropdown = () => this.page.locator("#gender").getByText('Gender');
+    private readonly genderOptionsContainer = () => this.page.locator("#gender");
     private readonly mobileGenderDropdown = () => this.page.locator('select[class*="select_dropdownButton_"]'); 
     private readonly desktopGenderDropdown = () => this.page.locator('button[class*="select_dropdownButton_"]'); 
+    private readonly genderButton = () => this.mobileGenderDropdown().or(this.desktopGenderDropdown());
+    private readonly genderSelection = (selectedGender: Gender) => this.page.locator('li[value="'+selectedGender +'"]');
+
     private readonly almostDoneButton = () => this.page.locator("#registration-enter-universe-btn");
-    private readonly desktopCountryButton = () => this.page.getByRole('button', { name: 'Country', exact: true  });
+
+    private readonly desktopCountryButton = () => this.page.getByRole('button', { name: 'Country', exact: true  }).or(
+        this.page.getByRole('button', { name: 'Pays', exact: true  })
+    );
     private readonly mobileCountryButton = () => this.page.locator('#country');
     private readonly desktopCountryCodeButton = () => this.page.locator(".mt-4 button[class*='styles_button_']");
     private readonly desktopCountryCodeList = () => this.page.locator(".mt-4 ul[class*='styles_list_']");
     private readonly mobileCountryCodes = () => this.page.locator("#phoneCode");
+
     private readonly city = () => this.page.locator("#city");
     private readonly address = () => this.page.locator("#address");
     private readonly postCode = () => this.page.locator("#zipCode");
@@ -123,12 +131,12 @@ export class SignUp {
 
     public async selectGender(selectedGender: Gender) {
         await test.step('I select gender', async () => {
-            await expect(this.desktopGenderDropdown().or(this.mobileGenderDropdown())).toBeVisible();
+            await expect(this.genderButton(), 'Expect the gender button is visible').toBeVisible();
             if (await this.mobileGenderDropdown().isVisible()) {
-                await this.mobileGenderDropdown().selectOption(selectedGender);
+                await this.mobileGenderDropdown().selectOption({value: selectedGender});
             } else {
-                await this.genderDropdown().click();
-                await this.genderGeneral().getByText(selectedGender, { exact: true }).click();
+                await this.genderButton().click();
+                await this.genderSelection(selectedGender).click();
             }
         });
     }
@@ -304,8 +312,8 @@ export class SignUp {
             await expect(this.lastName()).toBeEditable();
             await expect(this.dateOfBirthTextArea()).toBeVisible();
             await expect(this.dateOfBirthTextArea()).toBeEditable();
-            await expect(this.genderDropdown()).toBeVisible();
-            await expect(this.genderDropdown()).toBeEditable();
+            await expect(this.genderOptionsContainer()).toBeVisible();
+            await expect(this.genderOptionsContainer()).toBeEditable();
             await expect(this.almostDoneButton()).toBeVisible();
             //TODO: expect messages
         });
@@ -332,17 +340,23 @@ export class SignUp {
         });
     }
 
-    public async validateRegistrationEmailSent() {
+    public async validateRegistrationEmailSent(deviceUsed: String) {
         await test.step(`I validate successfull registration email sent instructions`, async () => {
-            await expect(this.successEscapeButton(), 'Escape Button is visible').toBeVisible();
+            if(deviceUsed == 'Desktop Chrome' ){
+                await expect(this.successEscapeButton(), 'Escape Button is visible').toBeVisible();
+            }
             await expect(this.successMessageHeading(), 'Success image title is visible').toBeVisible();
+            //TODO: check other validations based on locale 
             await expect(this.successMessageHeading(), 'Validate text content of success image title').toContainText('Please verify your email');
             await expect(this.successMessageImage(), 'Success image is visible').toBeVisible();
             await expect(this.successMessageBody(), 'Success message body is visible').toBeVisible();
+            //TODO: check other validations based on locale
             await expect(this.successMessageBody(), 'Validate text content of Success message body').toContainText('Please check your email to activate your account.');
             await expect(this.successMessageText(), 'Success message Text is visible').toBeVisible();
+            //TODO: check other validations based on locale
             await expect(this.successMessageText(), 'Validate text content of Success message text').toContainText('If you did not receive the email please check in your spam folder');
             await expect(this.successCloseButton(), 'Close button is visible').toBeVisible();
+            //TODO: check other validations based on locale
             await expect(this.successCloseButton(), 'Validate text content of Close button ').toContainText('close');
             await this.successCloseButton().click(); 
         });

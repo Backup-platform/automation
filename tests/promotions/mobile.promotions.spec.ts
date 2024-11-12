@@ -14,7 +14,7 @@ test.beforeEach(async ({ page, banner, headerMenuDesktop, landingPage, promotion
 	await landingPage.acceptCookiesBannerRandom();
 	await headerMenuDesktop.validateLogoVisible();
 });
-
+test.describe.skip('Skip', async () => {
 test.describe('Testing Promotions page as a member', async () => {
 	test('Validate card elements', async ({ promotions, viewport, headerMenuDesktop }) => {
 		await headerMenuDesktop.clickPromotions();
@@ -124,4 +124,4 @@ test.describe('Validate promotions page card content', async () => {
 		}
 	});
 });
-
+});

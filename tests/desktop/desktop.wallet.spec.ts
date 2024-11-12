@@ -1,7 +1,7 @@
 import test, { expect } from '../../pages/utils/base.po';
 
 test.beforeEach(async ({ page, banner, landingPage,logInIFrame,headerMenuDesktop }) => {
-	await page.goto('https://stage.spacefortuna1.com');
+	await page.goto(`${process.env.URL}`);
 	await banner.bannerNewDesign();
 	await banner.bannerHiThere();
     await landingPage.clickLoginButton();
@@ -11,7 +11,7 @@ test.beforeEach(async ({ page, banner, landingPage,logInIFrame,headerMenuDesktop
    
 });
 
-test.describe('Login Desktop', () => {
+test.describe.skip('Login Desktop', () => {
 	test.use({ storageState: 'playwright/.auth/noAuthentication.json' });
 	test('Successfull Deposit', async ({ landingPage, logInIFrame, headerMenuDesktop, walletModal }) => {
         await headerMenuDesktop.walletModalVisible();

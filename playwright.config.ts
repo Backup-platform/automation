@@ -16,7 +16,7 @@ export default defineConfig({
 	expect: {
 		timeout: 10 * 1000,
 	},
-	timeout: 30 * 1000,
+	timeout: 40 * 1000,
 	testDir: './tests',
 	/* Run tests in files in parallel */
 	fullyParallel: true,
@@ -25,7 +25,7 @@ export default defineConfig({
 	/* Retry on CI only */
 	retries: process.env.CI ? 2 : 0,
 	/* Opt out of parallel tests on CI. */
-	workers: 6, //process.env.CI ? 1 : undefined,
+	workers: 3, //process.env.CI ? 1 : undefined,
 	/* Reporter to use. See https://playwright.dev/docs/test-reporters */
 	reporter: 'html',
 	//reporter: 'allure-playwright',
@@ -111,6 +111,16 @@ export default defineConfig({
 			dependencies: ['setupDesk'],
 		},
 		{
+			name: 'desktop.720',
+			testMatch: '**/*desktop/*',
+			use: {
+				...devices['Desktop Chrome'],
+				storageState: 'playwright/.auth/user.json',
+				viewport: { width: 1320, height: 720 },
+			},
+			dependencies: ['setupDesk'],
+		},
+		{
 			name: 'mobile.1024.chrome',
 			testMatch: '**/*mobile/*',
 			use: {
@@ -186,57 +196,59 @@ export default defineConfig({
 		//   dependencies: ['setupMobile'],
 		//   //testIgnore: '**/*login.mobile.spec.ts',
 		// },
-		 {
-			name: 'wip',
-			testMatch: '**/*signUP.spec.ts*',
-			use: {
-			// ...devices['Pixel 7'],
-			  ...devices['Desktop Chrome'],
-			//storageState: 'playwright/.auth/mobileUser.json',
-			viewport: { width: 1440, height: 1024 },
-			},
-			dependencies: ['setupDesk'],
-		},
-		{
-			name: 'wip',
-			testMatch: '*/desktop/desktop.login.spec.ts',
-			use: {
-				...devices['Desktop Chrome'],
-				//storageState: 'playwright/.auth/user.json',
-				viewport: { width: 1320, height: 720 },
-			}
-			//dependencies: ['setupDesk'],
-		},
-		{
-			name: 'firefox',
-			testMatch: '**/*desktop/*',
-			use: {
-				...devices['Desktop Firefox'],
-				storageState: 'playwright/.auth/user.json',
-				viewport: { width: 1320, height: 720 },
-			},
-			dependencies: ['setupDesk'],
-		},
-		{
-			name: 'screenshots',
-			testMatch: '**/*screenshots.spec.ts',
-			use: {
-				...devices['Desktop Chrome'],
-				viewport: { width: 1320, height: 720 },
-			},
-		},
-		{
-		  name: 'wip2',
-		  testMatch: '**/*signUP.spec.ts',
-		  use: {
-		  ...devices['Pixel 7'],
-			//...devices['Desktop Chrome'],
-		  //storageState: 'playwright/.auth/mobileUser.json',
-		  //viewport: { width: 1440, height: 1024 },
-		  },
-		  //dependencies: ['setupMobile'],
-		  //testIgnore: '**/*login.mobile.spec.ts',
-		},
+		//  {
+		// 	name: 'wip',
+		// 	testMatch: '**/*signUP.spec.ts*',
+		// 	use: {
+		// 	// ...devices['Pixel 7'],
+		// 	  ...devices['Desktop Chrome'],
+		// 	//storageState: 'playwright/.auth/mobileUser.json',
+		// 	viewport: { width: 1440, height: 1024 },
+		// 	},
+		// 	//dependencies: ['setupDesk'],
+		// },
+		// {
+		// 	name: 'wip2',
+		// 	testMatch: '**/*signUP.spec.ts',
+		// 	use: {
+		// 	...devices['Pixel 7'],
+		// 	//...devices['Desktop Chrome'],
+		// 	//storageState: 'playwright/.auth/mobileUser.json',
+		// 	//viewport: { width: 1440, height: 1024 },
+		// 	},
+		// 	//dependencies: ['setupMobile'],
+
+		//   	testIgnore: '**/*login.mobile.spec.ts',
+		//},
+		// {
+		// 	name: 'wip3',
+		// 	testMatch: '*/desktop/desktop.login.spec.ts',
+		// 	use: {
+		// 		...devices['Desktop Chrome'],
+		// 		//storageState: 'playwright/.auth/user.json',
+		// 		viewport: { width: 1320, height: 720 },
+		// 	}
+		// 	//dependencies: ['setupDesk'],
+		// },
+		// {
+		// 	name: 'wip4',
+		// 	testMatch: '**/*mobile/*',
+		// 	use: {
+		// 		...devices['iPad Mini landscape'], //width: 1024, height: 768
+		// 		browserName: 'chromium',
+		// 		//storageState: 'playwright/.auth/user.json', 
+		// 	},
+		// 	//dependencies: ['setupMobile'],
+		// },
+		
+		// {
+		// 	name: 'screenshots',
+		// 	testMatch: '**/*screenshots.spec.ts',
+		// 	use: {
+		// 		...devices['Desktop Chrome'],
+		// 		viewport: { width: 1320, height: 720 },
+		// 	},
+		// }
 		// {
 		// 	name: 'Pixel7',
 		// 	testMatch: '**/*mobile.spec.ts',

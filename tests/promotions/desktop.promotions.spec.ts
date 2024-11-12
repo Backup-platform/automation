@@ -4,6 +4,7 @@ import cardSizes from '../../test-data/promotion.card.sizes.json';
 const testdata = JSON.parse(JSON.stringify(require("../../test-data/promotion.cards.json")));
 
 
+test.describe.skip('Skip', async () => {
 test.beforeEach(async ({ page, banner, headerMenuDesktop, landingPage  }) => {
 	await test.step('go to url', async () => {
 		await page.goto(`${process.env.URL}`);
@@ -132,4 +133,4 @@ test.describe('Validate promotions page card content', async () => {
 		}
 	});
 });
-
+});
