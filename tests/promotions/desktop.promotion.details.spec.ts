@@ -11,9 +11,8 @@ test.beforeEach(async ({ page, banner, headerMenuDesktop, landingPage }) => {
 	await banner.randomClickEscape();
 	await banner.randomClickSkipSomething();
 	await landingPage.acceptCookiesBannerRandom();
-	await headerMenuDesktop.validateLogoVisible();
-	await headerMenuDesktop.clickPromotions();
-	console.log(testdata);
+	await headerMenuDesktop.validateSFLogoVisible();
+	await headerMenuDesktop.clickPromotionsButton();
 });
 
 test.describe.skip('Skip', async () => {

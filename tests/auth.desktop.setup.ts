@@ -2,8 +2,8 @@
  * TODO: figure out how to do setup with fixtures
  */
 import { test as setup } from '@playwright/test';
-import { LandingPage } from '../pages/landingPage.po';
-import { LogInIFrame } from '../pages/logInIFrame.po';
+import { LandingPage } from '../pages/LandingPage/landingPage.po';
+import { LoginPage } from '../pages/loginPage.po';
 import { HeaderMenuDesktop } from '../pages/headerMenuDesktop.po';
 import { Banner } from '../pages/banner.po';
 
@@ -13,7 +13,7 @@ setup('Authenticate for Desktop', async ({ page }) => {
 	await page.setViewportSize({ width: 1320, height: 720 });
 	
 	const landingPage = new LandingPage(page);
-	const logInIFrame = new LogInIFrame(page);
+	const logInIFrame = new LoginPage(page);
 	const headerMenuDesktop = new HeaderMenuDesktop(page);
 	const banner = new Banner(page);
 
@@ -21,10 +21,10 @@ setup('Authenticate for Desktop', async ({ page }) => {
 	await banner.randomClickSkipSomething();
 
 	await page.goto(`${process.env.URL}`);
-	await landingPage.clickLoginButton();
+	await headerMenuDesktop.clickLoginButton();
 	await logInIFrame.actionLogin(`${process.env.USER}`, `${process.env.PASS}`);
 	await page.waitForURL(process.env.URL!, {waitUntil: "commit"});
-	await headerMenuDesktop.validateLogoVisible();
+	await headerMenuDesktop.validateSFLogoVisible();
 	//TODO: FIX ME await headerMenuDesktop.validateGamesButtonVisible();
 	//TODO: FIX ME await headerMenuDesktop.validateMyProfileVisible(); //expect(page.locator('#desktop-profile-icon')).toBeVisible({timeout: 20000});
 	//TODO: FIX ME await landingPage.clickAcceptCookiesButton();

@@ -14,12 +14,12 @@ test.beforeEach(async ({ page, banner, headerMenuDesktop, landingPage  }) => {
 	await banner.randomClickEscape();
 	await banner.randomClickSkipSomething();
 	await landingPage.acceptCookiesBannerRandom();
-	await headerMenuDesktop.validateLogoVisible();
+	await headerMenuDesktop.validateSFLogoVisible();
 });
 
 test.describe('Testing Promotions page as a member', async () => {
 	test('Validate card elements', async ({ promotions, viewport, headerMenuDesktop}) => {
-		await headerMenuDesktop.clickPromotions();
+		await headerMenuDesktop.clickPromotionsButton();
 		await promotions.validateURL();
 		await promotions.validatePromoContainer();
 		await promotions.validatePromotionCards(JSON.parse(JSON.stringify(cardSizes)), 5, viewport);
@@ -35,7 +35,7 @@ test.describe('Testing Promotions page as a member', async () => {
 test.describe('Testing Promotions page as a guest', async () => {
 	test.use({ storageState: 'playwright/.auth/noAuthentication.json' });
 	test('Validate card elements', async ({ promotions, viewport, headerMenuDesktop}) => {
-		await headerMenuDesktop.clickPromotions();
+		await headerMenuDesktop.clickPromotionsButton();
 		await promotions.validateURL();
 		await promotions.validatePromoContainer();
 		await promotions.validatePromotionCards(JSON.parse(JSON.stringify(cardSizes)), 5, viewport);
@@ -49,7 +49,7 @@ test.describe('Testing Promotion Tabs as a member', async () => {
 	});
 
 	test('Validate Loyalty Page', async ({ promotionTabs, headerMenuDesktop }) => {
-		await headerMenuDesktop.clickLoyalty();
+		await headerMenuDesktop.clickLoyaltyButton();
 		await promotionTabs.validateCardElements(promotionTabs.loyaltyPageLocator());
 	});
 });
@@ -58,7 +58,7 @@ test.describe('Testing Promotion Tabs as a member', async () => {
 test.describe('Testing Promotion Tabs as a guest', async () => {
 	test.use({ storageState: 'playwright/.auth/noAuthentication.json' });
 	test('Validate Loyalty Page', async ({ promotionTabs, headerMenuDesktop }) => {
-		await headerMenuDesktop.clickLoyalty();
+		await headerMenuDesktop.clickLoyaltyButton();
 		await promotionTabs.validateCardElements(promotionTabs.loyaltyPageLocator());
 	});
 
@@ -74,7 +74,7 @@ test.describe('Validate promotions page card content', async () => {
 	test.describe('Testing as a member', async () => {
 
 		test('Validate content of cards', async ({ promotions, headerMenuDesktop}) => {
-			await headerMenuDesktop.clickPromotions();
+			await headerMenuDesktop.clickPromotionsButton();
 			await promotions.validateURL();
 			await promotions.validatePromoContainer();
 			await promotions.validateCardCount(Number(testdata.length));
@@ -85,14 +85,14 @@ test.describe('Validate promotions page card content', async () => {
 
 		for (const promotion of testdata) {
 			test(`Validate navigation to promotion details for card: ${promotion.title}`, async ({ promotions, promotionDetails, headerMenuDesktop}) => {
-				await headerMenuDesktop.clickPromotions();
+				await headerMenuDesktop.clickPromotionsButton();
 				await promotions.validateURL();
 				await promotions.clickReadMoreButton(promotion.cardNumber, promotion.readMoreURL);
 				await promotionDetails.validateURL(promotion.title, promotion.readMoreURL);
 			});
 
 			test(`Validate deposit button opens the wallet modal for card: ${promotion.title}`, async ({ promotions, headerMenuDesktop}) => {
-				await headerMenuDesktop.clickPromotions();
+				await headerMenuDesktop.clickPromotionsButton();
 				await promotions.validateURL();
 				await promotions.clickGreenButton(promotion.cardNumber);
 				await promotions.validateWalletModalVisible();
@@ -105,7 +105,7 @@ test.describe('Validate promotions page card content', async () => {
 
 		test.use({ storageState: 'playwright/.auth/noAuthentication.json' });
 		test('Validate content of cards', async ({ promotions, headerMenuDesktop}) => {
-			await headerMenuDesktop.clickPromotions();
+			await headerMenuDesktop.clickPromotionsButton();
 			await promotions.validateURL();
 			await promotions.validatePromoContainer();
 			await promotions.validateCardCount(Number(testdata.length));
@@ -117,7 +117,7 @@ test.describe('Validate promotions page card content', async () => {
 		for (const promotion of testdata) {
 			test.use({ storageState: 'playwright/.auth/noAuthentication.json' });
 			test(`Validate navigation to promotion details for card: ${promotion.title} for guests`, async ({ promotions, promotionDetails, headerMenuDesktop}) => {
-				await headerMenuDesktop.clickPromotions();
+				await headerMenuDesktop.clickPromotionsButton();
 				await promotions.validateURL();
 				await promotions.clickReadMoreButton(promotion.cardNumber, promotion.readMoreURL);
 				await promotionDetails.validateURL(promotion.title, promotion.readMoreURL);
@@ -125,7 +125,7 @@ test.describe('Validate promotions page card content', async () => {
 
 			test.use({ storageState: 'playwright/.auth/noAuthentication.json' });
 			test(`Validate deposit button opens the wallet modal for card: ${promotion.title}`, async ({ promotions, headerMenuDesktop}) => {
-				await headerMenuDesktop.clickPromotions();
+				await headerMenuDesktop.clickPromotionsButton();
 				await promotions.validateURL();
 				await promotions.clickGreenButton(promotion.cardNumber);
 				await promotions.validateRegisterModalVisible();

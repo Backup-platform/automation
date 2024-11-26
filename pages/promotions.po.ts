@@ -1,6 +1,5 @@
 import { FrameLocator, Locator, Page, ViewportSize } from '@playwright/test';
 import test, { expect } from '../pages/utils/base.po';
-import internal from 'stream';
 
 
 export class Promotions {

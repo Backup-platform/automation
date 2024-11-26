@@ -358,7 +358,8 @@ export class SignUp {
             await expect(this.successCloseButton(), 'Close button is visible').toBeVisible();
             //TODO: check other validations based on locale
             await expect(this.successCloseButton(), 'Validate text content of Close button ').toContainText('close');
-            await this.successCloseButton().click(); 
+            await this.successCloseButton().click();
+            await this.page.waitForURL(`${process.env.URL}`);
         });
     }
 

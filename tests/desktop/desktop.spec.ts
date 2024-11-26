@@ -14,8 +14,8 @@ test.describe.skip('Check by provider', async () => {
 	];
 	for (const game of providers) {
 		test(`Validate ${game} Opens`, async ({ headerMenuDesktop, gameProviders, banner }) => {
-			await headerMenuDesktop.validateLogoVisible();
-			await headerMenuDesktop.clickGames();
+			await headerMenuDesktop.validateSFLogoVisible();
+			await headerMenuDesktop.clickGamesButton();
 			await gameProviders.selectDesktopProvidersFromDropdown(game);
 			//TODO: validate game page
 		});

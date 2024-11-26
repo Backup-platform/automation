@@ -1,25 +1,19 @@
 import { secondStepFields, thirdStepFields } from '../../pages/signUp.po';
 import test, { expect } from '../../pages/utils/base.po';
 
-var projectName;
+var projectName: string | String;
 test.beforeEach(async ({ page, banner, headerMenuDesktop }) => {
     projectName = test.info().project.name;
     await page.goto(`${process.env.URL}`);
-    if(await headerMenuDesktop.isLoginVisible()) {
-        await headerMenuDesktop.clickSignUpButton();
-    } else {
-        await page.locator('a[class*="styles_buttons_"]').click()
-    }
+    await headerMenuDesktop.clickRegisterButton();
     await banner.randomClickEscape();
 	await banner.randomClickSkipSomething();
-    //await banner.bannerNewDesign();
-	//await banner.bannerHiThere();
 });
 
 test.describe('Signup Smoke Tests Desktop', () => {
 
     test.use({ storageState: 'playwright/.auth/noAuthentication.json' });
-    test('Validate SignUp', async ({ signUp }) => {
+    test('Validate SignUp', async ({ signUp, page, loginPage }) => {
         await signUp.fillFirstStep("Somemail@something.com", 'Password@');
         await signUp.clickNextButton();
         await signUp.fillSecondStep('firstName', 'lastName', '02/05/2001', 'MALE');
@@ -27,6 +21,7 @@ test.describe('Signup Smoke Tests Desktop', () => {
         await signUp.fillThirdStep('Toronto', '1337 Blvrd', '42', '3065344301', 'Canada', '+1');
         await signUp.clickEnterButton();
         await signUp.validateRegistrationEmailSent(projectName);
+        await loginPage.validateLoggedIn();
     });
 
     test.use({ storageState: 'playwright/.auth/noAuthentication.json' });
@@ -136,7 +131,7 @@ test.describe('Sign up regression Tests Desktop', () => {
     test.describe('Test second step', () => {
         const secondStepFields = [
             { scenario: 'One Letter First Name', firstName: 'a', lastName: 'a', DOB: '02/05/2001', gender: 'MALE' },
-            //TODO: validate if this is a feature because leter + space is allowed currently { scenario: 'One Letter and space', firstName: 'a ', lastName: 'a ', DOB: '02/05/2001', gender: 'Female' },
+            { scenario: 'One Letter and space', firstName: 'a ', lastName: 'a ', DOB: '02/05/2001', gender: 'Female' },
         ];
         for (const fields of secondStepFields) {
             test.use({ storageState: 'playwright/.auth/noAuthentication.json' });
@@ -154,7 +149,7 @@ test.describe('Sign up regression Tests Desktop', () => {
     test.describe('Test third step', () => {
         const thirdStepFields = [
             { scenario: 'One Letter', country: 'Canada' , city: 'a', address: 'a', postcode: 'a', countryCode: '+1' , phone: '3065344301', checkbox: true },
-            //TODO: validate if this is a feature because leter + space is allowed currently { scenario: 'One Letter and space',  country: 'Canada' , city: 'a ', address: 'a ', postcode: 'a ', countryCode: '+1' , phone: '3065344301', checkbox: true },
+            { scenario: 'One Letter and space',  country: 'Canada' , city: 'a ', address: 'a ', postcode: 'a ', countryCode: '+1' , phone: '3065344301', checkbox: true },
         ];
         for (const fields of thirdStepFields) {
             test.use({ storageState: 'playwright/.auth/noAuthentication.json' });
