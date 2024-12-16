@@ -7,12 +7,12 @@ test.beforeEach(async ({ page, banner, headerMenuDesktop, landingPage, promotion
 	await test.step('go to url', async () => {
 		await page.goto(`${process.env.URL}`);
 	});
-	await banner.bannerNewDesign();
-	await banner.bannerHiThere();
-	await banner.randomClickEscape();
-	await banner.randomClickSkipSomething();
-	await landingPage.acceptCookiesBannerRandom();
-	await headerMenuDesktop.validateSFLogoVisible();
+    await banner.clickEscapeInOptIn();
+    await banner.randomClickSkipSomething();
+    await banner.sideBannerClickCloseBtn();
+    await banner.randomBannerHiThere();
+    await banner.acceptCookies();
+    await banner.randomBannerNewDesign();
 });
 test.describe.skip('Skip', async () => {
 test.describe('Testing Promotions page as a member', async () => {

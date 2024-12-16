@@ -14,6 +14,6 @@ test.beforeEach(async ({ page, banner, landingPage,loginPage,headerMenuDesktop }
 test.describe.skip('Login Desktop', () => {
 	test.use({ storageState: 'playwright/.auth/noAuthentication.json' });
 	test('Successfull Deposit', async ({ landingPage, headerMenuDesktop, walletModal }) => {
-        await headerMenuDesktop.validateDepositButton();
+        await headerMenuDesktop.validateDepositButtonVisible();
 	});
 });

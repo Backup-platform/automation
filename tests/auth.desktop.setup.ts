@@ -17,13 +17,13 @@ setup('Authenticate for Desktop', async ({ page }) => {
 	const headerMenuDesktop = new HeaderMenuDesktop(page);
 	const banner = new Banner(page);
 
-	await banner.randomClickEscape();
+	await banner.escapeOptIn();
 	await banner.randomClickSkipSomething();
 
 	await page.goto(`${process.env.URL}`);
 	await headerMenuDesktop.clickLoginButton();
 	await logInIFrame.actionLogin(`${process.env.USER}`, `${process.env.PASS}`);
-	await page.waitForURL(process.env.URL!, {waitUntil: "commit"});
+	await page.waitForURL(process.env.URL!, {waitUntil: "domcontentloaded"});
 	await headerMenuDesktop.validateSFLogoVisible();
 	//TODO: FIX ME await headerMenuDesktop.validateGamesButtonVisible();
 	//TODO: FIX ME await headerMenuDesktop.validateMyProfileVisible(); //expect(page.locator('#desktop-profile-icon')).toBeVisible({timeout: 20000});

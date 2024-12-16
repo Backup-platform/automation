@@ -1,6 +1,6 @@
 import { Locator, Page } from '@playwright/test';
 import test, { expect } from '../utils/base.po';
-import { Navigation } from '../utils/navigation.po';
+import { Navigation, step, stepParam } from '../utils/navigation.po';
 
 export class LandingPageFAQ {
     readonly page: Page;
@@ -38,29 +38,30 @@ export class LandingPageFAQ {
             `Expect FAQ "Read More" section number ${nthElement} to be visible`);
     }
 
+    @stepParam((nthElement: number, softAssert: boolean) => `I click on FAQ dropdown number ${nthElement}`)
     public async clickFaqDropdown(nthElement: number, softAssert = false): Promise<void> {
-        await test.step(`I click on FAQ dropdown number ${nthElement}`, async () => {
-            const faqDropdown = this.faqDropdowns().nth(nthElement);
-            await this.navigation.clickElement(faqDropdown, softAssert,
-                `Expect FAQ dropdown number ${nthElement} to be visible before clicking`);
-        });
+        const faqDropdown = this.faqDropdowns().nth(nthElement);
+        await this.navigation.clickElement(faqDropdown, softAssert,
+            `Expect FAQ dropdown number ${nthElement} to be visible before clicking`);
     }
 
+    @step('I validate FAQ elements are visible')
     public async validateFaqElements(softAssert = false): Promise<void> {
-        await test.step('I check if the FAQ elements are visible', async () => {
-            await this.validateFaqTitleVisible(softAssert);
-            await this.validateFaqContainerVisible(softAssert);
+        await this.validateFaqTitleVisible(softAssert);
+        await this.validateFaqContainerVisible(softAssert);
 
-            const totalDropdowns = await this.faqDropdowns().count();
-            for (let i = 0; i < totalDropdowns; i++) {
+        const totalDropdowns = await this.faqDropdowns().count();
+
+        for (let i = 0; i < totalDropdowns; i++) {
+            await test.step(`I validate ${i} dropdown and read more section`, async () => {
                 await this.validateFaqDropdownVisible(i, softAssert);
                 //TODO: it is shown await expect(await this.faqReadMoreSections().nth(i), 'Initial more info window is not visible').not.toBeVisible()
                 await this.clickFaqDropdown(i, softAssert);
                 await this.validateFaqReadMoreSectionVisible(i, softAssert);
-            }
-            expect(await totalDropdowns, 'There is the same ammount of dropdowns as read more sections'
-            ).toEqual(await this.faqReadMoreSections().count());
-        });
-    }
+            });
+        }
 
+        expect(await totalDropdowns, 'Expect the same ammount of dropdowns as read more sections'
+        ).toEqual(await this.faqReadMoreSections().count());
+    }
 }

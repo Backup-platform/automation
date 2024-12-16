@@ -7,6 +7,7 @@ export class Navigation {
 	constructor(page: Page) {
 		this.page = page;
 	}
+    //TODO: make a method that interacts with the callendar 
 
 	public async isMobileOrDesktop(projectName: string): Promise<boolean> {
 		return false;
@@ -14,12 +15,13 @@ export class Navigation {
 	};
 
 	/**
-	 * Asserts that an element is visible, with an option for soft or strict assertions.
+	 * Asserts that an element is visible, 
+	 * with an option for soft or strict assertions.
 	 * 
 	 * @param element - The element to be checked for visibility.
 	 * @param softAssert - If true, performs a soft assertion (logs failures without stopping the test).
 	 *                     If false, performs a strict assertion (fails the test immediately if the check fails).
-	 * @param message - Optional custom message displayed if the assertion fails.
+	 * @param elementName - Element for the custom message to be displayed if the assertion fails.
 	 * 
 	 * Usage:
 	 * - Use `softAssert = true` for logging-only checks, allowing the test to continue on failure.
@@ -28,9 +30,104 @@ export class Navigation {
 	 * Example:
 	 * `await this.assertVisible(this.loginButton(), false, 'Login button should be visible');`
 	 */
-	public async assertVisible(element: Locator, softAssert: boolean = false, message?: string): Promise<void> {
-		softAssert ? await expect.soft(element, `Expect ${message} to be visible`).toBeVisible() :
-			await expect(element, `Expect ${message} to be visible`).toBeVisible();
+	public async assertVisible(element: Locator, softAssert: boolean = false, elementName?: string): Promise<void> {
+		if (softAssert) {
+			await expect.soft(element, `Expect ${elementName} to be visible`).toBeVisible();
+		} else {
+			await expect(element, `Expect ${elementName} to be visible`).toBeVisible();
+		}
+	}
+
+	public async assertNotVisible(element: Locator, softAssert: boolean = false, elementName?: string): Promise<void> {
+		if (softAssert) {
+			await expect.soft(element, `Expect ${elementName} to NOT be visible`).not.toBeVisible();
+		} else {
+			await expect(element, `Expect ${elementName} to NOT be visible`).not.toBeVisible();
+		}
+	}
+
+
+	/**
+	 * Asserts that the given element is enabled, 
+	 * with an option for soft or strict assertions.
+	 *
+	 * @param {Locator} element - The element to check.
+	 * @param {boolean} [softAssert=false] - If true, performs a soft assertion.
+	 * @param {string} [elementName] - The name of the element for logging purposes.
+	 */
+	public async assertEnabled(element: Locator, softAssert: boolean = false, elementName?: string): Promise<void> {
+		if (softAssert) {
+			await expect.soft(element, `Expect ${elementName} to be enabled`).toBeEnabled();
+		} else {
+			await expect(element, `Expect ${elementName} to be enabled`).toBeEnabled();
+		}
+	}
+
+	public async assertNotEnabled(element: Locator, softAssert: boolean = false, elementName?: string): Promise<void> {
+		if (softAssert) {
+			await expect.soft(element, `Expect ${elementName} to not be enabled`).not.toBeEnabled();
+		} else {
+			await expect(element, `Expect ${elementName} to not be enabled`).not.toBeEnabled();
+		}
+	}
+
+	private async assertCondition(
+		element: Locator,
+		assertionType: 'visible' | 'enabled' | 'editable',
+		shouldMatch: boolean,
+		softAssert: boolean = false,
+		elementName: string = 'Element'
+	): Promise<void> {
+		const action = shouldMatch ? '' : 'NOT ';
+		const message = `Expect ${elementName} to ${action}be ${assertionType}`;
+
+		// Map assertion types to Playwright's `expect` API
+		const assertionMap = {
+			visible: {
+				positive: () => expect(element, message).toBeVisible(),
+				negative: () => expect(element, message).not.toBeVisible(),
+			},
+			enabled: {
+				positive: () => expect(element, message).toBeEnabled(),
+				negative: () => expect(element, message).not.toBeEnabled(),
+			},
+			editable: {
+				positive: () => expect(element, message).toBeEditable(),
+				negative: () => expect(element, message).not.toBeEditable(),
+			},
+		};
+
+		const assertion = assertionMap[assertionType][shouldMatch ? 'positive' : 'negative'];
+
+		// Perform soft or strict assertion
+		if (softAssert) {
+			await expect.soft(element, message)[shouldMatch ? 'toBe' : 'not.toBe'](assertionType);
+		} else {
+			await assertion();
+		}
+	}
+	/**
+	 * Asserts that the given element is editable, 
+	 * with an option for soft or strict assertions.
+	 *
+	 * @param {Locator} element - The element to check.
+	 * @param {boolean} [softAssert=false] - If true, performs a soft assertion.
+	 * @param {string} [elementName] - The name of the element for logging purposes.
+	 */
+	public async assertEditable(element: Locator, softAssert: boolean = false, elementName?: string): Promise<void> {
+		if (softAssert) {
+			await expect.soft(element, `Expect ${elementName} to be editable`).toBeEditable();
+		} else {
+			await expect(element, `Expect ${elementName} to be editable`).toBeEditable();
+		}
+	}
+
+	public async assertNotEditable(element: Locator, softAssert: boolean = false, elementName?: string): Promise<void> {
+		if (softAssert) {
+			await expect.soft(element, `Expect ${elementName} to be NOT editable`).not.toBeEditable();
+		} else {
+			await expect(element, `Expect ${elementName} to be NOT editable`).not.toBeEditable();
+		}
 	}
 
 	/**
@@ -44,14 +141,13 @@ export class Navigation {
 	 * 
 	 * @throws Will throw an error if the attribute does not match the expected value (or if element or attribute is not found), unless `softAssert` is true.
 	 */
-	public async assertAttributes(
+	public async assertAttribute(
 		element: Locator,
 		attributeType: string,
-		//attributeText: string = "", //TODO: figure out the regex that will accept anything
 		softAssert: boolean = false,
 	): Promise<void> {
-		const message = `Expected element to have attribute ${attributeType}`;
-		const expectation = softAssert ? expect.soft(await element, message) : expect(await element, message);
+		const message = `Expected element has attribute ${attributeType}`;
+		const expectation = softAssert ? expect.soft(element, message) : expect(element, message);
 		await expectation.toHaveAttribute(attributeType);
 	}
 
@@ -63,9 +159,29 @@ export class Navigation {
 	 *                     if false, performs a strict assertion (fails test on visibility failure).
 	 * @param description - A description message used in the assertion to clarify which element is expected to be visible.
 	 */
+	@stepParam((element: Locator, softAssert: boolean, description: string) => `I click on ${description}`)
 	public async clickElement(element: Locator, softAssert: boolean, description: string): Promise<void> {
 		await this.assertVisible(element, softAssert, description);
+		await this.assertEnabled(element, softAssert, description);
 		await element.click();
+	}
+
+	/**
+	 * Checks if an element contains the specified text after verifying its visibility.
+	 * Performs a soft or strict assertion for visibility based on the `softAssert` parameter.
+	 * @param element - The element to be checked.
+	 * @param text - The text that the element should contain.
+	 * @param softAssert - If true, performs a soft assertion (does not stop test on failure); 
+	 *                     if false, performs a strict assertion (fails test on visibility or text check failure).
+	 * @param description - A description message used in the assertion to clarify which element is expected to contain the text.
+	 */
+	public async assertElementContainsText(element: Locator, text: string, softAssert: boolean, description: string): Promise<void> {
+		await this.assertVisible(element, softAssert, description);
+		if (softAssert) {
+			await expect.soft(element, `Expect ${description} to contain text: ${text}`).toContainText(text);
+		} else {
+			await expect(element, `Expect ${description} to contain text: ${text}`).toContainText(text);
+		}
 	}
 
 	/**
@@ -78,33 +194,60 @@ export class Navigation {
 	 * @param description - A description message used in the assertion to clarify which element is expected to be visible and editable.
 	 */
 	public async fillInputField(element: Locator, value: string, softAssert: boolean, description: string): Promise<void> {
-		await this.assertVisible(element, softAssert, `${description} should be visible`);
-		await expect(element, `${description} should be editable`).toBeEditable();
+		await this.assertVisible(element, softAssert, description);
+		await this.assertEditable(element, softAssert, description);
 		await element.fill(value);
 	}
 
 	/**
- * Validates that the current page URL matches the expected URL.
- * 
- * @param expectedUrl - The URL that you expect the current page to match.
- * @param softAssert - If true, performs a soft assertion (logs failures without stopping the test). Default is `false`.
- * 
- * Usage:
- * - Use `softAssert = true` to log failures and continue the test.
- * - Use `softAssert = false` to stop the test if the URL does not match.
- * 
- * Example:
- * `await this.assertUrl('https://example.com/dashboard', false);`
- */
+	 * Validates that the current page URL matches the expected URL.
+	 * 
+	 * @param expectedUrl - The URL that you expect the current page to match.
+	 * @param softAssert - If true, performs a soft assertion (logs failures without stopping the test). Default is `false`.
+	 * 
+	 * Usage:
+	 * - Use `softAssert = true` to log failures and continue the test.
+	 * - Use `softAssert = false` to stop the test if the URL does not match.
+	 * 
+	 * Example:
+	 * `await this.assertUrl('https://example.com/dashboard', false);`
+	 */
 	public async assertUrl(
 		expectedUrl: string,
 		softAssert: boolean = false,
 	): Promise<void> {
-		const actualUrl = this.page.url();
-		const message = `Expected to be on URL: ${expectedUrl}`
-		const expectation = softAssert ? expect.soft(await actualUrl, message) : expect(await actualUrl, message);
-		await expectation.toBe(expectedUrl)
+		const message = `Expected to be on URL: ${expectedUrl}`;
+		const expectation = softAssert ? expect.soft(this.page, message) : expect(this.page, message);
+		await expectation.toHaveURL(expectedUrl);
 	}
+
+	/**
+	 * Asserts that the current URL contains all specified substrings.
+	 * 
+	 * @param expectedSubstrings - An array of substrings expected to be present in the current URL.
+	 * @param softAssert - If true, logs failures without stopping the test; otherwise, fails immediately.
+	 * 
+	 * Example:
+	 * ```typescript
+	 * await navigation.assertUrlContains(['location=testingnet.com', 'console=Test'], false);
+	 * ```
+	 */
+	public async assertUrlContains(
+		expectedSubstrings: string[],
+		softAssert: boolean = false
+	): Promise<void> {
+		const currentUrl = this.page.url();
+
+		for (const substring of expectedSubstrings) {
+			const message = `Expected URL to contain: ${substring}. Current URL: ${currentUrl}`;
+			if (softAssert) {
+				await expect.soft(currentUrl, message).toContain(substring);
+			} else {
+				await expect(currentUrl, message).toContain(substring);
+			}
+		}
+	}
+
 
 	/**
 	 * Retrieves the indices of elements within a given locator that match a specific attribute-value pair.
@@ -163,4 +306,58 @@ export class Navigation {
 		}
 	}
 
+
+	/**
+	 * Clicks an element if it's visible. If not, executes the fallback action to make it visible, then clicks the element.
+	 * 
+	 * @param targetElement - The element to click (the one we want to ensure is visible and clicked).
+	 * @param fallbackAction - A function to execute if the target element is not visible (e.g., opening a menu).
+	 * @param softAssert - Optional. Whether to use soft assertions (default is `false`).
+	 * @param targetName - A name or description of the target element (for logging/debugging purposes).
+	 */
+	public async clickIfVisibleOrFallback(
+		targetElement: Locator,
+		fallbackAction: () => Promise<void>,
+		softAssert: boolean = false,
+		targetName?: string
+	): Promise<void> {
+		await test.step(`I click on ${targetName}`, async () => {
+			// If the element is visible, click it and return
+			if (await targetElement.isVisible()) {
+				return await this.clickElement(targetElement, softAssert, `${targetName}`);
+			}
+
+			// Otherwise, fallback using the provided action
+			await fallbackAction();
+			await targetElement.waitFor({ state: 'visible' });
+			await this.clickElement(targetElement, softAssert, `${targetName} after fallback`);
+		});
+	}
+
 }
+
+export function step(stepName?: string) {
+	return function decorator(target: Function, context: ClassMethodDecoratorContext) {
+		return async function repalacmentMethod(...args: any[]) {
+			const name = stepName || `${this.constructor.name}.${(context.name as string)}`;
+			return test.step(name, async () => {
+				return await target.call(this, ...args);
+			});
+		};
+	}
+}
+
+export function stepParam(stepName?: string | ((...args: any[]) => string)) {
+	return function decorator(target: Function, context: ClassMethodDecoratorContext) {
+		return async function replacementMethod(this: any, ...args: any[]) {
+			const name = typeof stepName === 'function'
+				? stepName(...args) // Use the args to compute the step name
+				: stepName || `${this.constructor.name}.${context.name as string}`;
+			
+			return test.step(name, async () => {
+				return await target.apply(this, args); // Ensure the original method runs in the correct context
+			});
+		};
+	};
+}
+

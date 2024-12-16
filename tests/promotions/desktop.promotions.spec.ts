@@ -11,9 +11,9 @@ test.beforeEach(async ({ page, banner, headerMenuDesktop, landingPage  }) => {
 	});
 	banner.bannerNewDesign();
 	banner.bannerHiThere();
-	await banner.randomClickEscape();
+	await banner.randomBannerNewDesign();
 	await banner.randomClickSkipSomething();
-	await landingPage.acceptCookiesBannerRandom();
+	await banner.cookiesAcceptButton();
 	await headerMenuDesktop.validateSFLogoVisible();
 });
 

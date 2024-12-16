@@ -8,7 +8,7 @@ import { Banner } from '../banner.po';
 import { Promotions } from '../promotions.po';
 import { PromotionDetails } from '../promotion.details.po';
 import { PromotionTabs } from '../promotionTabs.po';
-import { SignUp } from '../signUp.po';
+import { SignUp } from '../signUp/signUpPage.po';
 import { WalletModal } from '../walletModal.po';
 import { ResetPasswordFrame } from '../resetPasswordFrame.po';
 import { Navigation } from './navigation.po';
@@ -18,6 +18,11 @@ import { GamesCategories } from '../LandingPage/gamesCategories.po';
 import { LandingPageFAQ } from '../LandingPage/landingPageFAQ.po';
 import { PromotionsLandingPage } from '../LandingPage/promotionsLandingPage.po';
 import { FooterLandingPage } from '../LandingPage/footerLandingPage.po';
+import { BurgerMenu } from '../mobileMenu/burgerMenu.po';
+import { BottomMenu } from '../mobileMenu/bottomMenu.po';
+import { SignUpFirstStep } from '../signUp/signUpFirstStep.po';
+import { SignUpSecondStep } from '../signUp/signUpSecondStep.po';
+import { SignUpThirdStep } from '../signUp/signUpThirdStep.po';
 
 type pages = {
 	loginPage: LoginPage;
@@ -39,6 +44,11 @@ type pages = {
 	landingPageFAQ: LandingPageFAQ;
 	promotionsLandingPage: PromotionsLandingPage;
 	footerLandingPage: FooterLandingPage;
+	bottomMenu: BottomMenu;
+	burgerMenu: BurgerMenu;
+	signUpFirstStep: SignUpFirstStep;
+	signUpSecondStep: SignUpSecondStep;
+	signUpThirdStep: SignUpThirdStep;
 }
 
 const test = base.extend<pages>({
@@ -98,6 +108,21 @@ const test = base.extend<pages>({
 	},
 	footerLandingPage: async ({ page }, use) => {
 		await use(new FooterLandingPage(page));
+	},
+	bottomMenu: async ({ page }, use) => {
+		await use(new BottomMenu(page));
+	},
+	burgerMenu: async ({ page }, use) => {
+		await use(new BurgerMenu(page));
+	},
+	signUpFirstStep: async ({ page }, use) => {
+		await use(new SignUpFirstStep(page));
+	},
+	signUpSecondStep: async ({ page }, use) => {
+		await use(new SignUpSecondStep(page));
+	},
+	signUpThirdStep: async ({ page }, use) => {
+		await use(new SignUpThirdStep(page));
 	},
 });
 

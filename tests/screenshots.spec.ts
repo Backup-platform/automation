@@ -1,19 +1,26 @@
+import { LoginPage } from '../pages/loginPage.po';
 import test, { expect } from '../pages/utils/base.po';
 
-test.beforeEach(async ({ page }) => {
-	await page.goto('https://stage.spacefortuna1.com');
+test.beforeEach(async ({ page, banner }) => {
+	await page.goto(`${process.env.URL}`);
+	await banner.clickEscapeInOptIn();
+    await banner.randomClickSkipSomething();
+    await banner.sideBannerClickCloseBtn();
+    await banner.randomBannerHiThere();
+    await banner.acceptCookies();
+    await banner.randomBannerNewDesign();
 });
 
 test.describe.skip('screenshot tests', () => {
-	test('compare landing page', async ({ page, landingPage }) => {
-		await landingPage.isLoginButtonVisible();
+	test.use({ storageState: 'playwright/.auth/noAuthentication.json' });
+	test('compare landing page', async ({ page, headerMenuDesktop }) => {
+		await headerMenuDesktop.validateLoginButtonVisible();
 		await expect(page).toHaveScreenshot('landingPage.png', { maxDiffPixelRatio: 0.85 });
 	});
 
-	test('Validate Login', async ({ landingPage, logInIFrame, page }) => {
-		await landingPage.isLoginButtonVisible();
-		await landingPage.clickLoginButton();
-		await expect(logInIFrame.wholeLoginWindow()).toHaveScreenshot('logingPage.png', { maxDiffPixels: 500 });
+	test('Validate Login', async ({ loginPage, headerMenuDesktop }) => {
+		await headerMenuDesktop.clickLoginButton();
+		await expect(loginPage.wholeLoginWindow()).toHaveScreenshot('logingPage.png', { maxDiffPixels: 500 });
 	});
 
 });

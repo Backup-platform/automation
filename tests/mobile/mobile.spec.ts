@@ -3,8 +3,12 @@ import test, { expect } from '../../pages/utils/base.po';
 
 test.beforeEach(async ({ page, banner }) => {
 	await page.goto(`${process.env.URL}`);
-	await banner.randomClickEscape();
-	await banner.randomClickSkipSomething();
+    await banner.clickEscapeInOptIn();
+    await banner.randomClickSkipSomething();
+    await banner.sideBannerClickCloseBtn();
+    await banner.randomBannerHiThere();
+    await banner.acceptCookies();
+    await banner.randomBannerNewDesign();
 });
 
 test.describe.skip('Test mobile game is responsive', () => {
