@@ -1,0 +1,2523 @@
+[
+    {
+        "testName": "Duplicate BET",
+        "steps": [
+            {
+                "type": "BET",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "amount": 2.00,
+                "storeVariablesForNextStep": {
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "requestedAt": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 2.00,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "BET",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "amount": 2.00,
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 2.00,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": true
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Duplicate BET_WIN",
+        "steps": [
+            {
+                "type": "BET_WIN",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "bet": {
+                    "amount": 0.50
+                },
+                "win": {
+                    "amount": 1.00
+                },
+                "storeVariablesForNextStep": {
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "requestedAt": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": null,
+                    "bet": {
+                        "realAmount": 0.50,
+                        "bonusAmount": 0
+                    },
+                    "win": {
+                        "realAmount": 1.00,
+                        "bonusAmount": 0
+                    },
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "BET_WIN",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "bet": {
+                    "amount": 0.50
+                },
+                "win": {
+                    "amount": 1.00
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": null,
+                    "bet": {
+                        "realAmount": 0.50,
+                        "bonusAmount": 0
+                    },
+                    "win": {
+                        "realAmount": 1.00,
+                        "bonusAmount": 0
+                    },
+                    "isAlreadyProcessed": true
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Duplicated WIN",
+        "steps": [
+            {
+                "type": "BET",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "amount": 1.50,
+                "storeVariablesForNextStep": {
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 1.50,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "WIN",
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "amount": 2.50,
+                "storeVariablesForNextStep": {
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 2.50,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "WIN",
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "amount": 2.50,
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 2.50,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": true
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Duplicated rollback BET",
+        "steps": [
+            {
+                "type": "BET",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "amount": 1.50,
+                "storeVariablesForNextStep": {
+                    "referenceName": "betOne",
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    },
+                    "realAmount": 1.50
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 1.50,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "ROLLBACK",
+                "useVariablesFrom": "betOne",
+                "onlyRound": true,
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": null,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "ROLLBACK",
+                "useVariablesFrom": "betOne",
+                "onlyRound": true,
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": null,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Duplicated rollback BET_WIN",
+        "steps": [
+            {
+                "type": "BET_WIN",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "bet": {
+                    "amount": 0.50
+                },
+                "win": {
+                    "amount": 1.00
+                },
+                "storeVariablesForNextStep": {
+                    "referenceName": "betOne",
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "requestedAt": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": null,
+                    "bet": {
+                        "realAmount": 0.50,
+                        "bonusAmount": 0
+                    },
+                    "win": {
+                        "realAmount": 1.00,
+                        "bonusAmount": 0
+                    },
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "ROLLBACK",
+                "useVariablesFrom": "betOne",
+                "onlyRound": true,
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "storeVariablesForNextStep": {
+                    "referenceName": "rollbackOne",
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "requestedAt": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    },
+                    "transaction": {
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "ROLLBACK",
+                "useVariablesFrom": "rollbackOne",
+                "onlyRound": false,
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": null,
+                    "isAlreadyProcessed": true
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Happy Path",
+        "steps": [
+            {
+                "type": "BET",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "amount": 2.00,
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 2.00,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "WIN",
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "amount": 12.00,
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 12.00,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Multi BET",
+        "steps": [
+            {
+                "type": "BET",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "amount": 1.00,
+                "storeVariablesForNextStep": {
+                    "referenceName": "betOne",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 1.00,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "BET",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "amount": 0.50,
+                "storeVariablesForNextStep": {
+                    "referenceName": "betTwo",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 0.50,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "WIN",
+                "useVariablesFrom": "betTwo",
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "amount": 1.00,
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 1.00,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "WIN",
+                "useVariablesFrom": "betOne",
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "amount": 0.00,
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 0.00,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Multi BET_WIN",
+        "steps": [
+            {
+                "type": "BET_WIN",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "bet": {
+                    "amount": 0.50
+                },
+                "win": {
+                    "amount": 1.00
+                },
+                "storeVariablesForNextStep": {
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": null,
+                    "bet": {
+                        "realAmount": 0.50,
+                        "bonusAmount": 0
+                    },
+                    "win": {
+                        "realAmount": 1.00,
+                        "bonusAmount": 0
+                    },
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "BET_WIN",
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "bet": {
+                    "amount": 0.50
+                },
+                "win": {
+                    "amount": 0.00
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": null,
+                    "bet": {
+                        "realAmount": 0.50,
+                        "bonusAmount": 0
+                    },
+                    "win": {
+                        "realAmount": 0.00,
+                        "bonusAmount": 0
+                    },
+                    "isAlreadyProcessed": false
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Rollback BET",
+        "steps": [
+            {
+                "type": "BET",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "amount": 1.50,
+                "storeVariablesForNextStep": {
+                    "referenceName": "betOne",
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    },
+                    "realAmount": 1.50
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 1.50,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "ROLLBACK",
+                "useVariablesFrom": "betOne",
+                "onlyRound": true,
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": null,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Rollback BET_WIN",
+        "steps": [
+            {
+                "type": "BET_WIN",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "bet": {
+                    "amount": 0.50
+                },
+                "win": {
+                    "amount": 1.00
+                },
+                "storeVariablesForNextStep": {
+                    "referenceName": "betOne",
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "requestedAt": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": null,
+                    "bet": {
+                        "realAmount": 0.50,
+                        "bonusAmount": 0
+                    },
+                    "win": {
+                        "realAmount": 1.00,
+                        "bonusAmount": 0
+                    },
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "ROLLBACK",
+                "useVariablesFrom": "betOne",
+                "onlyRound": true,
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "storeVariablesForNextStep": {
+                    "referenceName": "rollbackOne",
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "requestedAt": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    },
+                    "transaction": {
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": null,
+                    "isAlreadyProcessed": false
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Multiple Rollback BET for same round",
+        "steps": [
+            {
+                "type": "BET",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "amount": 1.00,
+                "storeVariablesForNextStep": {
+                    "referenceName": "betOne",
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "requestedAt": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 1.00,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "BET",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "useVariablesFrom": "betOne",
+                "onlyRound": true,
+                "amount": 2.00,
+                "storeVariablesForNextStep": {
+                    "referenceName": "betTwo",
+                    "requestedAt": "",
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 2.00,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "ROLLBACK",
+                "useVariablesFrom": "betOne",
+                "onlyRound": true,
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "ROLLBACK",
+                "useVariablesFrom": "betTwo",
+                "onlyRound": true,
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": null,
+                    "isAlreadyProcessed": false
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Multiple Rollback BET_WIN for same round",
+        "steps": [
+            {
+                "type": "BET_WIN",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "bet": {
+                    "amount": 0.50
+                },
+                "win": {
+                    "amount": 1.00
+                },
+                "storeVariablesForNextStep": {
+                    "referenceName": "betOne",
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "requestedAt": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "bet": {
+                        "realAmount": 0.50,
+                        "bonusAmount": 0
+                    },
+                    "win": {
+                        "realAmount": 1.00,
+                        "bonusAmount": 0
+                    },
+                    "realAmount": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "BET_WIN",
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "bet": {
+                    "amount": 1.00
+                },
+                "win": {
+                    "amount": 1.50
+                },
+                "useVariablesFrom": "betOne",
+                "onlyRound": true,
+                "storeVariablesForNextStep": {
+                    "referenceName": "betTwo",
+                    "requestedAt": "",
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "bet": {
+                        "realAmount": 1.00,
+                        "bonusAmount": 0
+                    },
+                    "win": {
+                        "realAmount": 1.50,
+                        "bonusAmount": 0
+                    },
+                    "realAmount": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "ROLLBACK",
+                "useVariablesFrom": "betOne",
+                "onlyRound": true,
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "ROLLBACK",
+                "useVariablesFrom": "betTwo",
+                "onlyRound": true,
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": null,
+                    "isAlreadyProcessed": false
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Simultaneous BET",
+        "steps": [
+            {
+                "type": "BET",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "amount": 1.00,
+                "storeVariablesForNextStep": {
+                    "referenceName": "betOne",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 1.00,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "BET",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "amount": 0.50,
+                "storeVariablesForNextStep": {
+                    "referenceName": "betTwo",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 0.50,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "WIN",
+                "useVariablesFrom": "betTwo",
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "amount": 1.00,
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 1.00,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "WIN",
+                "useVariablesFrom": "betOne",
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "amount": 0.00,
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 0.00,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Simultaneous multiple BETs with multiple WINs",
+        "steps": [
+            {
+                "type": "BET",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "amount": 1.00,
+                "storeVariablesForNextStep": {
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 1.00,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "BET",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "amount": 0.50,
+                "storeVariablesForNextStep": {
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 0.50,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "WIN",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "amount": 1.00,
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 1.00,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "WIN",
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "amount": 1.50,
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 1.50,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Invalid currency BET",
+        "steps": [
+            {
+                "type": "BET",
+                "currency": "USD",
+                "amount": 1.00,
+                "storeVariablesForNextStep": {
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Invalid player currency."
+                }
+            },
+            {
+                "type": "BET",
+                "amount": 1.00,
+                "currency": "USD",
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Invalid player currency."
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Invalid currency WIN",
+        "steps": [
+            {
+                "type": "BET",
+                "currency": "USD",
+                "amount": 1.00,
+                "storeVariablesForNextStep": {
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Invalid player currency."
+                }
+            },
+            {
+                "type": "WIN",
+                "amount": 1.00,
+                "currency": "USD",
+                "storeVariablesForNextStep": {
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Invalid player currency."
+                }
+            },
+            {
+                "type": "WIN",
+                "amount": 1.00,
+                "currency": "USD",
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Invalid player currency."
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Invalid currency BET_WIN",
+        "steps": [
+            {
+                "type": "BET",
+                "currency": "USD",
+                "bet": {
+                    "amount": 0.50
+                },
+                "win": {
+                    "amount": 1.0
+                },
+                "storeVariablesForNextStep": {
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Invalid player currency."
+                }
+            },
+            {
+                "type": "BET",
+                "currency": "USD",
+                "bet": {
+                    "amount": 0.5
+                },
+                "win": {
+                    "amount": 1.0
+                },
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Invalid player currency."
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Rollback BET invalid currency",
+        "steps": [
+            {
+                "type": "BET",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "amount": 1.00,
+                "storeVariablesForNextStep": {
+                    "referenceName": "betOne",
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "requestedAt": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 1.00,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "ROLLBACK",
+                "useVariablesFrom": "betOne",
+                "onlyRound": true,
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "currency": "USD",
+                "storeVariablesForNextStep": {
+                    "referenceName": "refactorOne",
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "requestedAt": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Invalid player currency."
+                }
+            },
+            {
+                "type": "ROLLBACK",
+                "useVariablesFrom": "refactorOne",
+                "onlyRound": false,
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "currency": "USD",
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Invalid player currency."
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Rollback BET_WIN invalid currency",
+        "steps": [
+            {
+                "type": "BET_WIN",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "bet": {
+                    "amount": 0.50
+                },
+                "win": {
+                    "amount": 1.50
+                },
+                "storeVariablesForNextStep": {
+                    "referenceName": "betOne",
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "requestedAt": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": null,
+                    "bet": {
+                        "realAmount": 0.50,
+                        "bonusAmount": 0
+                    },
+                    "win": {
+                        "realAmount": 1.5,
+                        "bonusAmount": 0
+                    },
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "ROLLBACK",
+                "useVariablesFrom": "betOne",
+                "onlyRound": true,
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "currency": "USD",
+                "storeVariablesForNextStep": {
+                    "referenceName": "refactorOne",
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "requestedAt": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Invalid player currency."
+                }
+            },
+            {
+                "type": "ROLLBACK",
+                "useVariablesFrom": "refactorOne",
+                "onlyRound": false,
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "currency": "USD",
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Invalid player currency."
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Invalid game BET",
+        "steps": [
+            {
+                "type": "BET",
+                "amount": 0.50,
+                "game": {
+                    "id": -1
+                },
+                "storeVariablesForNextStep": {
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 404,
+                    "status": "DENIED",
+                    "code": "GAME_NOT_ALLOWED",
+                    "message": "Game not allowed."
+                }
+            },
+            {
+                "type": "BET",
+                "amount": 0.50,
+                "game": {
+                    "id": -1
+                },
+                "expectedValues": {
+                    "statusCode": 404,
+                    "status": "DENIED",
+                    "code": "GAME_NOT_ALLOWED",
+                    "message": "Game not allowed."
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Invalid game WIN",
+        "steps": [
+            {
+                "type": "BET",
+                "amount": 0.50,
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 0.50,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "WIN",
+                "amount": 0.50,
+                "game": {
+                    "id": -1
+                },
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "storeVariablesForNextStep": {
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Invalid game identifier."
+                }
+            },
+            {
+                "type": "WIN",
+                "amount": 0.50,
+                "game": {
+                    "id": -1
+                },
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Invalid game identifier."
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Invalid game BET_WIN",
+        "steps": [
+            {
+                "type": "BET_WIN",
+                "bet": {
+                    "amount": 0.5
+                },
+                "win": {
+                    "amount": 1.5
+                },
+                "game": {
+                    "id": -1
+                },
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "storeVariablesForNextStep": {
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 404,
+                    "status": "DENIED",
+                    "code": "GAME_NOT_ALLOWED",
+                    "message": "Game not allowed."
+                }
+            },
+            {
+                "type": "BET_WIN",
+                "bet": {
+                    "amount": 0.5
+                },
+                "win": {
+                    "amount": 1.5
+                },
+                "game": {
+                    "id": -1
+                },
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "expectedValues": {
+                    "statusCode": 404,
+                    "status": "DENIED",
+                    "code": "GAME_NOT_ALLOWED",
+                    "message": "Game not allowed."
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Rollback BET invalid game",
+        "steps": [
+            {
+                "type": "BET",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "amount": 1.00,
+                "storeVariablesForNextStep": {
+                    "referenceName": "betOne",
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "requestedAt": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 1.00,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "ROLLBACK",
+                "useVariablesFrom": "betOne",
+                "onlyRound": true,
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "game": {
+                    "id": -1
+                },
+                "storeVariablesForNextStep": {
+                    "referenceName": "refactorOne",
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "requestedAt": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Invalid game identifier."
+                }
+            },
+            {
+                "type": "ROLLBACK",
+                "useVariablesFrom": "refactorOne",
+                "onlyRound": false,
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "game": {
+                    "id": -1
+                },
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Invalid game identifier."
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Rollback BET_WIN invalid game",
+        "steps": [
+            {
+                "type": "BET_WIN",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "bet": {
+                    "amount": 0.50
+                },
+                "win": {
+                    "amount": 1.50
+                },
+                "storeVariablesForNextStep": {
+                    "referenceName": "betOne",
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "requestedAt": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": null,
+                    "bet": {
+                        "realAmount": 0.50,
+                        "bonusAmount": 0
+                    },
+                    "win": {
+                        "realAmount": 1.5,
+                        "bonusAmount": 0
+                    },
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "ROLLBACK",
+                "useVariablesFrom": "betOne",
+                "onlyRound": true,
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "game": {
+                    "id": -1
+                },
+                "storeVariablesForNextStep": {
+                    "referenceName": "refactorOne",
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "requestedAt": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Invalid game identifier."
+                }
+            },
+            {
+                "type": "ROLLBACK",
+                "useVariablesFrom": "refactorOne",
+                "onlyRound": false,
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "game": {
+                    "id": -1
+                },
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Invalid game identifier."
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Invalid Player BET",
+        "steps": [
+            {
+                "type": "BET",
+                "player": {
+                    "id": "444",
+                    "casinoPlayerId": "wr0ngPl4y3r"
+                },
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "amount": 2.00,
+                "storeVariablesForNextStep": {
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "requestedAt": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Invalid casino player identifier."
+                }
+            },
+            {
+                "type": "BET",
+                "player": {
+                    "id": "444",
+                    "casinoPlayerId": "wr0ngPl4y3r"
+                },
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "amount": 2.00,
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Invalid casino player identifier."
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Invalid Player WIN",
+        "steps": [
+            {
+                "type": "BET",
+                "player": {
+                    "id": "444",
+                    "casinoPlayerId": "334337"
+                },
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "amount": 0.50,
+                "storeVariablesForNextStep": {
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 0.50,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "WIN",
+                "player": {
+                    "id": "444",
+                    "casinoPlayerId": "wr0ngPl4y3r"
+                },
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "amount": 1.00,
+                "storeVariablesForNextStep": {
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "requestedAt": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Invalid casino player identifier."
+                }
+            },
+            {
+                "type": "WIN",
+                "player": {
+                    "id": "444",
+                    "casinoPlayerId": "wr0ngPl4y3r"
+                },
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "amount": 1.00,
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Invalid casino player identifier."
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Invalid Player BET_WIN",
+        "steps": [
+            {
+                "type": "BET_WIN",
+                "player": {
+                    "id": "444",
+                    "casinoPlayerId": "wr0ngPl4y3r"
+                },
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "bet": {
+                    "amount": 0.5
+                },
+                "win": {
+                    "amount": 1.5
+                },
+                "storeVariablesForNextStep": {
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "requestedAt": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Invalid casino player identifier."
+                }
+            },
+            {
+                "type": "BET_WIN",
+                "player": {
+                    "id": "444",
+                    "casinoPlayerId": "wr0ngPl4y3r"
+                },
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "bet": {
+                    "amount": 0.5
+                },
+                "win": {
+                    "amount": 1.5
+                },
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Invalid casino player identifier."
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Rollback BET invalid player",
+        "steps": [
+            {
+                "type": "BET",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "amount": 1.00,
+                "storeVariablesForNextStep": {
+                    "referenceName": "betOne",
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "requestedAt": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 1.00,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "ROLLBACK",
+                "useVariablesFrom": "betOne",
+                "onlyRound": true,
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "player": {
+                    "id": "444",
+                    "casinoPlayerId": "wr0ngPl4y3r"
+                },
+                "storeVariablesForNextStep": {
+                    "referenceName": "refactorOne",
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "requestedAt": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Invalid casino player identifier."
+                }
+            },
+            {
+                "type": "ROLLBACK",
+                "useVariablesFrom": "refactorOne",
+                "onlyRound": false,
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "player": {
+                    "id": "444",
+                    "casinoPlayerId": "wr0ngPl4y3r"
+                },
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Invalid casino player identifier."
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Rollback BET_WIN invalid player",
+        "steps": [
+            {
+                "type": "BET_WIN",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "bet": {
+                    "amount": 0.50
+                },
+                "win": {
+                    "amount": 1.50
+                },
+                "storeVariablesForNextStep": {
+                    "referenceName": "betOne",
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "requestedAt": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": null,
+                    "bet": {
+                        "realAmount": 0.50,
+                        "bonusAmount": 0
+                    },
+                    "win": {
+                        "realAmount": 1.5,
+                        "bonusAmount": 0
+                    },
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "ROLLBACK",
+                "useVariablesFrom": "betOne",
+                "onlyRound": true,
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "player": {
+                    "id": "444",
+                    "casinoPlayerId": "wr0ngPl4y3r"
+                },
+                "storeVariablesForNextStep": {
+                    "referenceName": "refactorOne",
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "requestedAt": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Invalid casino player identifier."
+                }
+            },
+            {
+                "type": "ROLLBACK",
+                "useVariablesFrom": "refactorOne",
+                "onlyRound": false,
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "player": {
+                    "id": "444",
+                    "casinoPlayerId": "wr0ngPl4y3r"
+                },
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Invalid casino player identifier."
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Invalid session BET",
+        "steps": [
+            {
+                "type": "BET",
+                "casinoSessionId": "e5612db5-0c05-30db-8d97-258d37d54723",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "amount": 0.50,
+                "storeVariablesForNextStep": {
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "requestedAt": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 403,
+                    "status": "DENIED",
+                    "code": "SESSION_EXPIRED",
+                    "message": "Session not found or expired."
+                }
+            },
+            {
+                "type": "BET",
+                "casinoSessionId": "e5612db5-0c05-30db-8d97-258d37d54723",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "amount": 0.50,
+                "expectedValues": {
+                    "statusCode": 403,
+                    "status": "DENIED",
+                    "code": "SESSION_EXPIRED",
+                    "message": "Session not found or expired."
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Invalid session BET_WIN",
+        "steps": [
+            {
+                "type": "BET_WIN",
+                "casinoSessionId": "e5612db5-0c05-30db-8d97-258d37d54723",
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "bet": {
+                    "amount": 1.5
+                },
+                "win": {
+                    "amount": 3.5
+                },
+                "storeVariablesForNextStep": {
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "requestedAt": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 403,
+                    "status": "DENIED",
+                    "code": "SESSION_EXPIRED",
+                    "message": "Session not found or expired."
+                }
+            },
+            {
+                "type": "BET_WIN",
+                "casinoSessionId": "e5612db5-0c05-30db-8d97-258d37d54723",
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "bet": {
+                    "amount": 1.5
+                },
+                "win": {
+                    "amount": 3.5
+                },
+                "expectedValues": {
+                    "statusCode": 403,
+                    "status": "DENIED",
+                    "code": "SESSION_EXPIRED",
+                    "message": "Session not found or expired."
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Invalid signature BET",
+        "steps": [
+            {
+                "type": "BET",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "amount": 0.50,
+                "secret": "invalidSecret",
+                "storeVariablesForNextStep": {
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "requestedAt": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Digest hash does not match the body"
+                }
+            },
+            {
+                "type": "BET",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "amount": 0.50,
+                "secret": "invalidSecret",
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Digest hash does not match the body"
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Invalid signature WIN",
+        "steps": [
+            {
+                "type": "BET",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "amount": 0.50,
+                "storeVariablesForNextStep": {
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 0.50,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "WIN",
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "amount": 0.50,
+                "storeVariablesForNextStep": {
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "requestedAt": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "secret": "invalidSecret",
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Digest hash does not match the body"
+                }
+            },
+            {
+                "type": "WIN",
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "amount": 0.50,
+                "secret": "invalidSecret",
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Digest hash does not match the body"
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Invalid signature BET_WIN",
+        "steps": [
+            {
+                "type": "BET_WIN",
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "bet": {
+                    "amount": 1.5
+                },
+                "win": {
+                    "amount": 3.5
+                },
+                "storeVariablesForNextStep": {
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "requestedAt": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "secret": "invalidSecret",
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Digest hash does not match the body"
+                }
+            },
+            {
+                "type": "BET_WIN",
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "bet": {
+                    "amount": 1.5
+                },
+                "win": {
+                    "amount": 3.5
+                },
+                "secret": "invalidSecret",
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Digest hash does not match the body"
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Rollback BET invalid signature",
+        "steps": [
+            {
+                "type": "BET",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "amount": 1.00,
+                "storeVariablesForNextStep": {
+                    "referenceName": "betOne",
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "requestedAt": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 1.00,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "ROLLBACK",
+                "useVariablesFrom": "betOne",
+                "onlyRound": true,
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "player": {
+                    "id": "444",
+                    "casinoPlayerId": "wr0ngPl4y3r"
+                },
+                "storeVariablesForNextStep": {
+                    "referenceName": "refactorOne",
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "requestedAt": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "secret": "invalidSecret",
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Digest hash does not match the body"
+                }
+            },
+            {
+                "type": "ROLLBACK",
+                "useVariablesFrom": "refactorOne",
+                "onlyRound": false,
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "player": {
+                    "id": "444",
+                    "casinoPlayerId": "wr0ngPl4y3r"
+                },
+                "secret": "invalidSecret",
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Digest hash does not match the body"
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Rollback BET_WIN invalid signature",
+        "steps": [
+            {
+                "type": "BET_WIN",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "bet": {
+                    "amount": 0.50
+                },
+                "win": {
+                    "amount": 1.50
+                },
+                "storeVariablesForNextStep": {
+                    "referenceName": "betOne",
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "requestedAt": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": null,
+                    "bet": {
+                        "realAmount": 0.50,
+                        "bonusAmount": 0
+                    },
+                    "win": {
+                        "realAmount": 1.5,
+                        "bonusAmount": 0
+                    },
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "ROLLBACK",
+                "useVariablesFrom": "betOne",
+                "onlyRound": true,
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "player": {
+                    "id": "444",
+                    "casinoPlayerId": "wr0ngPl4y3r"
+                },
+                "storeVariablesForNextStep": {
+                    "referenceName": "refactorOne",
+                    "id": "",
+                    "integratorTransactionId": "",
+                    "requestedAt": "",
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "secret": "invalidSecret",
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Digest hash does not match the body"
+                }
+            },
+            {
+                "type": "ROLLBACK",
+                "useVariablesFrom": "refactorOne",
+                "onlyRound": false,
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "player": {
+                    "id": "444",
+                    "casinoPlayerId": "wr0ngPl4y3r"
+                },
+                "secret": "invalidSecret",
+                "expectedValues": {
+                    "statusCode": 500,
+                    "status": "ERROR",
+                    "code": "INVALID_REQUEST",
+                    "message": "Digest hash does not match the body"
+                }
+            }
+        ]
+    },
+    {
+        "testName": "BET with multiple WINS",
+        "steps": [
+            {
+                "type": "BET",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "amount": 0.50,
+                "storeVariablesForNextStep": {
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 0.50,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "WIN",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "amount": 0.50,
+                "storeVariablesForNextStep": {
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 0.50,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "WIN",
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "amount": 0.50,
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 0.50,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Multiple BETS with WIN",
+        "steps": [
+            {
+                "type": "BET",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "amount": 0.50,
+                "storeVariablesForNextStep": {
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 0.50,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "BET",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "amount": 0.50,
+                "storeVariablesForNextStep": {
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 0.50,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "WIN",
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "amount": 0.50,
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 0.50,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            }
+        ]
+    },
+    {
+        "testName": "Multiple BETS with multiple WINS",
+        "steps": [
+            {
+                "type": "BET",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "amount": 0.50,
+                "storeVariablesForNextStep": {
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 0.50,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "BET",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "amount": 0.50,
+                "storeVariablesForNextStep": {
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 0.50,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "WIN",
+                "round": {
+                    "status": "IN_PROGRESS"
+                },
+                "amount": 1.00,
+                "storeVariablesForNextStep": {
+                    "round": {
+                        "integratorRoundId": "",
+                        "id": ""
+                    }
+                },
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 1.00,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            },
+            {
+                "type": "WIN",
+                "round": {
+                    "status": "COMPLETED"
+                },
+                "amount": 2.00,
+                "expectedValues": {
+                    "statusCode": 200,
+                    "id": null,
+                    "realAmount": 2.00,
+                    "bet": null,
+                    "win": null,
+                    "isAlreadyProcessed": false
+                }
+            }
+        ]
+    }
+]

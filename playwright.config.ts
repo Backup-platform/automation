@@ -37,7 +37,7 @@ export default defineConfig({
 	/* Retry on CI only */
 	retries: process.env.CI ? 2 : 0,
 	/* Opt out of parallel tests on CI. */
-	workers: 2, //process.env.CI ? 1 : undefined,
+	workers: 3, //process.env.CI ? 1 : undefined,
 	/* Reporter to use. See https://playwright.dev/docs/test-reporters */
 	reporter: 'html',
 	//reporter: 'allure-playwright',
@@ -93,6 +93,13 @@ export default defineConfig({
 				storageState: 'playwright/.auth/mobileUser.json', //width: 375 height:812
 			},
 			dependencies: ['setupMobile'],
+		},
+		{
+			name: 'API tests',
+			testMatch: ['aleaTransactions.spec.ts', 'balance.spec.ts'],
+			use: {
+				baseURL: 'https://games.dev.inovadatabv.com/alea/',
+			}
 		}		
 		
 		// {
