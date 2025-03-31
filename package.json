@@ -15,7 +15,7 @@
     "test": "npx playwright test",
     "test:smoke": "npx playwright test --grep \".*\\Smoke Tests\"",
     "test:regression": "npx playwright test --grep \".*\\Regression Tests\"",
-    "test:api": "npx playwright test --grep \".*\\API Tests\" --ui",
+    "test:api": "npx playwright test --grep \".*\\API Tests\"",
     "report": "allure generate allure-results -o allure-report --clean && allure open allure-report"
   },
   "keywords": [],
