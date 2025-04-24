@@ -30,19 +30,21 @@ export class Navigation {
 	 * Example:
 	 * `await this.assertVisible(this.loginButton(), false, 'Login button should be visible');`
 	 */
+	@stepParam((element: Locator, softAssert: boolean, elementName: string) => `I expect ${elementName} is visible`)
 	public async assertVisible(element: Locator, softAssert: boolean = false, elementName?: string): Promise<void> {
 		if (softAssert) {
-			await expect.soft(element, `Expect ${elementName} to be visible`).toBeVisible();
+			await expect.soft(element).toBeVisible();
 		} else {
-			await expect(element, `Expect ${elementName} to be visible`).toBeVisible();
+			await expect(element).toBeVisible();
 		}
 	}
 
+	@stepParam((element: Locator, softAssert: boolean, elementName: string) => `I expect ${elementName} is NOT visible`)
 	public async assertNotVisible(element: Locator, softAssert: boolean = false, elementName?: string): Promise<void> {
 		if (softAssert) {
-			await expect.soft(element, `Expect ${elementName} to NOT be visible`).not.toBeVisible();
+			await expect.soft(element).not.toBeVisible();
 		} else {
-			await expect(element, `Expect ${elementName} to NOT be visible`).not.toBeVisible();
+			await expect(element).not.toBeVisible();
 		}
 	}
 
@@ -55,6 +57,7 @@ export class Navigation {
 	 * @param {boolean} [softAssert=false] - If true, performs a soft assertion.
 	 * @param {string} [elementName] - The name of the element for logging purposes.
 	 */
+	@stepParam((element: Locator, softAssert: boolean, elementName: string) => `I expect ${elementName} is enabled`)
 	public async assertEnabled(element: Locator, softAssert: boolean = false, elementName?: string): Promise<void> {
 		if (softAssert) {
 			await expect.soft(element, `Expect ${elementName} to be enabled`).toBeEnabled();
@@ -63,6 +66,7 @@ export class Navigation {
 		}
 	}
 
+	@stepParam((element: Locator, softAssert: boolean, elementName: string) => `I expect ${elementName} is NOT enabled`)
 	public async assertNotEnabled(element: Locator, softAssert: boolean = false, elementName?: string): Promise<void> {
 		if (softAssert) {
 			await expect.soft(element, `Expect ${elementName} to not be enabled`).not.toBeEnabled();
@@ -141,6 +145,7 @@ export class Navigation {
 	 * 
 	 * @throws Will throw an error if the attribute does not match the expected value (or if element or attribute is not found), unless `softAssert` is true.
 	 */
+	@stepParam((element: Locator, attributeType: string, softAssert: boolean, message: string) => `I expect ${message} has attribute ${attributeType}`)
 	public async assertAttribute(
 		element: Locator,
 		attributeType: string,
@@ -193,6 +198,7 @@ export class Navigation {
 	 *                     if false, performs a strict assertion (fails test on visibility/editability failure).
 	 * @param description - A description message used in the assertion to clarify which element is expected to be visible and editable.
 	 */
+	@stepParam((element: Locator, softAssert: boolean, description: string, value: string) => `I fill ${description} with ${value}`)
 	public async fillInputField(element: Locator, value: string, softAssert: boolean, description: string): Promise<void> {
 		await this.assertVisible(element, softAssert, description);
 		await this.assertEditable(element, softAssert, description);
@@ -232,6 +238,7 @@ export class Navigation {
 	 * await navigation.assertUrlContains(['location=testingnet.com', 'console=Test'], false);
 	 * ```
 	 */
+	//TODO: add a method that checks if the URL contains a SINGLE specific substring and refactor this method to use it
 	public async assertUrlContains(
 		expectedSubstrings: string[],
 		softAssert: boolean = false
@@ -361,3 +368,34 @@ export function stepParam(stepName?: string | ((...args: any[]) => string)) {
 	};
 }
 
+
+async function watchAndRemoveFog(page: any) {
+    await page.addInitScript(() => {
+        const observer = new MutationObserver((mutations) => {
+            for (const mutation of mutations) {
+                for (const node of mutation.addedNodes) {
+                    if (!(node instanceof HTMLElement)) continue;
+
+                    // Check if the added node is the overlay
+                    if (node.matches?.('overlay-fog')) {
+                        console.log('Removing overlay-fog:', node);
+                        node.remove();
+                        continue;
+                    }
+
+                    // Or if it contains the overlay
+                    const fog = node.querySelector?.('overlay-fog');
+                    if (fog) {
+                        console.log('Removing overlay-fog (child):', fog);
+                        fog.remove();
+                    }
+                }
+            }
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true,
+        });
+    });
+}

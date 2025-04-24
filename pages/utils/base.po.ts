@@ -23,6 +23,11 @@ import { BottomMenu } from '../mobileMenu/bottomMenu.po';
 import { SignUpFirstStep } from '../signUp/signUpFirstStep.po';
 import { SignUpSecondStep } from '../signUp/signUpSecondStep.po';
 import { SignUpThirdStep } from '../signUp/signUpThirdStep.po';
+import { AccountModal } from '../myProfile/accountModal.po';
+import { CashierMain } from '../openCashier/cashierMain.po';
+import { CashierDeposit } from '../openCashier/cashierDeposit.po';
+import { PaymentIQ } from '../openCashier/paymentIQ.po';
+import { CashierWithdraw } from '../openCashier/cashierWithdraw.po';
 
 type pages = {
 	loginPage: LoginPage;
@@ -49,6 +54,11 @@ type pages = {
 	signUpFirstStep: SignUpFirstStep;
 	signUpSecondStep: SignUpSecondStep;
 	signUpThirdStep: SignUpThirdStep;
+	accountModal: AccountModal;
+	cashierMain: CashierMain;
+	cashierDeposit: CashierDeposit;
+	cashierWithdraw: CashierWithdraw;
+	paymentIQ: PaymentIQ;
 }
 
 const test = base.extend<pages>({
@@ -124,6 +134,21 @@ const test = base.extend<pages>({
 	signUpThirdStep: async ({ page }, use) => {
 		await use(new SignUpThirdStep(page));
 	},
+	accountModal: async ({ page }, use) => {
+		await use(new AccountModal(page)); 
+	},
+	cashierMain: async ({ page }, use) => {
+		await use(new CashierMain(page));
+	},
+	cashierDeposit: async ({ page }, use) => {
+		await use(new CashierDeposit(page));
+	},
+	cashierWithdraw: async ({ page }, use) => {
+		await use(new CashierWithdraw(page));
+	},
+	paymentIQ: async ({ page }, use) => {
+		await use(new PaymentIQ(page));
+	}
 });
 
 export default test;

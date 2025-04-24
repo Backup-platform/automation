@@ -16,7 +16,9 @@
     "test:smoke": "npx playwright test --grep \".*\\Smoke Tests\"",
     "test:regression": "npx playwright test --grep \".*\\Regression Tests\"",
     "test:api": "npx playwright test --grep \".*\\API Tests\"",
-    "report": "allure generate allure-results -o allure-report --clean && allure open allure-report"
+    "report": "allure generate allure-results -o allure-report --clean && allure open allure-report",
+    "test:wip": "set TEST_PROJECT=\"wip.desktop.1440\" && npx playwright test --project=wip.desktop.1440 --headed --trace on-first-retry",
+    "test:wip2": "set TEST_PROJECT=\"wip.mobile.375.chrome\" && npx playwright test --project=wip.mobile.375.chrome --headed --trace on-first-retry"
   },
   "keywords": [],
   "author": "",
@@ -28,6 +30,7 @@
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "allure-commandline": "^2.29.0",
     "allure-playwright": "^2.13.0",
+    "cross-env": "^7.0.3",
     "eslint": "^8.57.0",
     "eslint-config-standard-with-typescript": "^43.0.1",
     "eslint-plugin-import": "^2.29.1",
