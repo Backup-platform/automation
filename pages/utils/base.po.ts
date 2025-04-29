@@ -1,4 +1,4 @@
-import { test as base } from '@playwright/test';
+import { test as base, Page } from '@playwright/test';
 import { LoginPage } from '../loginPage.po';
 import { LandingPage } from '../LandingPage/landingPage.po';
 import { HeaderMenuDesktop } from '../headerMenuDesktop.po';
@@ -61,94 +61,43 @@ type pages = {
 	paymentIQ: PaymentIQ;
 }
 
+function createPageFixture<T>(PageObject: new (page: Page) => T) {
+	return async ({ page }, use, testInfo) => {
+	  console.log(`Initializing ${PageObject.name} for project: ${testInfo.project.name}`);
+	  await use(new PageObject(page));
+	};
+  }
+
 const test = base.extend<pages>({
-	loginPage: async ({ page }, use) => {
-		await use(new LoginPage(page));
-	},
-	landingPage: async ({ page }, use) => {
-		await use(new LandingPage(page));
-	},
-	headerMenuDesktop: async ({ page }, use) => {
-		await use(new HeaderMenuDesktop(page));
-	},
-	footerMenuMobile: async ({ page }, use) => {
-		await use(new FooterMenuMobile(page));
-	},
-	gameProviders: async ({ page }, use) => {
-		await use(new GameProviders(page));
-	},
-	banner: async ({ page }, use) => {
-		await use(new Banner(page));
-	},
-	promotions: async ({ page }, use) => {
-		await use(new Promotions(page));
-	},
-	promotionDetails: async ({ page }, use) => {
-		await use(new PromotionDetails(page));
-	},
-	promotionTabs: async ({ page }, use) => {
-		await use(new PromotionTabs(page));
-	},
-	signUp: async ({ page }, use) => {
-		await use(new SignUp(page));
-	},
-	walletModal: async ({ page }, use) => {
-		await use(new WalletModal(page));
-	},
-	resetPasswordFrame: async ({ page }, use) => {
-		await use(new ResetPasswordFrame(page));
-	},
-	navigation: async ({ page }, use) => {
-		await use(new Navigation(page));
-	},
-	landingPageCarousel: async ({ page }, use) => {
-		await use(new LandingPageCarousel(page));
-	},
-	topCategories: async ({ page }, use) => {
-		await use(new TopCategories(page));
-	},
-	gamesCategories: async ({ page }, use) => {
-		await use(new GamesCategories(page));
-	},
-	landingPageFAQ: async ({ page }, use) => {
-		await use(new LandingPageFAQ(page));
-	},
-	promotionsLandingPage: async ({ page }, use) => {
-		await use(new PromotionsLandingPage(page));
-	},
-	footerLandingPage: async ({ page }, use) => {
-		await use(new FooterLandingPage(page));
-	},
-	bottomMenu: async ({ page }, use) => {
-		await use(new BottomMenu(page));
-	},
-	burgerMenu: async ({ page }, use) => {
-		await use(new BurgerMenu(page));
-	},
-	signUpFirstStep: async ({ page }, use) => {
-		await use(new SignUpFirstStep(page));
-	},
-	signUpSecondStep: async ({ page }, use) => {
-		await use(new SignUpSecondStep(page));
-	},
-	signUpThirdStep: async ({ page }, use) => {
-		await use(new SignUpThirdStep(page));
-	},
-	accountModal: async ({ page }, use) => {
-		await use(new AccountModal(page)); 
-	},
-	cashierMain: async ({ page }, use) => {
-		await use(new CashierMain(page));
-	},
-	cashierDeposit: async ({ page }, use) => {
-		await use(new CashierDeposit(page));
-	},
-	cashierWithdraw: async ({ page }, use) => {
-		await use(new CashierWithdraw(page));
-	},
-	paymentIQ: async ({ page }, use) => {
-		await use(new PaymentIQ(page));
-	}
+	loginPage: createPageFixture(LoginPage),
+	landingPage: createPageFixture(LandingPage),
+	headerMenuDesktop: createPageFixture(HeaderMenuDesktop),
+	footerMenuMobile: createPageFixture(FooterMenuMobile),
+	gameProviders: createPageFixture(GameProviders),
+	banner: createPageFixture(Banner),
+	promotions: createPageFixture(Promotions),
+	promotionDetails: createPageFixture(PromotionDetails),
+	promotionTabs: createPageFixture(PromotionTabs),
+	signUp: createPageFixture(SignUp),
+	walletModal: createPageFixture(WalletModal),
+	resetPasswordFrame: createPageFixture(ResetPasswordFrame),
+	navigation: createPageFixture(Navigation),
+	landingPageCarousel: createPageFixture(LandingPageCarousel),
+	topCategories: createPageFixture(TopCategories),
+	gamesCategories: createPageFixture(GamesCategories),
+	landingPageFAQ: createPageFixture(LandingPageFAQ),
+	promotionsLandingPage: createPageFixture(PromotionsLandingPage),
+	footerLandingPage: createPageFixture(FooterLandingPage),
+	bottomMenu: createPageFixture(BottomMenu),
+	burgerMenu: createPageFixture(BurgerMenu),
+	signUpFirstStep: createPageFixture(SignUpFirstStep),
+	signUpSecondStep: createPageFixture(SignUpSecondStep),
+	signUpThirdStep: createPageFixture(SignUpThirdStep),
+	accountModal: createPageFixture(AccountModal),
+	cashierMain: createPageFixture(CashierMain),
+	cashierDeposit: createPageFixture(CashierDeposit),
+	cashierWithdraw: createPageFixture(CashierWithdraw),
+	paymentIQ: createPageFixture(PaymentIQ),
 });
 
 export default test;

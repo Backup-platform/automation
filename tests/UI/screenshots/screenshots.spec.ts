@@ -1,5 +1,5 @@
-import { LoginPage } from '../pages/loginPage.po';
-import test, { expect } from '../pages/utils/base.po';
+import { LoginPage } from '../../../pages/loginPage.po';
+import test, { expect } from '../../../pages/utils/base.po';
 
 test.beforeEach(async ({ page, banner }) => {
 	await page.goto(`${process.env.URL}`);
