@@ -31,6 +31,10 @@ Go to a folder, open a terminal window there and clone it using the URL.
 If everything is okay, you should see the same lines as in the screenshot above, which would mean that the repository has been cloned successfully.
 If something goes wrong, it means you did something wrong - which means you have to go back and correct it.
 
+Note: As you can see this is SSH based communication with GitHub. It is the more appropriate way.
+Setting it up is not rocket science. You just have to create an SSH key and configure it to your
+account. There are many intuitive guides on how to do it.
+
 ### 2. Branching
 
 Every repository has a default branch - which is like a source of truth for the code in it. However if you all work on this branch, 
