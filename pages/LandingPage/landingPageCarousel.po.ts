@@ -89,37 +89,33 @@ export class LandingPageCarousel {
 			`Text number ${nthElement}`);
 	}
 
-	@step('I click on the left arrow button')
 	public async clickArrowLeftButton(softAssert = false): Promise<void> {
 		await this.navigation.clickElement(this.arrowLeftButton(), softAssert, 'Left arrow button');
-		//await this.page.waitForTimeout(500);
 	}
 
-	@step('I click on the right arrow button')
 	public async clickArrowRightButton(softAssert = false): Promise<void> {
 		await this.navigation.clickElement(this.arrowRightButton(), softAssert, 'Right arrow button');
-		//await this.page.waitForTimeout(500);
 	}
 
-	@step('I click on the enter button')
 	public async clickEnterButton(softAssert = false): Promise<void> {
 		await this.navigation.clickElement(this.enterButton(), softAssert, 'Enter button');
 	}
 
-	@step('I click on the receive bonus button')
 	public async clickReceiveBonusButton(softAssert = false): Promise<void> {
 		await this.navigation.clickElement(this.receiveBonusButton(), softAssert, 'Receive bonus button');
 	}
 
-	@step('I click on the dot')
 	public async clickDot(index: number, softAssert = false): Promise<void> {
 		await this.navigation.clickElement(this.dots().nth(index), softAssert, `Carousel Dot Number ${index}`);
 	}
 
 	@stepParam((index) => `I validate the dot at index ${index} has active class`)
-	async validateDotIsActive(index: number): Promise<void> {
-		await expect(this.dots().nth(index),
-			`Dot at index ${index} should have the active class.`).toHaveClass(new RegExp(`${this.dotsActiveClass}`));
+	async validateDotIsActive(index: number, softAssert = false): Promise<void> {
+		await this.navigation.assertAttribute(this.dots().nth(index), "class",
+			softAssert,
+			`Carousel dot ${index}`,
+			new RegExp(this.dotsActiveClass).source
+		);
 	}
 
 	@step('I validate the carousel elements are visible for a guest')

@@ -7,7 +7,7 @@ export class Navigation {
 	constructor(page: Page) {
 		this.page = page;
 	}
-    //TODO: make a method that interacts with the callendar 
+	//TODO: make a method that interacts with the callendar 
 
 	public async isMobileOrDesktop(projectName: string): Promise<boolean> {
 		return false;
@@ -135,25 +135,44 @@ export class Navigation {
 	}
 
 	/**
-	 * Asserts that an element has a specific attribute with the expected value.
+	 * Asserts that an element has a specific attribute with an optional expected value.
+	 * First checks if the element is visible before checking the attribute.
 	 * 
 	 * @param element - The `Locator` for the target element.
 	 * @param attributeType - The attribute name to check (e.g., `aria-label`, `data-test-id`).
-	 * @param attributeText - The expected value of the attribute. Default is .* - which will just check that the attribute exists (non-empty).
-	 * @param softAssert - If true, performs a soft assertion, allowing test execution to continue even if the assertion fails. Default is `false`.
-	 * @param message - Optional custom message to display if the assertion fails.
+	 * @param softAssert - If true, performs a soft assertion. Default is `false`.
+	 * @param elementName - Name of the element for clearer assertion messages.
+	 * @param attributeValue - Optional. The expected value of the attribute.
 	 * 
-	 * @throws Will throw an error if the attribute does not match the expected value (or if element or attribute is not found), unless `softAssert` is true.
+	 * @throws Will throw an error if the element is not visible or doesn't have the attribute,
+	 *         unless `softAssert` is true.
 	 */
-	@stepParam((element: Locator, attributeType: string, softAssert: boolean, message: string) => `I expect ${message} has attribute ${attributeType}`)
+	@stepParam((element: Locator, attributeType: string, softAssert: boolean, elementName: string, attributeValue?: string) =>
+		attributeValue
+			? `I expect ${elementName} has attribute ${attributeType}=${attributeValue}`
+			: `I expect ${elementName} has attribute ${attributeType}`)
 	public async assertAttribute(
 		element: Locator,
 		attributeType: string,
 		softAssert: boolean = false,
+		elementName: string = 'Element',
+		attributeValue?: string
 	): Promise<void> {
-		const message = `Expected element has attribute ${attributeType}`;
+		// First check if the element is visible
+		await this.assertVisible(element, softAssert, elementName);
+
+		// Then check the attribute
+		const message = attributeValue
+			? `Expected ${elementName} to have attribute ${attributeType}=${attributeValue}`
+			: `Expected ${elementName} to have attribute ${attributeType}`;
+
 		const expectation = softAssert ? expect.soft(element, message) : expect(element, message);
-		await expectation.toHaveAttribute(attributeType);
+
+		if (attributeValue) {
+			await expectation.toHaveAttribute(attributeType, attributeValue);
+		} else {
+			await expectation.toHaveAttribute(attributeType);
+		}
 	}
 
 	/**
@@ -360,7 +379,7 @@ export function stepParam(stepName?: string | ((...args: any[]) => string)) {
 			const name = typeof stepName === 'function'
 				? stepName(...args) // Use the args to compute the step name
 				: stepName || `${this.constructor.name}.${context.name as string}`;
-			
+
 			return test.step(name, async () => {
 				return await target.apply(this, args); // Ensure the original method runs in the correct context
 			});
@@ -370,32 +389,32 @@ export function stepParam(stepName?: string | ((...args: any[]) => string)) {
 
 
 async function watchAndRemoveFog(page: any) {
-    await page.addInitScript(() => {
-        const observer = new MutationObserver((mutations) => {
-            for (const mutation of mutations) {
-                for (const node of mutation.addedNodes) {
-                    if (!(node instanceof HTMLElement)) continue;
+	await page.addInitScript(() => {
+		const observer = new MutationObserver((mutations) => {
+			for (const mutation of mutations) {
+				for (const node of mutation.addedNodes) {
+					if (!(node instanceof HTMLElement)) continue;
 
-                    // Check if the added node is the overlay
-                    if (node.matches?.('overlay-fog')) {
-                        console.log('Removing overlay-fog:', node);
-                        node.remove();
-                        continue;
-                    }
+					// Check if the added node is the overlay
+					if (node.matches?.('overlay-fog')) {
+						console.log('Removing overlay-fog:', node);
+						node.remove();
+						continue;
+					}
 
-                    // Or if it contains the overlay
-                    const fog = node.querySelector?.('overlay-fog');
-                    if (fog) {
-                        console.log('Removing overlay-fog (child):', fog);
-                        fog.remove();
-                    }
-                }
-            }
-        });
+					// Or if it contains the overlay
+					const fog = node.querySelector?.('overlay-fog');
+					if (fog) {
+						console.log('Removing overlay-fog (child):', fog);
+						fog.remove();
+					}
+				}
+			}
+		});
 
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true,
-        });
-    });
+		observer.observe(document.body, {
+			childList: true,
+			subtree: true,
+		});
+	});
 }

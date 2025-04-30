@@ -82,7 +82,6 @@ export class GamesCategories {
             `Card ${nthCard} Try for Fun button in category ${nthCategory}`);
     }
 
-    @step('I click on the Try For Fun button')
     public async clickTryForFunButton(nthCategory: number, nthCard: number, softAssert = false): Promise<void> {
         await this.navigation.clickElement(this.tryForFun(nthCategory, nthCard), softAssert,
             `Card ${nthCard} Try for Fun button in category ${nthCategory}`);
