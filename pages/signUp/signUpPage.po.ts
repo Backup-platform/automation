@@ -23,6 +23,7 @@ export class SignUp {
 
     
     //Actions
+    //TODO: add navigation to the method
     @step('I validate successfull registration email sent instructions')
     public async validateRegistrationEmailSent(deviceUsed: String) {
             if (deviceUsed == 'Desktop Chrome') {

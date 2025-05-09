@@ -176,6 +176,28 @@ export class Navigation {
 	}
 
 	/**
+	 * Validates that the specified element has the correct attributes and their values.
+	 * 
+	 * @param locator - The locator of the element to validate.
+	 * @param description - A description of the element for logging purposes.
+	 * @param attributes - An object where keys are attribute types and values are their expected values.
+	 *                     If a value is `null`, only the presence of the attribute is checked.
+	 * @param softAssert - Optional. Whether to use soft assertions (default is `false`).
+	 */
+	@stepParam(description => `I validate ${description} has the correct attributes and values`)
+	public async validateAttributes(
+		locator: Locator,
+		description: string,
+		attributes: Record<string, string | null>,
+		softAssert = false
+	): Promise<void> {
+		for (const [attributeType, attributeValue] of Object.entries(attributes)) {
+			await this.assertAttribute(locator, attributeType, softAssert, description, attributeValue || undefined);
+		}
+	}
+
+	
+	/**
 	 * Clicks on an element after verifying its visibility.
 	 * Performs a soft or strict assertion for visibility based on the `softAssert` parameter.
 	 * @param element - The element to be clicked.
@@ -183,10 +205,10 @@ export class Navigation {
 	 *                     if false, performs a strict assertion (fails test on visibility failure).
 	 * @param description - A description message used in the assertion to clarify which element is expected to be visible.
 	 */
-	@stepParam((element: Locator, softAssert: boolean, description: string) => `I click on ${description}`)
-	public async clickElement(element: Locator, softAssert: boolean, description: string): Promise<void> {
-		await this.assertVisible(element, softAssert, description);
-		await this.assertEnabled(element, softAssert, description);
+	@stepParam((element: Locator, description: string) => `I click on ${description}`)
+	public async clickElement(element: Locator, description: string): Promise<void> {
+		await this.assertVisible(element, false, description);
+		await this.assertEnabled(element, false, description);
 		await element.click();
 	}
 
@@ -210,17 +232,14 @@ export class Navigation {
 
 	/**
 	 * Fills an input field after verifying its visibility and editability.
-	 * Performs a soft or strict assertion for visibility and editability based on the `softAssert` parameter.
 	 * @param element - The input field to be filled.
 	 * @param value - The value to fill into the input field.
-	 * @param softAssert - If true, performs a soft assertion (does not stop test on failure); 
-	 *                     if false, performs a strict assertion (fails test on visibility/editability failure).
 	 * @param description - A description message used in the assertion to clarify which element is expected to be visible and editable.
 	 */
-	@stepParam((element: Locator, softAssert: boolean, description: string, value: string) => `I fill ${description} with ${value}`)
-	public async fillInputField(element: Locator, value: string, softAssert: boolean, description: string): Promise<void> {
-		await this.assertVisible(element, softAssert, description);
-		await this.assertEditable(element, softAssert, description);
+	@stepParam((element: Locator, value: string, description: string) => `I fill **${description}** with **${value}**`)
+	public async fillInputField(element: Locator, value: string, description: string): Promise<void> {
+		await this.assertVisible(element, false, description);
+		await this.assertEditable(element, false, description);
 		await element.fill(value);
 	}
 
@@ -237,6 +256,7 @@ export class Navigation {
 	 * Example:
 	 * `await this.assertUrl('https://example.com/dashboard', false);`
 	 */
+	//TODO: make the method accept page providers
 	public async assertUrl(
 		expectedUrl: string,
 		softAssert: boolean = false,
@@ -344,19 +364,18 @@ export class Navigation {
 	public async clickIfVisibleOrFallback(
 		targetElement: Locator,
 		fallbackAction: () => Promise<void>,
-		softAssert: boolean = false,
 		targetName?: string
 	): Promise<void> {
 		await test.step(`I click on ${targetName}`, async () => {
 			// If the element is visible, click it and return
 			if (await targetElement.isVisible()) {
-				return await this.clickElement(targetElement, softAssert, `${targetName}`);
+				return await this.clickElement(targetElement, `${targetName}`);
 			}
 
 			// Otherwise, fallback using the provided action
 			await fallbackAction();
 			await targetElement.waitFor({ state: 'visible' });
-			await this.clickElement(targetElement, softAssert, `${targetName} after fallback`);
+			await this.clickElement(targetElement, `${targetName} after fallback`);
 		});
 	}
 

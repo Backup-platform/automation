@@ -12,6 +12,7 @@ export class CashierMain {
     }
 
     // Locators
+    readonly modalContainer = () => this.page.locator('div[class*="walletModal_modalContent_"]'); //TODO: add action
     readonly modalBody = () => this.page.locator('div[class*="walletModal_modalBody_"]');
     readonly modalHeading = () => this.page.locator('div[class*="walletModalHeading_userInfo_"]');
     readonly headingTitle = () => this.page.locator('div[class*="walletModalHeading_title_"]');
@@ -24,6 +25,8 @@ export class CashierMain {
     readonly stepsContainerHeading = () => this.page.locator('div[class*="walletModalHeading_stepsContainer_"]'); //TODO: not ready 
 
     // Actions
+    //TODO: this needs steps from the specs
+
     public async validateModalBodyVisible(softAssert = false): Promise<void> {
         await this.navigation.assertVisible(this.modalBody(), softAssert, 'Modal body');
     }
@@ -78,17 +81,17 @@ export class CashierMain {
         await this.validateStepsContainerHeadingVisible(softAssert);
     }
 
-    public async clickDepositHeading(softAssert = false): Promise<void> {
-        await this.navigation.clickElement(this.depositHeading(), softAssert, 'Deposit heading');
+    public async clickDepositHeading(): Promise<void> {
+        await this.navigation.clickElement(this.depositHeading(), 'Deposit heading');
     }
 
-    public async clickWithdrawHeading(softAssert = false): Promise<void> {
-        await this.navigation.clickElement(this.withdrawHeading(), softAssert, 'Withdraw heading');
+    public async clickWithdrawHeading(): Promise<void> {
+        await this.navigation.clickElement(this.withdrawHeading(), 'Withdraw heading');
     }
 
     @step('I click a wallet tab')
-    public async clickWalletTab(tabIndex: number, softAssert = false): Promise<void> {
+    public async clickWalletTab(tabIndex: number): Promise<void> {
         const walletTab = this.walletTabs().locator(`div:nth-child(${tabIndex})`);
-        await this.navigation.clickElement(walletTab, softAssert, `Wallet tab ${tabIndex}`);
+        await this.navigation.clickElement(walletTab, `Wallet tab ${tabIndex}`);
     }
 }

@@ -4,6 +4,7 @@ import { Navigation, step, stepParam } from './utils/navigation.po';
 import { HeaderMenuDesktop } from './headerMenuDesktop.po';
 import { BottomMenu } from './mobileMenu/bottomMenu.po';
 
+
 export class LoginPage {
     readonly page: Page;
     readonly navigation: Navigation;
@@ -27,6 +28,26 @@ export class LoginPage {
     readonly inputError = () => this.page.locator('#input-error');
 
     // Actions
+
+    public fillUsername = async (username: string) =>
+        await this.navigation.fillInputField(this.usernameField(), username, 'Username field');
+
+    public fillPassword = async (password: string) => 
+        await this.navigation.fillInputField(this.passwordField(), password, 'Password field');
+
+    public clickLoginButton = async () => await this.navigation.clickElement(this.loginButton(), 'Login Button');
+
+    public clickBackButton = async () => await this.navigation.clickElement(this.backButton(), 'Back Button');
+
+    public clickResetPasswordLink = async () => 
+        await this.navigation.clickElement(this.resetPasswordLink(), 'Reset Password link');
+
+    public validateInputErrorVisible = async (softAssert = false) =>
+        await this.navigation.assertVisible(this.inputError(), softAssert, 'Input error');
+
+
+    //TODO: move to locators
+    //TODO: complete refactor of the class
     private async validateElements(
         elements: { locator: Locator; shouldBeVisible: boolean; description: string }[],
         softAssert: boolean
@@ -40,32 +61,6 @@ export class LoginPage {
         }
     }
 
-    @step('I fill in the username')
-    public async fillUsername(username: string, softAssert = false): Promise<void> {
-        await this.navigation.fillInputField(this.usernameField(), username, softAssert, 'Username field');
-    }
-
-    @step('I fill in the password')
-    public async fillPassword(password: string, softAssert = false): Promise<void> {
-        await this.navigation.fillInputField(this.passwordField(), password, softAssert, 'Password field');
-    }
-
-    @step('I click on the login button')
-    public async clickLoginButton(softAssert = false): Promise<void> {
-        await this.navigation.clickElement(this.loginButton(), softAssert, 'Login Button');
-    }
-
-    @step('I click on the back button')
-    public async clickBackButton(softAssert = false): Promise<void> {
-        await this.navigation.clickElement(this.backButton(), softAssert, 'Back Button');
-    }
-
-    @step('I click on the reset password link')
-    public async clickResetPasswordLink(softAssert = false): Promise<void> {
-        await this.navigation.clickElement(this.resetPasswordLink(), softAssert, 'Reset Password link');
-    }
-
-    // Validations
     @step('I validate the login window elements are visible')
     public async validateLoginWindowElementsVisible(softAssert = false): Promise<void> {
         const elements = [
@@ -80,16 +75,11 @@ export class LoginPage {
         await this.validateElements(elements, softAssert);
     }
 
-    @step('I validate an input error is visible')
-    public async validateInputErrorVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.inputError(), softAssert, 'Input error');
-    }
-
     @stepParam((username, password) => `I log in using username: ${username} and password: ${password}`)
     public async actionLogin(username: string, password: string, softAssert = false): Promise<void> {
-        await this.fillUsername(username, softAssert);
-        await this.fillPassword(password, softAssert);
-        await this.clickLoginButton(softAssert);
+        await this.fillUsername(username);
+        await this.fillPassword(password);
+        await this.clickLoginButton();
     }
 
     @step('I validate desktop login state')

@@ -30,6 +30,8 @@ export class Promotions {
 	private readonly registerModal = () => this.page.locator('#register-modal');
 
 	//Action
+
+	//TODO: add navigation methods
 	public async clickReadMoreButton(cardNumber: string, readMoreURL: string) {
 		await test.step(`I click the read more button`, async () => {
 			await this.validateReadMoreVisible(cardNumber);

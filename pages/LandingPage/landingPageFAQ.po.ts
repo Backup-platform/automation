@@ -41,8 +41,8 @@ export class LandingPageFAQ {
         await this._validateElementVisible(this.faqReadMoreSectionAt(index), `FAQ "Read More" number ${index}`, softAssert);
     }
 
-    public async clickFaqDropdown(index: number, softAssert = false): Promise<void> {
-        await this.navigation.clickElement(this.faqDropdownAt(index), softAssert, `FAQ dropdown number ${index}`);
+    public async clickFaqDropdown(index: number): Promise<void> {
+        await this.navigation.clickElement(this.faqDropdownAt(index), `FAQ dropdown number ${index}`);
     }
 
     @step('I validate FAQ elements are visible')
@@ -58,7 +58,7 @@ export class LandingPageFAQ {
             await test.step(`I validate dropdown #${i} and read more section`, async () => {
                 await this.validateFaqDropdownVisible(i, softAssert);
                 //TODO: it is shown await expect(await this.faqReadMoreSections().nth(i), 'Initial more info window is not visible').not.toBeVisible()
-                await this.clickFaqDropdown(i, softAssert);
+                await this.clickFaqDropdown(i);
                 await this.validateFaqReadMoreSectionVisible(i, softAssert);
             });
         }

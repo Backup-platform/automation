@@ -2,7 +2,7 @@ import { test as base, Page } from '@playwright/test';
 import { LoginPage } from '../loginPage.po';
 import { LandingPage } from '../LandingPage/landingPage.po';
 import { HeaderMenuDesktop } from '../headerMenuDesktop.po';
-import { FooterMenuMobile } from '../footerMenuMobile.po';
+import { FooterMenuMobile } from '../mobileMenu/footerMenuMobile.po';
 import { GameProviders } from '../gameProviders.po';
 import { Banner } from '../banner.po';
 import { Promotions } from '../promotions.po';

@@ -24,6 +24,8 @@ export class BurgerMenu {
         this.signUpFirstStep = new SignUpFirstStep(page);
     }
 
+    //Locators 
+    // TODO: make images etc separate locators so the method actions are reusable
     readonly shortcutButton = () => this.page.locator('#shortcut-btn-shortcut');
     readonly search = () => this.page.locator('input[type="search"]');
     readonly escape = () => this.page.locator('.w-\[2rem\]');
@@ -46,10 +48,11 @@ export class BurgerMenu {
     readonly searchModalClose = () => this.page.locator('div[class*="searchModalV3_closeButton_"]');
 
  
+    //TODO: 
     // General helper to click an element, falling back to open the burger menu if necessary
     @stepParam((locator: Locator, softAssert = false, name?: string) => `I click the ${name} button`)
     private async clickNavigation(locator: Locator, softAssert = false, name: string): Promise<void> {
-        await this.navigation.clickIfVisibleOrFallback(locator, async () => await this.openBurgerMenu(), softAssert, name);
+        await this.navigation.clickIfVisibleOrFallback(locator, async () => await this.openBurgerMenu(), name);
     }
 
     @step('I open the burger menu')
@@ -63,6 +66,7 @@ export class BurgerMenu {
         await this.navigation.assertVisible(this.menuWindow(), softAssert, 'Menu window');
     }
 
+    @step('I validate the shortcut button is visible')
     public async validateShortcutButtonVisible(softAssert = false): Promise<void> {
         await this.navigation.assertVisible(this.shortcutButton(), softAssert, 'Shortcut Button');
         await this.navigation.assertVisible(this.shortcutButton().locator(this.buttonImage()), 
@@ -73,31 +77,39 @@ export class BurgerMenu {
         await this.navigation.assertVisible(this.search(), softAssert, 'Search Button');
     }
 
-    @step('I validate the home button is visible')
-        public async validateHomeButtonVisible(softAssert = false): Promise<void> {
+    public async validateHomeButtonVisible(softAssert = false): Promise<void> {
         await this.navigation.assertVisible(this.home(), softAssert, 'Home Button');
-        await this.navigation.assertVisible(this.home().locator(this.buttonImage()),
-            softAssert, 'Home Button image');
-        await this.navigation.assertAttribute(this.home().locator(this.buttonImage()), 'srcset');
-        await this.navigation.assertAttribute(this.home().locator(this.buttonImage()), 'src');
     }
 
-    @step('I validate the games button is visible')
+    public async validateHomeButtonImageVisible(softAssert = false): Promise<void> {
+        await this.navigation.validateAttributes(this.home().locator(this.buttonImage()), 'Home Button image', {srcset: null, src: null});
+    }
+
+    @step('I validate the home button, its image and atributes are visible')
+    public async validateHomeButtonImageAndAttributesVisible(softAssert = false): Promise<void> {
+        await this.validateHomeButtonVisible(softAssert);
+        await this.validateHomeButtonImageVisible(softAssert);
+    }
+
+
     public async validateGamesButtonVisible(softAssert = false): Promise<void> {
         await this.navigation.assertVisible(this.games(), softAssert, 'Games Button');
-        await this.navigation.assertVisible(this.games().locator(this.buttonImage()), 
-            softAssert, 'Games Button image');
-        await this.navigation.assertAttribute(this.games().locator(this.buttonImage()), 'srcset');
-        await this.navigation.assertAttribute(this.games().locator(this.buttonImage()), 'src');
+    }
+
+    public async validateGamesButtonImageVisible(softAssert = false): Promise<void> {
+        await this.navigation.validateAttributes(this.games().locator(this.buttonImage()), 'Games Button image', {srcset: null, src: null}, softAssert);
+    }
+
+    @step('I validate the games button, its image and atributes are visible')
+    public async validateGamesButtonImageAndAttributesVisible(softAssert = false): Promise<void> {
+        await this.validateGamesButtonVisible(softAssert);
+        await this.validateGamesButtonImageVisible(softAssert);
     }
 
     @step('I validate the live casino button is visible')
     public async validateLiveCasinoButtonVisible(softAssert = false): Promise<void> {
         await this.navigation.assertVisible(this.liveCasino(), softAssert, 'Live Casino Button');
-        await this.navigation.assertVisible(this.liveCasino().locator(this.buttonImage()), 
-            softAssert, 'Live Casino Button image');
-        await this.navigation.assertAttribute(this.liveCasino().locator(this.buttonImage()), 'srcset');
-        await this.navigation.assertAttribute(this.liveCasino().locator(this.buttonImage()), 'src');
+        await this.navigation.validateAttributes(this.liveCasino().locator(this.buttonImage()), 'Live Button image', {srcset: null, src: null});
     }
 
     @step('I validate the promotions button is visible')
@@ -175,6 +187,7 @@ export class BurgerMenu {
     }
 
 
+    @step('I click on the search button')
     public async clickSearchField(softAssert = false): Promise<void> {
         await this.clickNavigation(this.search(), softAssert, 'Search Button');
         await this.navigation.assertVisible(this.searchModal(), softAssert, 'Search Modal');
@@ -216,22 +229,25 @@ export class BurgerMenu {
         await this.navigation.assertUrl(`${process.env.URL}loyalty`, softAssert);
     }
 
+    @step('I click on the my bonuses button')
     public async clickLoginButton(softAssert = false): Promise<void> {
         await this.clickNavigation(this.login(), softAssert, 'Login Button');
         await this.loginPage.validateLoginWindowElementsVisible(softAssert);
         await this.loginPage.clickBackButton();
     }
 
+    @step('I click on the register button')
     public async clickRegisterButton(softAssert = false): Promise<void> {
         await this.clickNavigation(this.register(), softAssert, 'Register Button');
         await this.signUpFirstStep.validatePageElements();
         await this.signupPage.successEscapeButton().click();
     }
 
+    //TODO: this needs to be a locator
     public async clickSupportButton(softAssert = false): Promise<void> {
         await this.clickNavigation(this.support(), softAssert, 'Support Button');
         await this.navigation.assertVisible(this.page.locator('div[data-embed*="chat"]'), softAssert, 'Support Page');
-        await this.navigation.clickElement(this.page.locator('button[aria-label*="Minimize widget"]'), softAssert, 'Support Page');
+        await this.navigation.clickElement(this.page.locator('button[aria-label*="Minimize widget"]'), 'Support Page');
     }
 
     public async clickLogoutButton(softAssert = false): Promise<void> {
@@ -239,10 +255,11 @@ export class BurgerMenu {
         await this.loginPage.validateMobileLoginState(false);
     }
 
+    //TODO: needs locator
     public async clickDepositButton(softAssert = false): Promise<void> {
         await this.clickNavigation(this.deposit(), softAssert, 'Deposit Button');
         await expect(this.page.locator('div[class*="walletModal_modalContent_"]'), 'Expect walet modal to be visible').toBeVisible();
-        await this.navigation.clickElement(this.page.locator('div[class*="walletModal_closeBtn_"]'), false, 'Close Button') //TODO: 
+        await this.navigation.clickElement(this.page.locator('div[class*="walletModal_closeBtn_"]'), 'Close Button') //TODO: 
     }
 
 

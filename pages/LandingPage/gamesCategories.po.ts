@@ -82,20 +82,19 @@ export class GamesCategories {
             `Card ${nthCard} Try for Fun button in category ${nthCategory}`);
     }
 
-    public async clickTryForFunButton(nthCategory: number, nthCard: number, softAssert = false): Promise<void> {
-        await this.navigation.clickElement(this.tryForFun(nthCategory, nthCard), softAssert,
+    public async clickTryForFunButton(nthCategory: number, nthCard: number): Promise<void> {
+        await this.navigation.clickElement(this.tryForFun(nthCategory, nthCard),
             `Card ${nthCard} Try for Fun button in category ${nthCategory}`);
     }
 
-    @step('I click on the Play Now button')
-    public async clickPlayNowButton(nthCategory: number, nthCard: number, softAssert = false): Promise<void> {
-        await this.navigation.clickElement(this.playNow(nthCategory, nthCard), softAssert,
+    public async clickPlayNowButton(nthCategory: number, nthCard: number): Promise<void> {
+        await this.navigation.clickElement(this.playNow(nthCategory, nthCard),
             `Card ${nthCard} Play Now button in category ${nthCategory}`);
     }
 
     @step('I click on Show All button and validate navigation')
-    public async clickShowAll(nthElement: number, newURL: string, softAssert = false): Promise<void> {
-        await this.navigation.clickElement(this.showAllButtons().nth(nthElement), softAssert,
+    public async clickShowAll(nthElement: number, newURL: string): Promise<void> {
+        await this.navigation.clickElement(this.showAllButtons().nth(nthElement),
             `Show All menu button in category ${nthElement}`);
         const URL = `${process.env.URL}${newURL}`
         await this.page.waitForURL(URL, { waitUntil: "domcontentloaded" });
@@ -105,7 +104,7 @@ export class GamesCategories {
     @step('I validate the CTA buttons for members')
     public async validateCTAbuttonsForMembers(nthCategory: number, nthCard: number, isMobile: boolean, softAssert = false): Promise<void> {
         await this.validateTryForFunNotVisible(nthCategory, nthCard, softAssert);
-        await this.clickPlayNowButton(nthCategory, nthCard, softAssert);
+        await this.clickPlayNowButton(nthCategory, nthCard);
         //TODO: need a more specific validation
         await this.page.waitForURL('**/https://stage.spacefortuna7.com/play/**', { waitUntil: "domcontentloaded" });
         await this.navigation.assertUrlContains(['spacefortuna7.com/play'], softAssert);
@@ -113,10 +112,10 @@ export class GamesCategories {
 
     @step('I validate the CTA buttons for guests')
     public async validateCTAbuttonsForGuests(nthCategory: number, nthCard: number, isMobile: boolean, softAssert = false): Promise<void> {
-        await this.clickPlayNowButton(nthCategory, nthCard, softAssert);
+        await this.clickPlayNowButton(nthCategory, nthCard);
         await this.navigation.assertVisible(this.page.locator('#login-modal'), softAssert, 'Login modal');
-        await this.navigation.clickElement(this.page.locator('#login-modal-close-btn'), softAssert, 'Close button');
-        await this.clickTryForFunButton(nthCategory, nthCard, softAssert);
+        await this.navigation.clickElement(this.page.locator('#login-modal-close-btn'), 'Close button');
+        await this.clickTryForFunButton(nthCategory, nthCard);
         //TODO: need a more specific validation
         await this.page.waitForURL('**/https://stage.spacefortuna7.com/play/**', { waitUntil: "domcontentloaded" });
         await this.navigation.assertUrlContains(['spacefortuna7.com/play'], softAssert);

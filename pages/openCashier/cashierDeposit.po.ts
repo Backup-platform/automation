@@ -47,6 +47,7 @@ export class CashierDeposit {
 
 
     //TODO: details section
+    //TODO: needs steps from the specs
 
 
     // Actions
@@ -54,20 +55,20 @@ export class CashierDeposit {
         await this.navigation.assertVisible(this.backButton(), softAssert, 'Back button');
     }
 
-    public async clickBackButton(softAssert = false): Promise<void> {
-        await this.navigation.clickElement(this.backButton(), softAssert, 'Back button');
+    public async clickBackButton(): Promise<void> {
+        await this.navigation.clickElement(this.backButton(), 'Back button');
     }
 
     public async validateDepoitWithoutBonusVisible(softAssert = false): Promise<void> {
         await this.navigation.assertVisible(this.depositWithoutBonus(), softAssert, 'Deposit without bonus button');
     }
 
-    public async clickDepositWithoutBonus(softAssert = false): Promise<void> {
-        await this.navigation.clickElement(this.depositWithoutBonus(), softAssert, 'Deposit without bonus button');
+    public async clickDepositWithoutBonus(): Promise<void> {
+        await this.navigation.clickElement(this.depositWithoutBonus(), 'Deposit without bonus button');
     }
 
-    public async selectPaymentCard(nthCard: number, softAssert = false): Promise<void> {
-        await this.navigation.clickElement(this.paymentSingleCard(nthCard), softAssert, `Payment card ${nthCard}`);
+    public async selectPaymentCard(nthCard: number): Promise<void> {
+        await this.navigation.clickElement(this.paymentSingleCard(nthCard), `Payment card ${nthCard}`);
     }
 
     public async validatePaymentMethodsHeadingVisible(softAssert = false): Promise<void> {
@@ -122,16 +123,16 @@ export class CashierDeposit {
         await this.navigation.assertVisible(this.paymentContinueButton(), softAssert, 'Continue button');
     }
 
-    public async clickPaymentContinueButton(softAssert = false): Promise<void> {
-        await this.navigation.clickElement(this.paymentContinueButton(), softAssert, 'Continue button');
+    public async clickPaymentContinueButton(): Promise<void> {
+        await this.navigation.clickElement(this.paymentContinueButton(), 'Continue button');
     }
 
     public async validateDetailsPIQSectionVisible(softAssert = false): Promise<void> {
         await this.navigation.assertVisible(this.depositPIQSection(), softAssert, 'Details PIQ section');
     }
 
-    public async clickHomeButton(softAssert = false): Promise<void> {
-        await this.navigation.clickElement(this.homeButton(), softAssert, 'Home button');
+    public async clickHomeButton(): Promise<void> {
+        await this.navigation.clickElement(this.homeButton(), 'Home button');
     }
 
     public async validateHomeButtonVisible(softAssert = false): Promise<void> {

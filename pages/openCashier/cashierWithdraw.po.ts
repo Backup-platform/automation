@@ -13,6 +13,9 @@ export class CashierWithdraw {
     }
 
     // Locators
+    //TODO: this needs steps from the specs
+
+
     readonly stepsContainer = () => this.page.locator('div[class*="walletModalHeading_withdrawalSteps_"]');
     readonly paymentDesktopStep = () => this.page.locator('#wallet-modal-payment-details-step-desktop');
     readonly summaryDesktopStep = () => this.page.locator('#wallet-modal-withdraw-summary-step-desktop');
@@ -102,20 +105,20 @@ export class CashierWithdraw {
     }
 
     // Actions for Interactions
-    public async clickContinueButton(softAssert = false): Promise<void> {
-        await this.navigation.clickElement(this.continueButton(), softAssert, 'Continue button');
+    public async clickContinueButton(): Promise<void> {
+        await this.navigation.clickElement(this.continueButton(), 'Continue button');
     }
 
-    public async clickHomeButton(softAssert = false): Promise<void> {
-        await this.navigation.clickElement(this.homeButton(), softAssert, 'Home button');
+    public async clickHomeButton(): Promise<void> {
+        await this.navigation.clickElement(this.homeButton(), 'Home button');
     }
 
-public async clickBackButton(softAssert = false): Promise<void> {
-        await this.navigation.clickElement(this.backButton(), softAssert, 'Back button');
+    public async clickBackButton(): Promise<void> {
+        await this.navigation.clickElement(this.backButton(), 'Back button');
     }
 
-    public async selectPaymentCard(nthCard: number, softAssert = false): Promise<void> {
-        await this.navigation.clickElement(this.paymentSingleCard(nthCard), softAssert, `Payment card ${nthCard}`);
+    public async selectPaymentCard(nthCard: number): Promise<void> {
+        await this.navigation.clickElement(this.paymentSingleCard(nthCard), `Payment card ${nthCard}`);
     }
 
     @step('I validate payment step elements are visible (mobile)')

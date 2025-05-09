@@ -15,6 +15,7 @@ export class PromotionsLandingPage {
     readonly sectionTitle = () => this.page.locator('span[class*="_homePagePromotionsTitle_"]');
     readonly showAllButton = () => this.page.locator('#promotions-view-all-btn');
     readonly cards = () => this.page.locator('div[class*="_promotionCard_"]');
+    readonly card = (nthCard: number) => this.cards().nth(nthCard);
     readonly background = (nthCard: number) => this.cards().nth(nthCard).locator('img[class*="_promotionCardBackgroundImg_"]');
     readonly foreground = (nthCard: number) => this.cards().nth(nthCard).locator('img[class*="_promotionCardForegroundImg_"]');
     readonly title = (nthCard: number) => this.cards().nth(nthCard).locator('div[class*="_promotionCardTitle_"]');
@@ -25,21 +26,10 @@ export class PromotionsLandingPage {
 
 
     //Actions
-    @stepParam(description => `I validate ${description} has the correct attributes`)
-    private async validateAttributes(
-        locator: Locator,
-        description: string,
-        attributes: string[],
-        softAssert = false
-    ): Promise<void> {
-        await this.navigation.assertVisible(locator, softAssert, description);
-        for (const attribute of attributes) {
-            await this.navigation.assertAttribute(locator, attribute, softAssert);
-        }
-    }
 
-    public async clickShowAll(newURL: string, softAssert = false): Promise<void> {
-        await this.navigation.clickElement(this.showAllButton(), softAssert, 'Show All button');
+    @step('I click on the Show All button')
+    public async clickShowAll(newURL: string): Promise<void> {
+        await this.navigation.clickElement(this.showAllButton(), 'Show All button');
         const URL = `${process.env.URL}${newURL}`
         await this.page.waitForURL(URL, { waitUntil: "domcontentloaded" });
         await this.navigation.assertUrl(URL);
@@ -60,18 +50,17 @@ export class PromotionsLandingPage {
     }
 
     public async validateCardVisible(nthElement: number, softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.cards().nth(nthElement), softAssert,
-            `Promotion card ${nthElement}`);
+        await this.navigation.assertVisible(this.card(nthElement), softAssert,`Promotion card ${nthElement}`);
     }
 
     public async validateCardBackgroundVisible(nthElement: number, softAssert = false): Promise<void> {
-        await this.validateAttributes(this.background(nthElement), 
-            `Background image of promotion card ${nthElement}`, ['srcset', 'src']);
+        await this.navigation.validateAttributes(this.background(nthElement), 
+            `Background image of promotion card ${nthElement}`, { srcset: null, src: null });
     }
 
     public async validateCardForegroundVisible(nthElement: number, softAssert = false): Promise<void> {
-        await this.validateAttributes(this.foreground(nthElement), 
-            `Foreground image of promotion card ${nthElement}`, ['srcset', 'src']);
+        await this.navigation.validateAttributes(this.foreground(nthElement), 
+            `Foreground image of promotion card ${nthElement}`, { srcset: null, src: null });
     }
 
     public async validateCardTitleVisible(nthElement: number, softAssert = false): Promise<void> {
@@ -95,37 +84,40 @@ export class PromotionsLandingPage {
     }
 
     public async validateCardSecondaryButtonVisible(nthElement: number, softAssert = false): Promise<void> {
-        await this.validateAttributes(this.secondaryButton(nthElement),
-         `Secondary button of promotion card ${nthElement}`, ['href']);
+        await this.navigation.validateAttributes(this.secondaryButton(nthElement),
+         `Secondary button of promotion card ${nthElement}`, { href: null });
     }
 
-    public async clickCardPrimaryButton(nthElement: number, softAssert = false): Promise<void> {
-        await this.navigation.clickElement(this.primaryButton(nthElement), softAssert,
+    public async clickCardPrimaryButton(nthElement: number): Promise<void> {
+        await this.navigation.clickElement(this.primaryButton(nthElement),
             `Primary button of promotion card number ${nthElement.toString()}`);
     }
 
-    public async clickCardSecondaryButton(nthElement: number, URL: string, softAssert = false): Promise<void> {
-        await this.navigation.clickElement(this.secondaryButton(nthElement), softAssert,
+    @step('Click on the card secondary button')
+    public async clickCardSecondaryButton(nthElement: number, URL: string): Promise<void> {
+        await this.navigation.clickElement(this.secondaryButton(nthElement),
             `Secondary button of promotion card number ${nthElement}`);
         await this.page.waitForURL(`**${URL}/**`, { waitUntil: 'domcontentloaded' });
         await this.navigation.assertUrlContains([`${URL}`]);
     }
 
+    //TODO: need to move locators 
     @step('I validate the CTA buttons for members')
     public async validateCTAbuttonsForMembers(nthCard: number, softAssert = false): Promise<void> {
-        await this.clickCardPrimaryButton(nthCard, softAssert);
+        await this.clickCardPrimaryButton(nthCard);
         await this.navigation.assertVisible(this.page.locator('div[class*="walletModal_modalDialog_"]'), softAssert, 'Wallet modal');
-        await this.navigation.clickElement(this.page.locator('div[class*="walletModal_closeBtn_"]'), softAssert, 'Close button');
-        await this.clickCardSecondaryButton(nthCard, '/promotions', softAssert);
+        await this.navigation.clickElement(this.page.locator('div[class*="walletModal_closeBtn_"]'), 'Close button');
+        await this.clickCardSecondaryButton(nthCard, '/promotions');
     }
 
+    //TODO: need to move locators
     @step('I validate the CTA buttons for guests')
     public async validateCTAbuttonsForGuests(nthCard: number, softAssert = false): Promise<void> {
-        await this.clickCardPrimaryButton(nthCard, softAssert);
+        await this.clickCardPrimaryButton(nthCard);
         await this.navigation.assertVisible(this.page.locator('div[class*="registrationModal_modalDialog_"]'), softAssert, 'Registration modal');
         await this.navigation.clickElement(this.page.locator('#registration-modal-close-btn').or(
-            this.page.locator('#register-modal-close-btn')), softAssert, 'Close button');
-        await this.clickCardSecondaryButton(nthCard, '/promotions', softAssert);
+            this.page.locator('#register-modal-close-btn')), 'Close button');
+        await this.clickCardSecondaryButton(nthCard, '/promotions');
     }
 
     @step('I validate the promotion card elements')

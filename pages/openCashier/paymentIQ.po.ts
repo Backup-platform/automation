@@ -82,48 +82,50 @@ export class PaymentIQ {
 
 
     // Actions for Modal Visibility
-    public async clickPredefinedAmount(nthAmount: number, softAssert = false): Promise<void> {
-        await this.navigation.clickElement(this.singlePredefinedAmountButton(nthAmount), softAssert, `Predefined amount button ${nthAmount}`);
+    //TODO: this needs steps from the specs
+
+    public async clickPredefinedAmount(nthAmount: number): Promise<void> {
+        await this.navigation.clickElement(this.singlePredefinedAmountButton(nthAmount), `Predefined amount button ${nthAmount}`);
     }
 
     public async validatePredefinedAmountsContainerVisible(softAssert = false): Promise<void> {
         await this.navigation.assertVisible(this.predefinedAmountsContainer(), softAssert, 'Predefined amounts container');
     }
 
-    public async fillAmount(amount: string, softAssert = false): Promise<void> {
-        await this.navigation.fillInputField(this.amountInput(), amount, softAssert, 'Amount input field');
+    public async fillAmount(amount: string): Promise<void> {
+        await this.navigation.fillInputField(this.amountInput(), amount, 'Amount input field');
     }
 
-    public async clickSetAmount(softAssert = false): Promise<void> {
-        await this.navigation.clickElement(this.setAmmountButton(), softAssert, 'Set amount button');
+    public async clickSetAmount(): Promise<void> {
+        await this.navigation.clickElement(this.setAmmountButton(), 'Set amount button');
     }
 
-    public async fillCardNumber(cardNumber: string, softAssert = false): Promise<void> {
-        await this.navigation.fillInputField(this.cardNumber(), cardNumber, softAssert, 'Card number input');
+    public async fillCardNumber(cardNumber: string): Promise<void> {
+        await this.navigation.fillInputField(this.cardNumber(), cardNumber, 'Card number input');
     }
 
-    public async fillCardName(softAssert = false): Promise<void> {
-        await this.navigation.fillInputField(this.cardName(), 'Test User', softAssert, 'Card name input');
+    public async fillCardName(): Promise<void> {
+        await this.navigation.fillInputField(this.cardName(), 'Test User', 'Card name input');
     }
 
-    public async fillExpirationDate(expirationDate: string, softAssert = false): Promise<void> {
-        await this.navigation.fillInputField(this.expirationDate(), expirationDate, softAssert, 'Expiration date input');
+    public async fillExpirationDate(expirationDate: string): Promise<void> {
+        await this.navigation.fillInputField(this.expirationDate(), expirationDate, 'Expiration date input');
     }
 
-    public async fillCVV(cvv: string, softAssert = false): Promise<void> {
-        await this.navigation.fillInputField(this.cvv(), cvv, softAssert, 'CVV input');
+    public async fillCVV(cvv: string): Promise<void> {
+        await this.navigation.fillInputField(this.cvv(), cvv, 'CVV input');
     }
 
-    public async clickPredefinedAmountButton(nthCard: number, softAssert = false): Promise<void> {
-        await this.navigation.clickElement(this.singlePredefinedAmountButton(nthCard), softAssert, `Predefined amount button ${nthCard}`);
+    public async clickPredefinedAmountButton(nthCard: number): Promise<void> {
+        await this.navigation.clickElement(this.singlePredefinedAmountButton(nthCard), `Predefined amount button ${nthCard}`);
     }
 
-    public async fillAmountInput(amount: string, softAssert = false): Promise<void> {
-        await this.navigation.fillInputField(this.amountInput(), amount, softAssert, 'Amount input field');
+    public async fillAmountInput(amount: string): Promise<void> {
+        await this.navigation.fillInputField(this.amountInput(), amount, 'Amount input field');
     }
 
-    public async clickSetAmountButton(softAssert = false): Promise<void> {
-        await this.navigation.clickElement(this.setAmmountButton(), softAssert, 'Set amount button');
+    public async clickSetAmountButton(): Promise<void> {
+        await this.navigation.clickElement(this.setAmmountButton(), 'Set amount button');
     }
 
     public async validatePredefinedAmountVisible(nthCard: number, softAssert = false): Promise<void> {
@@ -148,11 +150,11 @@ export class PaymentIQ {
 
     @step('I fill the card details')
     public async fillCardDetails(moneyAmount: string, cardNumber: string, expirationDate: string, cvv: string, softAssert = false): Promise<void> {
-        await this.fillAmountInput(moneyAmount, softAssert);
-        await this.fillCardNumber(cardNumber, softAssert);
-        await this.fillCardName(softAssert);
-        await this.fillExpirationDate(expirationDate, softAssert);
-        await this.fillCVV(cvv, softAssert);
+        await this.fillAmountInput(moneyAmount);
+        await this.fillCardNumber(cardNumber);
+        await this.fillCardName();
+        await this.fillExpirationDate(expirationDate);
+        await this.fillCVV(cvv);
     }
 
     @step('I validate that card details fields are visible')
@@ -165,8 +167,8 @@ export class PaymentIQ {
     @step('I delete the account if the select card dropdown is visible')
     public async deleteAccountIfDropdownVisible(softAssert = false): Promise<void> {
         await this.page.addLocatorHandler(this.deleteAccountButton(), async () => {
-            await this.navigation.clickElement(this.deleteAccountButton(), softAssert, 'Delete account button');
-            await this.navigation.clickElement(this.vueDeleteButton(), softAssert, 'Vue delete button');
+            await this.navigation.clickElement(this.deleteAccountButton(), 'Delete account button');
+            await this.navigation.clickElement(this.vueDeleteButton(), 'Vue delete button');
         });
     }
 

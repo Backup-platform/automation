@@ -64,8 +64,6 @@ export class LandingPageCarousel {
 		await this.navigation.assertVisible(this.enterButton(), softAssert, 'Enter button');
 	}
 
-	//TODO: this is not exactly a visibility method this tracks the href link
-
 	public async validateEnterButtonLinkVisible(softAssert = false): Promise<void> {
 		await this.navigation.assertVisible(this.userReceiveBonusLink(), softAssert, 'Enter button link');
 	}
@@ -89,24 +87,24 @@ export class LandingPageCarousel {
 			`Text number ${nthElement}`);
 	}
 
-	public async clickArrowLeftButton(softAssert = false): Promise<void> {
-		await this.navigation.clickElement(this.arrowLeftButton(), softAssert, 'Left arrow button');
+	public async clickArrowLeftButton(): Promise<void> {
+		await this.navigation.clickElement(this.arrowLeftButton(), 'Left arrow button');
 	}
 
-	public async clickArrowRightButton(softAssert = false): Promise<void> {
-		await this.navigation.clickElement(this.arrowRightButton(), softAssert, 'Right arrow button');
+	public async clickArrowRightButton(): Promise<void> {
+		await this.navigation.clickElement(this.arrowRightButton(), 'Right arrow button');
 	}
 
-	public async clickEnterButton(softAssert = false): Promise<void> {
-		await this.navigation.clickElement(this.enterButton(), softAssert, 'Enter button');
+	public async clickEnterButton(): Promise<void> {
+		await this.navigation.clickElement(this.enterButton(), 'Enter button');
 	}
 
-	public async clickReceiveBonusButton(softAssert = false): Promise<void> {
-		await this.navigation.clickElement(this.receiveBonusButton(), softAssert, 'Receive bonus button');
+	public async clickReceiveBonusButton(): Promise<void> {
+		await this.navigation.clickElement(this.receiveBonusButton(), 'Receive bonus button');
 	}
 
-	public async clickDot(index: number, softAssert = false): Promise<void> {
-		await this.navigation.clickElement(this.dots().nth(index), softAssert, `Carousel Dot Number ${index}`);
+	public async clickDot(index: number): Promise<void> {
+		await this.navigation.clickElement(this.dots().nth(index), `Carousel Dot Number ${index}`);
 	}
 
 	@stepParam((index) => `I validate the dot at index ${index} has active class`)
@@ -138,6 +136,7 @@ export class LandingPageCarousel {
 		await this.validateReceiveBonusButtonVisible(true);
 	}
 
+	//TODO: not used might be reused in navigation
 	async getActiveDotIndex(): Promise<number> {
 		const activeIndices = await this.navigation.getIndicesByAttribute(this.dots(), 'class', this.dotsActiveClass);
 		expect(activeIndices.length,
@@ -179,14 +178,14 @@ export class LandingPageCarousel {
 
 	@step('I validate carousel get bonus navigation for a member')
 	public async validateGetBonusNavigation(softAssert = false): Promise<void> {
-		await this.clickDot(0, softAssert);
-		await this.clickReceiveBonusButton(softAssert);
+		await this.clickDot(0);
+		await this.clickReceiveBonusButton();
 		await this.navigation.assertUrl(`${process.env.URL}promotions`);
 	}
 
 	@step('I validate carousel enter navigation for a guest')
 	public async validateEnterNavigation(softAssert = false): Promise<void> {
-		await this.clickDot(0, softAssert);
-		await this.clickEnterButton(softAssert);
+		await this.clickDot(0);
+		await this.clickEnterButton();
 	}
 }

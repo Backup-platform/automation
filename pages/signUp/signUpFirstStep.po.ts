@@ -26,39 +26,32 @@ export class SignUpFirstStep {
     public readonly passwordError = () => this.page.locator('label[class*="field_error"][for*="password"]');
     private readonly passwordStrength = () => this.page.locator('progress[class*="passwordMeter_password_strength_meter_progress"]');
 
-    public async validateEmailVisible(softAssert = false): Promise<void> {
+    public validateEmailVisible = async (softAssert = false) =>
         await this.navigation.assertVisible(this.email(), softAssert, 'Email field');
-    }
 
-    public async fillEmail(userEmail: string) {
-        await this.navigation.fillInputField(this.email(), userEmail, false, 'Email field');
-    }
+    public fillEmail = async (userEmail: string) =>
+        await this.navigation.fillInputField(this.email(), userEmail, 'Email field');    
 
-    public async validatePasswordVisible(softAssert = false): Promise<void> {
+    public validatePasswordVisible = async (softAssert = false) =>
         await this.navigation.assertVisible(this.password(), softAssert, 'Password field');
-    }
+    
+    public fillPassword = async (password: string) =>
+        await this.navigation.fillInputField(this.password(), password, 'Password field');
 
-    public async fillPassword(password: string) {
-        await this.navigation.fillInputField(this.password(), password, false, 'Password field');
-    }
-
-    public async validateNextButtonEnabled(softAssert = false): Promise<void> {
+    public validateNextButtonEnabled = async (softAssert = false) =>
         await this.navigation.assertEnabled(this.nextStepButton(), softAssert, 'Next button');
-    }
 
-
-    public async validateNextButtonNotEnabled(softAssert = false): Promise<void> {
+    public validateNextButtonNotEnabled = async (softAssert = false) =>
         await this.navigation.assertNotEnabled(this.nextStepButton(), softAssert, 'Next button');
-    }
 
-    public async validateNextButtonVisible(softAssert = false): Promise<void> {
+    public validateNextButtonVisible = async (softAssert = false) =>
         await this.navigation.assertVisible(this.nextStepButton(), softAssert, 'Next button');
-    }
 
-    public async clickNextButton() {
-        await this.navigation.clickElement(this.nextStepButton(), false, 'Next button');
-    }
+    public clickNextButton = async () =>
+        await this.navigation.clickElement(this.nextStepButton(), 'Next button');
 
+    @stepParam((userEmail: string, password: string) => 
+        `I fill in the email field with email ${userEmail} and password ${password}`)
     public async fillFirstStep(userEmail?: string, password?: string) {
         const time = Date.now();
         await this.fillEmail(time + '_' + userEmail);
@@ -71,14 +64,13 @@ export class SignUpFirstStep {
         await this.validatePasswordReminder(reminderText, false);
     }
 
-    public async validatePasswordStrengthMeter() {
+    public validatePasswordStrengthMeter = async () =>
         await this.navigation.assertVisible(this.passwordStrength(), false, 'Password strength meter');
-    }
 
-    public async validateError(fieldWithError: ErrorFieldsLocator) {
+    public validateError = async (fieldWithError: ErrorFieldsLocator) => 
         await this.navigation.assertVisible(this.fieldError(fieldWithError), false, `Field error ${fieldWithError}`);
-    }
 
+    //TODO: seems pointless method
     @step()
     public async validatePasswordMinus(reminderText: string) {
         await this.validatePasswordReminder(reminderText, true);
@@ -108,4 +100,3 @@ export class SignUpFirstStep {
         }
     }
 }
-

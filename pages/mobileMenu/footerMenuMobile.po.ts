@@ -1,14 +1,18 @@
 import { Page } from '@playwright/test';
-import test, { expect } from '../pages/utils/base.po';
-import { Navigation, step, stepParam } from './utils/navigation.po';
+import test, { expect } from '../utils/base.po';
+import { Navigation, step, stepParam } from '../utils/navigation.po';
+import { CashierMain } from '../openCashier/cashierMain.po';
+import { WalletModal } from '../walletModal.po';
 
 export class FooterMenuMobile {
 	readonly page: Page;
 	readonly navigation: Navigation;
+	readonly cashierMain: CashierMain
 
 	constructor(page: Page) {
 		this.page = page;
 		this.navigation = new Navigation(page);
+		this.cashierMain = new CashierMain(page);
 	}
 
 	//Locators
@@ -22,6 +26,8 @@ export class FooterMenuMobile {
 	readonly depositButton = () => this.page.locator('a[href*="openCashier=true"] button');
 	
 	//Actions
+//TODO: move content to other POMs bottom menu page object
+
 	public async validateLogoVisible(): Promise<void> {
 		await this.navigation.assertVisible(this.headerLogo(), false, 'Header Logo');
 	}
@@ -30,6 +36,7 @@ export class FooterMenuMobile {
 		await this.navigation.assertVisible(this.bottomNavMenu(), false, 'Bottom Nav Menu');
 	}
 
+	//TODO: add step decorator
 	public async validateBottomNavVisible(): Promise<void> {
 		await this.validateBottomNavMenuVisible();
 		await this.validateGamesVisible();
@@ -55,7 +62,7 @@ export class FooterMenuMobile {
 	}
 
 	public async clickGames(): Promise<void> {
-		await this.navigation.clickElement(this.gamesButton(), false, 'Games button');
+		await this.navigation.clickElement(this.gamesButton(), 'Games button');
 	}
 
 	@step(`I get the wallet balance amount`)
@@ -64,6 +71,12 @@ export class FooterMenuMobile {
 	}
 
 	public async clickDepositButton(): Promise<void> {
-		await this.navigation.clickElement(this.depositButton(), false, 'Deposit button');
+		await this.navigation.clickElement(this.depositButton(), 'Deposit button');
+	}
+	
+	@step(`I click on the deposit button and validate the cashier modal`)
+	public async clickAndValidateCashier() : Promise<void> {
+		await this.clickDepositButton();
+		await this.cashierMain.validateModalBodyVisible(false);
 	}
 }

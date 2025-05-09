@@ -31,6 +31,8 @@ export class PromotionDetails {
 	private readonly registerModal = () => this.page.locator('#register-modal');
 
 	//Action
+
+	//TODO: add navigation methods 
 	public async clickTermsAndConditionsText() {
 		await test.step(`I click the terms and conditions header`, async () => {
 			await this.validateTermsAndConditions();

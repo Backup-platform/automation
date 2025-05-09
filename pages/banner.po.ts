@@ -13,6 +13,8 @@ export class Banner {
 	}
 
 	//Locators //
+
+	//TODO: add the handlers to the locators instead of the actions
 	readonly skipHiThere = () => this.page.locator('.introjs-customskipbutton');
 	readonly skipNewDesign = () => this.page.locator('.introjs-customskipbutton');
 	readonly bannerNewDesign = () => this.page.locator(".introjs-tooltip-title") //.getByText('A New Universe Of Fun'); //this.page.getByRole('heading', { name: 'A New Universe Of Fun' });
@@ -41,7 +43,7 @@ export class Banner {
 	@step('I clic the accept cookies button')
 	public async acceptCookies(): Promise<void> {
 		await this.page.addLocatorHandler(this.cookiesContainer(), async () => {
-			await this.navigation.clickElement(this.cookiesAcceptButton(), false, 'Accept cookies');
+			await this.navigation.clickElement(this.cookiesAcceptButton(), 'Accept cookies');
 			//await this.cookiesContainer().waitFor({state: 'hidden'});
 		});
 	}

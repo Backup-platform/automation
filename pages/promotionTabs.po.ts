@@ -31,6 +31,7 @@ export class PromotionTabs {
 
 	//Actions
 
+	//TODO: add navigztion methods
 	/**
 	 * 
 	 * @param pageLocatorPartial you need to provide one of the public partial page locators

@@ -31,89 +31,60 @@ export class SignUpSecondStep {
 
     //Actions
 
-    @step('I validate the first name field is visible')
-    public async validateFirstNameVisible(softAssert = false): Promise<void> {
+    public validateFirstNameVisible = async (softAssert = false) =>
         await this.navigation.assertVisible(this.firstName(), softAssert, 'First name field');
-    }
 
-    @step('I fill the first name field')
-    public async fillFirstName(firstName: string) {
-        await this.navigation.fillInputField(this.firstName(), firstName, false, 'First name field');
-    }
+    public fillFirstName = async (firstName: string) =>
+        await this.navigation.fillInputField(this.firstName(), firstName, 'First name field');
 
-    @step('I validate the last name field is visible')
-    public async validateLastNameVisible(softAssert = false): Promise<void> {
+    public validateLastNameVisible = async (softAssert = false) =>
         await this.navigation.assertVisible(this.lastName(), softAssert, 'Last name field');
-    }
 
-    @step('I fill the last name field')
-    public async fillLastName(lastName: string) {
-        await this.navigation.fillInputField(this.lastName(), lastName, false, 'Last name field');
-    }
+    public fillLastName = async (lastName: string) =>
+        await this.navigation.fillInputField(this.lastName(), lastName, 'Last name field');
 
-    @step('I validate the date of birth field is visible')
-    public async validateDOBVisible(softAssert = false): Promise<void> {
+    public validateDOBVisible = async (softAssert = false) =>
         await this.navigation.assertVisible(this.dateOfBirthTextArea(), softAssert, 'Date of birth field');
-    }
 
+    //TODO: step param
+    //TODO: add locators
     @step('I fill the date of birth field')
     public async fillDOB(dateOfBirth: string) {
-        await this.navigation.fillInputField(this.dateOfBirthTextArea(), dateOfBirth, false, 'Date of birth field');
+        await this.navigation.fillInputField(this.dateOfBirthTextArea(), dateOfBirth, 'Date of birth field');
         if (await this.page.locator("[class*='styles_datePickerCalendar_']").isVisible()) {
             await this.page.locator('[class*=styles_icon_].mr-1').click();
         }
     }
 
-    @step('I validate the last name field is editable')
-    public async validateLastNameEditable(softAssert = false): Promise<void> {
+    public validateLastNameEditable = async (softAssert = false) =>
         await this.navigation.assertEditable(this.lastName(), softAssert, 'Last name field');
-    }
 
-    @step('I validate the first name field is editable')
-    public async validateFirstNameEditable(softAssert = false): Promise<void> {
+    public validateFirstNameEditable = async (softAssert = false) =>
         await this.navigation.assertEditable(this.firstName(), softAssert, 'First name field');
-    }
 
-    @step('I validate the date of birth field is editable')
-    public async validateDOBEditable(softAssert = false): Promise<void> {
+    public validateDOBEditable = async (softAssert = false) =>
         await this.navigation.assertEditable(this.dateOfBirthTextArea(), softAssert, 'Date of birth field');
-    }
 
-    @step('I validate the gender button is visible')
-    public async validateGenderButtonVisible(softAssert = false): Promise<void> {
+    public validateGenderButtonVisible = async (softAssert = false) =>
         await this.navigation.assertVisible(this.genderButton(), softAssert, 'Gender button');
-    }
-    @step('I validate the gender container is visible')
-    public async validateGenderContainerVisible(softAssert = false): Promise<void> {
+
+    public validateGenderContainerVisible = async (softAssert = false) =>
         await this.navigation.assertVisible(this.genderOptionsContainer(), softAssert, 'Gender container');
-    }
     
-
-    @step('I validate the almost done button is visible')
-    public async validateAlmostDoneButtonVisible(softAssert = false): Promise<void> {
+    public validateAlmostDoneButtonVisible = async (softAssert = false) =>
         await this.navigation.assertVisible(this.almostDoneButton(), softAssert, 'Almost done button');
-    }
 
-    @step('I validate the almost done button is enabled')
-    public async validateAlmostDoneButtonEnabled(softAssert = false): Promise<void> {
+    public validateAlmostDoneButtonEnabled = async (softAssert = false) =>
         await this.navigation.assertEnabled(this.almostDoneButton(), softAssert, 'Almost Done button');
-    }
 
-    @step('I validate the almost done button is NOT enabled')
-    public async validateAlmostDoneNotEnabled(softAssert = false): Promise<void> {
+    public validateAlmostDoneNotEnabled = async (softAssert = false) =>
         await this.navigation.assertNotEnabled(this.almostDoneButton(), softAssert, 'Almost Done button');
-    }
 
-    @step('I click the Almost Done button')
-    public async clickAlmostDoneButton() {
-        await this.navigation.clickElement(this.almostDoneButton(), false, 'Almost Done button');
-    }
+    public clickAlmostDoneButton = async () =>
+        await this.navigation.clickElement(this.almostDoneButton(), 'Almost Done button');
 
-    @stepParam((fieldWithError: ErrorFieldsLocator) => `I validate the ${fieldWithError} error is visible`)
-    public async validateError(fieldWithError: ErrorFieldsLocator) {
+    public validateError = async (fieldWithError: ErrorFieldsLocator) =>
         await this.navigation.assertVisible(this.fieldError(fieldWithError), false, `Field error ${fieldWithError}`);
-        //await expect(this.fieldError(fieldWithError), 'I validate that the ' + fieldWithError + ' error is visible').toBeVisible();
-    }
 
 
     @step('I select gender')
@@ -127,6 +98,7 @@ export class SignUpSecondStep {
         }
     }
 
+    @step('I fill the second registration step with partial values')
     public async fillPartialSecondStep({ firstName, lastName, DOB, gender }: secondStepFields) {
         firstName != undefined ? await this.fillFirstName(firstName) :
             await test.step('I do not set first name', async () => { });

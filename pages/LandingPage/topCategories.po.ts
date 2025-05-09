@@ -16,17 +16,17 @@ export class TopCategories {
     readonly showAll = () => this.page.locator('#top-categories-view-all-btn');
     readonly cardContainer = () => this.page.locator('div[class*= "_topCategoriesCardContainer_"]');
     readonly cards = () => this.page.locator('div[class*= "_topCategoriesCard_"]');
-    readonly cardIcon = () => this.page.locator('div[class*= "_topCategoriesCard_"]>img');
-    readonly cardTitle = () => this.page.locator('span[class*= "_cardTitle_"]');
-    readonly cardSubtitle = () => this.page.locator('span[class*= "_cardSubTitle_"]');
+    readonly card = (nthCard: number) => this.cards().nth(nthCard);
+    readonly cardIcon = (nthCard: number) => this.card(nthCard).locator('div[class*= "_topCategoriesCard_"]>img');
+    readonly cardTitle = (nthCard: number) => this.card(nthCard).locator('span[class*= "_cardTitle_"]');
+    readonly cardSubtitle = (nthCard: number) => this.card(nthCard).locator('span[class*= "_cardSubTitle_"]');
 
     //Actions
     public async validateTitleVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.title(), softAssert,' Top Categories Title');
+        await this.navigation.assertVisible(this.title(), softAssert, ' Top Categories Title');
     }
 
     public async validateShowAllButtonVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.showAll(), softAssert,'Show All button');
         await this.navigation.assertAttribute(this.showAll(), 'href'); //TODO: , "/games" );
     }
 
@@ -34,32 +34,32 @@ export class TopCategories {
         await this.navigation.assertVisible(this.cardContainer(), softAssert, 'Card container');
     }
 
-    public async validateCardVisible(nthElement: number, softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.cards().nth(nthElement), softAssert, `card ${nthElement}`);
+    public async validateCardVisible(nthCard: number, softAssert = false): Promise<void> {
+        await this.navigation.assertVisible(this.card(nthCard), softAssert, `card ${nthCard}`);
     }
 
-    public async validateCardIconVisible(nthElement: number, softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.cardIcon().nth(nthElement), softAssert, `Icon of card ${nthElement}`);
-        await this.navigation.assertAttribute(this.cardIcon().nth(nthElement), 'srcset');
-        await this.navigation.assertAttribute(this.cardIcon().nth(nthElement), 'src');
+    public async validateCardIconVisible(nthCard: number, softAssert = false): Promise<void> {
+        await this.navigation.validateAttributes(this.cardIcon(nthCard),
+            `Icon of card ${nthCard}`, { srcset: null, src: null });
     }
 
-    public async validateCardTitleVisible(nthElement: number, softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.cardTitle().nth(nthElement), softAssert, `Title of card ${nthElement}`);
+    public async validateCardTitleVisible(nthCard: number, softAssert = false): Promise<void> {
+        await this.navigation.assertVisible(this.cardTitle(nthCard), softAssert, `Title of card ${nthCard}`);
     }
 
-    public async validateCardSubtitleVisible(nthElement: number, softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.cardSubtitle().nth(nthElement), softAssert, `Subtitle of card ${nthElement}`);
+    public async validateCardSubtitleVisible(nthCard: number, softAssert = false): Promise<void> {
+        await this.navigation.assertVisible(this.cardSubtitle(nthCard), softAssert, `Subtitle of card ${nthCard}`);
     }
 
+    @step('I click on the Show All button')
     public async clickShowAll(softAssert = false): Promise<void> {
-            await this.navigation.clickElement(this.showAll(), softAssert, 'Show All menu button');
-            await this.page.waitForURL('**/games/all', { waitUntil: "domcontentloaded" });
-            await this.navigation.assertUrl(`${process.env.URL}games/all`);
+        await this.navigation.clickElement(this.showAll(), 'Show All menu button');
+        await this.page.waitForURL('**/games/all', { waitUntil: "domcontentloaded" });
+        await this.navigation.assertUrl(`${process.env.URL}games/all`);
     }
 
-    public async clickTopCard(nthElement: number, softAssert = false): Promise<void> {
-        await this.navigation.clickElement(this.cards().nth(nthElement), softAssert, `Categories Card ${nthElement}`);
+    public async clickTopCard(nthCard: number, softAssert = false): Promise<void> {
+        await this.navigation.clickElement(this.card(nthCard), `Categories Card ${nthCard}`);
     }
 
     @step('I validate the top categories elements are visible')
@@ -87,5 +87,4 @@ export class TopCategories {
         await this.page.goBack();
         await this.navigation.assertUrl(`${process.env.URL}`);
     }
-
 }

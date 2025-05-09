@@ -43,7 +43,7 @@ export class BottomMenu {
     readonly shortcutButton = () => this.page.locator('#shortcut-btn-shortcut');
     readonly shortcutButtonImage = () => this.shortcutButton().locator(' div img');
     readonly shortcutButtonLabel = () => this.shortcutButton().locator(' div[class*="styles_label_"]');
-
+    readonly bottomMenuLocator = () => this.page.locator('div[class*="bottomNavigationV2_container_"]');
     readonly balance = () => this.page.locator(''); //TODO: needs a locator should be moved to another place
 
 
@@ -99,38 +99,36 @@ export class BottomMenu {
     }
 
     public async validateBottomMenuVisible(softAssert: boolean = false): Promise<void> {
-        const bottomMenuLocator = this.page.locator('div[class*="bottomNavigationV2_container_"]');
-        await this.navigation.assertVisible(bottomMenuLocator, softAssert, 'Bottom Menu');
+        await this.navigation.assertVisible(this.bottomMenuLocator(), softAssert, 'Bottom Menu');
     }
 
     public async clickRegisterButton(softAssert = false): Promise<void> {
-        await this.navigation.clickElement(this.registerButton(), softAssert, 'Register button');
+        await this.navigation.clickElement(this.registerButton(), 'Register button');
     }
 
     public async clickLoginButton(softAssert = false): Promise<void> {
-        await this.navigation.clickElement(this.loginButton(), softAssert, 'Login button');
+        await this.navigation.clickElement(this.loginButton(), 'Login button');
     }
 
     public async clickDepositButton(softAssert = false): Promise<void> {
-        await this.navigation.clickElement(this.depositButton(), softAssert, 'Deposit button');
-        await expect(this.page.locator('div[class*="walletModal_modalContent_"]'), 'Expect walet modal to be visible').toBeVisible(); //TODO: 
+        await this.navigation.clickElement(this.depositButton(), 'Deposit button');
     }
 
     public async clickGamesButton(softAssert = false): Promise<void> {
-        await this.navigation.clickElement(this.gamesButton(), softAssert, 'Games section');
+        await this.navigation.clickElement(this.gamesButton(), 'Games section');
         await this.navigation.assertUrl(`${process.env.URL}games/all`, softAssert);
     }
 
     public async clickMyBonuses(softAssert = false): Promise<void> {
-        await this.navigation.clickElement(this.myBonusesButton(), softAssert, 'My Bonuses section');
+        await this.navigation.clickElement(this.myBonusesButton(), 'My Bonuses section');
     }
 
     public async clickBurgerMenuButton(softAssert = false): Promise<void> {
-        await this.navigation.clickElement(this.burgerMenuButton(), softAssert, 'Burger Menu Button');
+        await this.navigation.clickElement(this.burgerMenuButton(), 'Burger Menu Button');
     }
 
     public async clickShortcut(softAssert = false): Promise<void> {
-        await this.navigation.clickElement(this.shortcutButton(), softAssert, 'Shortcut');
+        await this.navigation.clickElement(this.shortcutButton(), 'Shortcut');
     }
 
     @step('I validate the bottom menu is visible for a member')
