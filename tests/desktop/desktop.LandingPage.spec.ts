@@ -91,7 +91,7 @@ test.describe("Landing Page Regression Tests", () => {
 
             test("Validate Game categories elements for a guest", async ({ gamesCategories, page }) => {
                 await gamesCategories.validateGameCardElements();
-                await gamesCategories.clickShowAll(0, 'slots/new-releases');
+                await gamesCategories.clickShowAll(0, 'fr/slots/popular');
                 await page.goBack();
                 await gamesCategories.validateCTAbuttonsForGuests(0,0,false);
             });
@@ -121,7 +121,7 @@ test.describe("Landing Page Regression Tests", () => {
 
             test("Validate Game categories elements for a member", async ({ gamesCategories, page }) => {
                 await gamesCategories.validateGameCardElements();
-                await gamesCategories.clickShowAll(0, 'slots/new-releases');
+                await gamesCategories.clickShowAll(0, 'fr/slots/popular');
                 await page.goBack();
                 await gamesCategories.validateCTAbuttonsForMembers(0,0,false);
             });
@@ -158,7 +158,7 @@ test.describe("Landing Page Regression Tests", () => {
 
             test("Validate Game categories elements for a guest", async ({ gamesCategories, page }) => {
                 await gamesCategories.validateGameCardElements();
-                await gamesCategories.clickShowAll(0, 'slots/new-releases');
+                await gamesCategories.clickShowAll(0, 'fr/slots/popular');
                 await page.goBack();
                 await gamesCategories.validateCTAbuttonsForGuests(0,0, true);
             });
@@ -188,7 +188,7 @@ test.describe("Landing Page Regression Tests", () => {
 
             test("Validate Game categories elements for a member", async ({ gamesCategories, page }) => {
                 await gamesCategories.validateGameCardElements();
-                await gamesCategories.clickShowAll(0, 'slots/new-releases');
+                await gamesCategories.clickShowAll(0, 'fr/slots/popular');
                 await page.goBack();
                 await gamesCategories.validateCTAbuttonsForMembers(0,0,true);
             });

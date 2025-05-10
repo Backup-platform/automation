@@ -1,6 +1,6 @@
 import { FrameLocator, Locator, Page } from '@playwright/test';
 import test, { expect } from './utils/base.po';
-import { Navigation, step, stepParam } from './utils/navigation.po';
+import { Navigation, step, stepParam, clickElement, fillInputField } from './utils/navigation.po';
 
 
 export class ResetPasswordFrame {
@@ -33,20 +33,20 @@ export class ResetPasswordFrame {
 	//Action
 
 	//TODO: complete refactoring of the methods to use the new navigation methods
-	public clickLoginButton = async () => await this.navigation.clickElement(this.loginButton(), 'Login button');
+	public clickLoginButton = async () => await clickElement(this.loginButton(), 'Login button');
 
-	public clickResetPasswordButton = async () => await this.navigation.clickElement(this.resetPasswordButton(), 'Reset Password button');
+	public clickResetPasswordButton = async () => await clickElement(this.resetPasswordButton(), 'Reset Password button');
 	
-	public clickSubmitButton = async () => await this.navigation.clickElement(this.submitButton(), 'Submit button');
+	public clickSubmitButton = async () => await clickElement(this.submitButton(), 'Submit button');
 	
 	public fillUsername = async (username: string ) =>
-		await this.navigation.fillInputField(this.username(), username, 'Username field');
+		await fillInputField(this.username(), username, 'Username field');
 
 	public fillResetEmail = async (username: string) =>
-		await this.navigation.fillInputField(this.resetEmail(), username, 'Reset email field');
+		await fillInputField(this.resetEmail(), username, 'Reset email field');
 
 	public fillPassword = async (password: string) =>
-		await this.navigation.fillInputField(this.password(), password, 'Password field');
+		await fillInputField(this.password(), password, 'Password field');
 
 	public async validateSendEmail(): Promise<any> {
 		await expect(this.username()).toBeVisible(); //TODO: should be validating the email is sent

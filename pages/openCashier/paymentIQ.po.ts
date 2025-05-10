@@ -1,6 +1,6 @@
 import { Locator, Page } from '@playwright/test';
 import test, { expect } from '../utils/base.po';
-import { Navigation, step, stepParam } from '../utils/navigation.po';
+import { Navigation, step, stepParam, assertAttribute, assertElementContainsText, clickElement,assertVisible, fillInputField, assertEditable, assertEnabled, assertNotEnabled } from '../utils/navigation.po';
 
 export class PaymentIQ {
     readonly page: Page;
@@ -84,61 +84,47 @@ export class PaymentIQ {
     // Actions for Modal Visibility
     //TODO: this needs steps from the specs
 
-    public async clickPredefinedAmount(nthAmount: number): Promise<void> {
-        await this.navigation.clickElement(this.singlePredefinedAmountButton(nthAmount), `Predefined amount button ${nthAmount}`);
-    }
+    public clickPredefinedAmount = async (nthAmount: number) => 
+        await clickElement(this.singlePredefinedAmountButton(nthAmount), `Predefined amount button ${nthAmount}`);
 
-    public async validatePredefinedAmountsContainerVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.predefinedAmountsContainer(), softAssert, 'Predefined amounts container');
-    }
+    public validatePredefinedAmountsContainerVisible = async (softAssert = false) => 
+        await assertVisible(this.predefinedAmountsContainer(), softAssert, 'Predefined amounts container');
 
-    public async fillAmount(amount: string): Promise<void> {
-        await this.navigation.fillInputField(this.amountInput(), amount, 'Amount input field');
-    }
+    public fillAmount = async (amount: string) => 
+        await fillInputField(this.amountInput(), amount, 'Amount input field');
 
-    public async clickSetAmount(): Promise<void> {
-        await this.navigation.clickElement(this.setAmmountButton(), 'Set amount button');
-    }
+    public clickSetAmount = async () => 
+        await clickElement(this.setAmmountButton(), 'Set amount button');
 
-    public async fillCardNumber(cardNumber: string): Promise<void> {
-        await this.navigation.fillInputField(this.cardNumber(), cardNumber, 'Card number input');
-    }
+    public fillCardNumber = async (cardNumber: string) => 
+        await fillInputField(this.cardNumber(), cardNumber, 'Card number input');
 
-    public async fillCardName(): Promise<void> {
-        await this.navigation.fillInputField(this.cardName(), 'Test User', 'Card name input');
-    }
+    public fillCardName = async () => 
+        await fillInputField(this.cardName(), 'Test User', 'Card name input');
 
-    public async fillExpirationDate(expirationDate: string): Promise<void> {
-        await this.navigation.fillInputField(this.expirationDate(), expirationDate, 'Expiration date input');
-    }
+    public fillExpirationDate = async (expirationDate: string) => 
+        await fillInputField(this.expirationDate(), expirationDate, 'Expiration date input');
 
-    public async fillCVV(cvv: string): Promise<void> {
-        await this.navigation.fillInputField(this.cvv(), cvv, 'CVV input');
-    }
+    public fillCVV = async (cvv: string) => 
+        await fillInputField(this.cvv(), cvv, 'CVV input');
 
-    public async clickPredefinedAmountButton(nthCard: number): Promise<void> {
-        await this.navigation.clickElement(this.singlePredefinedAmountButton(nthCard), `Predefined amount button ${nthCard}`);
-    }
+    public clickPredefinedAmountButton = async (nthCard: number) => 
+        await clickElement(this.singlePredefinedAmountButton(nthCard), `Predefined amount button ${nthCard}`);
 
-    public async fillAmountInput(amount: string): Promise<void> {
-        await this.navigation.fillInputField(this.amountInput(), amount, 'Amount input field');
-    }
+    public fillAmountInput = async (amount: string) => 
+        await fillInputField(this.amountInput(), amount, 'Amount input field');
 
-    public async clickSetAmountButton(): Promise<void> {
-        await this.navigation.clickElement(this.setAmmountButton(), 'Set amount button');
-    }
+    public clickSetAmountButton = async () => 
+        await clickElement(this.setAmmountButton(), 'Set amount button');
 
-    public async validatePredefinedAmountVisible(nthCard: number, softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.singlePredefinedAmountButton(nthCard), softAssert, `Predefined amount button ${nthCard}`);
-    }
+    public validatePredefinedAmountVisible = async (nthCard: number, softAssert = false) => 
+        await assertVisible(this.singlePredefinedAmountButton(nthCard), softAssert, `Predefined amount button ${nthCard}`);
 
-    public async validateAmountInputVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.amountInput(), softAssert, 'Amount input field');
-    }
+    public validateAmountInputVisible = async (softAssert = false) => 
+        await assertVisible(this.amountInput(), softAssert, 'Amount input field');
 
-    public async validateSetAmountButtonVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.setAmmountButton(), softAssert, 'Set amount button');
-    }
+    public validateSetAmountButtonVisible = async (softAssert = false) => 
+        await assertVisible(this.setAmmountButton(), softAssert, 'Set amount button');
 
     @step('I validate details section elements are visible')
     public async validateDetailsSectionElements(softAssert = false): Promise<void> {
@@ -159,55 +145,55 @@ export class PaymentIQ {
 
     @step('I validate that card details fields are visible')
     public async validateCardDetailsFieldsVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.cardNumber(), softAssert, 'Card number input');
-        await this.navigation.assertVisible(this.expirationDate(), softAssert, 'Expiration date input');
-        await this.navigation.assertVisible(this.cvv(), softAssert, 'CVV input');
+        await assertVisible(this.cardNumber(), softAssert, 'Card number input');
+        await assertVisible(this.expirationDate(), softAssert, 'Expiration date input');
+        await assertVisible(this.cvv(), softAssert, 'CVV input');
     }
 
     @step('I delete the account if the select card dropdown is visible')
     public async deleteAccountIfDropdownVisible(softAssert = false): Promise<void> {
         await this.page.addLocatorHandler(this.deleteAccountButton(), async () => {
-            await this.navigation.clickElement(this.deleteAccountButton(), 'Delete account button');
-            await this.navigation.clickElement(this.vueDeleteButton(), 'Vue delete button');
+            await clickElement(this.deleteAccountButton(), 'Delete account button');
+            await clickElement(this.vueDeleteButton(), 'Vue delete button');
         });
     }
 
     @step('I validate all deposit iframe locators are visible')
     public async validateDepositIframeLocatorsVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.accountDepositLabel(), softAssert, 'Account deposit label');
-        await this.navigation.assertVisible(this.accountDepositValue(), softAssert, 'Account deposit value');
+        await assertVisible(this.accountDepositLabel(), softAssert, 'Account deposit label');
+        await assertVisible(this.accountDepositValue(), softAssert, 'Account deposit value');
 
-        await this.navigation.assertVisible(this.amountDepositedToPlayerAccountLabel(), softAssert, 'Amount deposited to player account label');
-        await this.navigation.assertVisible(this.amountDepositedToPlayerAccountValue(), softAssert, 'Amount deposited to player account value');
+        await assertVisible(this.amountDepositedToPlayerAccountLabel(), softAssert, 'Amount deposited to player account label');
+        await assertVisible(this.amountDepositedToPlayerAccountValue(), softAssert, 'Amount deposited to player account value');
 
-        await this.navigation.assertVisible(this.feeDepositLabel(), softAssert, 'Fee deposit label');
-        await this.navigation.assertVisible(this.feeDepositValue(), softAssert, 'Fee deposit value');
+        await assertVisible(this.feeDepositLabel(), softAssert, 'Fee deposit label');
+        await assertVisible(this.feeDepositValue(), softAssert, 'Fee deposit value');
 
-        await this.navigation.assertVisible(this.amountWithdrawnDepositLabel(), softAssert, 'Amount withdrawn deposit label');
-        await this.navigation.assertVisible(this.amountWithdrawnDepositValue(), softAssert, 'Amount withdrawn deposit value');
+        await assertVisible(this.amountWithdrawnDepositLabel(), softAssert, 'Amount withdrawn deposit label');
+        await assertVisible(this.amountWithdrawnDepositValue(), softAssert, 'Amount withdrawn deposit value');
 
-        await this.navigation.assertVisible(this.paymentReferenceDepositLabel(), softAssert, 'Payment reference deposit label');
-        await this.navigation.assertVisible(this.paymentReferenceDepositValue(), softAssert, 'Payment reference deposit value');
+        await assertVisible(this.paymentReferenceDepositLabel(), softAssert, 'Payment reference deposit label');
+        await assertVisible(this.paymentReferenceDepositValue(), softAssert, 'Payment reference deposit value');
 
-        await this.navigation.assertVisible(this.transactionIdDepositLabel(), softAssert, 'Transaction ID deposit label');
-        await this.navigation.assertVisible(this.transactionIdDepositValue(), softAssert, 'Transaction ID deposit value');
+        await assertVisible(this.transactionIdDepositLabel(), softAssert, 'Transaction ID deposit label');
+        await assertVisible(this.transactionIdDepositValue(), softAssert, 'Transaction ID deposit value');
     }
 
     @step('I validate all withdrawal iframe locators are visible')
     public async validateWithdrawIframeLocatorsVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.accountWithdrawLabel(), softAssert, 'Account withdraw label');
-        await this.navigation.assertVisible(this.accountWithdrawValue(), softAssert, 'Account withdraw value');
+        await assertVisible(this.accountWithdrawLabel(), softAssert, 'Account withdraw label');
+        await assertVisible(this.accountWithdrawValue(), softAssert, 'Account withdraw value');
 
-        await this.navigation.assertVisible(this.amountWithdrawnLabel(), softAssert, 'Amount withdrawn label');
-        await this.navigation.assertVisible(this.amountWithdrawnValue(), softAssert, 'Amount withdrawn value');
+        await assertVisible(this.amountWithdrawnLabel(), softAssert, 'Amount withdrawn label');
+        await assertVisible(this.amountWithdrawnValue(), softAssert, 'Amount withdrawn value');
 
-        await this.navigation.assertVisible(this.feeWithdrawLabel(), softAssert, 'Fee withdraw label');
-        await this.navigation.assertVisible(this.feeWithdrawValue(), softAssert, 'Fee withdraw value');
+        await assertVisible(this.feeWithdrawLabel(), softAssert, 'Fee withdraw label');
+        await assertVisible(this.feeWithdrawValue(), softAssert, 'Fee withdraw value');
 
-        await this.navigation.assertVisible(this.amountDepositedWithdrawLabel(), softAssert, 'Amount deposited withdraw label');
-        await this.navigation.assertVisible(this.amountDepositedWithdrawValue(), softAssert, 'Amount deposited withdraw value');
+        await assertVisible(this.amountDepositedWithdrawLabel(), softAssert, 'Amount deposited withdraw label');
+        await assertVisible(this.amountDepositedWithdrawValue(), softAssert, 'Amount deposited withdraw value');
 
-        await this.navigation.assertVisible(this.transactionIdWithdrawLabel(), softAssert, 'Transaction ID withdraw label');
-        await this.navigation.assertVisible(this.transactionIdWithdrawValue(), softAssert, 'Transaction ID withdraw value');
+        await assertVisible(this.transactionIdWithdrawLabel(), softAssert, 'Transaction ID withdraw label');
+        await assertVisible(this.transactionIdWithdrawValue(), softAssert, 'Transaction ID withdraw value');
     }
 }

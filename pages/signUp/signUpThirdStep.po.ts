@@ -1,6 +1,6 @@
 import { Locator, Page } from '@playwright/test';
 import test, { expect } from '../utils/base.po';
-import { Navigation, step, stepParam } from '../utils/navigation.po';
+import { Navigation, step, stepParam, assertAttribute, clickElement,assertVisible, fillInputField } from '../utils/navigation.po';
 
 export type Country = 'France' | 'Canada';
 export type CountryCode = '+33' | '+1';
@@ -33,44 +33,37 @@ export class SignUpThirdStep {
     private readonly fieldError = (fieldError: ErrorFieldsLocator) => this.page.locator(`label[class*="field_error"][for*=${fieldError}]`);
 
     //Actions
-    public validateCityVisible = async (softAssert = false) =>
-        await this.navigation.assertVisible(this.city(), softAssert, 'City field');
+    public validateCityVisible = async (softAssert = false) => await assertVisible(this.city(), softAssert, 'City field');
 
-    public fillCity = async (city: string) =>
-        await this.navigation.fillInputField(this.city(), city, 'City field');
+    public fillCity = async (city: string) => await fillInputField(this.city(), city, 'City field');
 
-    public validateAddressVisible = async (softAssert = false) =>
-        await this.navigation.assertVisible(this.address(), softAssert, 'Address field');
+    public validateAddressVisible = async (softAssert = false) => await assertVisible(this.address(), softAssert, 'Address field');
 
-    public fillAddress = async (address: string) =>
-        await this.navigation.fillInputField(this.address(), address, 'Address field');
+    public fillAddress = async (address: string) => await fillInputField(this.address(), address, 'Address field');
 
-    public validatePostCodeVisible = async (softAssert = false) =>
-        await this.navigation.assertVisible(this.postCode(), softAssert, 'Post code field');
+    public validatePostCodeVisible = async (softAssert = false) => await assertVisible(this.postCode(), softAssert, 'Post code field');
 
-    public fillPostCode = async (postCode: string) =>
-        await this.navigation.fillInputField(this.postCode(), postCode, 'Post code field');
+    public fillPostCode = async (postCode: string) => await fillInputField(this.postCode(), postCode, 'Post code field');
 
-    public validatePhoneVisible = (softAssert = false) =>
-        this.navigation.assertVisible(this.phone(), softAssert, 'Phone field');
+    public validatePhoneVisible = async (softAssert = false) => await assertVisible(this.phone(), softAssert, 'Phone field');
 
-    public fillPhone = async (phone: string) =>
-        await this.navigation.fillInputField(this.phone(), phone, 'Phone field');
+    public fillPhone = async (phone: string) => await fillInputField(this.phone(), phone, 'Phone field');
 
     public validateCountryButtonVisible = async (softAssert = false) =>
-        await this.navigation.assertVisible(this.desktopCountryButton().or(this.mobileCountryButton()), softAssert, 'Country button');
+        await assertVisible(this.desktopCountryButton().or(this.mobileCountryButton()), softAssert, 'Country button');
 
     public validateAgeCheckboxVisible = async (softAssert = false) =>
-        await this.navigation.assertVisible(this.ageCheckbox(), softAssert, 'Age checkbox');
+        await assertVisible(this.ageCheckbox(), softAssert, 'Age checkbox');
 
-    public clickAgeCheckbox = async () =>
-        await this.navigation.clickElement(this.ageCheckbox(), 'Age Checkbox');
+    public clickAgeCheckbox = async () => await clickElement(this.ageCheckbox(), 'Age Checkbox');
 
     public validateEnterButtonVisible = async (softAssert = false) =>
-        await this.navigation.assertVisible(this.enterButton(), softAssert, 'Enter button');
+        await assertVisible(this.enterButton(), softAssert, 'Enter button');
 
-    public clickEnterButton = async () =>
-        await this.navigation.clickElement(this.enterButton(), 'Enter button');
+    public clickEnterButton = async () => await clickElement(this.enterButton(), 'Enter button');
+
+    public validateError = async (fieldWithError: ErrorFieldsLocator) =>
+        await assertVisible(this.fieldError(fieldWithError), false, `Field error ${fieldWithError}`);
 
     //TODO: use navigation class
     public async validateEnterEnabled(expectedStatus: boolean) {
@@ -78,9 +71,6 @@ export class SignUpThirdStep {
         await expect(await this.enterButton().isEnabled(),
             'Expect Enter button isEnabled to be: ' + expectedStatus).toBe(expectedStatus);
     }
-
-    public validateError = async (fieldWithError: ErrorFieldsLocator) =>
-        await this.navigation.assertVisible(this.fieldError(fieldWithError), false, `Field error ${fieldWithError}`);
 
     @step('I select country')
     public async selectCountry(countrySelected: Country) {

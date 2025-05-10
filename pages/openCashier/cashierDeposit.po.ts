@@ -1,6 +1,6 @@
 import { Locator, Page } from '@playwright/test';
 import test, { expect } from '../utils/base.po';
-import { Navigation, step, stepParam } from '../utils/navigation.po';
+import { Navigation, step, stepParam,  assertAttribute, assertElementContainsText, clickElement, assertVisible, assertNotVisible, fillInputField, assertEditable, assertEnabled, assertNotEnabled, iterateElements } from '../utils/navigation.po';
 
 export class CashierDeposit {
     readonly page: Page;
@@ -51,93 +51,71 @@ export class CashierDeposit {
 
 
     // Actions
-    public async validateBackButtonVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.backButton(), softAssert, 'Back button');
-    }
+    public validateBackButtonVisible = async (softAssert = false) => 
+        await assertVisible(this.backButton(), softAssert, 'Back button');
 
-    public async clickBackButton(): Promise<void> {
-        await this.navigation.clickElement(this.backButton(), 'Back button');
-    }
+    public clickBackButton = async () => 
+        await clickElement(this.backButton(), 'Back button');
 
-    public async validateDepoitWithoutBonusVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.depositWithoutBonus(), softAssert, 'Deposit without bonus button');
-    }
+    public validateDepoitWithoutBonusVisible = async (softAssert = false) => 
+        await assertVisible(this.depositWithoutBonus(), softAssert, 'Deposit without bonus button');
 
-    public async clickDepositWithoutBonus(): Promise<void> {
-        await this.navigation.clickElement(this.depositWithoutBonus(), 'Deposit without bonus button');
-    }
+    public clickDepositWithoutBonus = async () => 
+        await clickElement(this.depositWithoutBonus(), 'Deposit without bonus button');
 
-    public async selectPaymentCard(nthCard: number): Promise<void> {
-        await this.navigation.clickElement(this.paymentSingleCard(nthCard), `Payment card ${nthCard}`);
-    }
+    public selectPaymentCard = async (nthCard: number) => 
+        await clickElement(this.paymentSingleCard(nthCard), `Payment card ${nthCard}`);
 
-    public async validatePaymentMethodsHeadingVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.paymentMethodsHeading(), softAssert, 'Payment methods heading');
-    }
+    public validatePaymentMethodsHeadingVisible = async (softAssert = false) => 
+        await assertVisible(this.paymentMethodsHeading(), softAssert, 'Payment methods heading');
 
-    public async validateStepsContainerVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.stepsContainer(), softAssert, 'Deposit steps');
-    }
+    public validateStepsContainerVisible = async (softAssert = false) => 
+        await assertVisible(this.stepsContainer(), softAssert, 'Deposit steps');
 
-    public async validateBonusStepVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.bonusStep(), softAssert, 'Bonus step');
-    }
+    public validateBonusStepVisible = async (softAssert = false) => 
+        await assertVisible(this.bonusStep(), softAssert, 'Bonus step');
 
-    public async validatePaymentStepVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.paymentStep(), softAssert, 'Payment step');
-    }
+    public validatePaymentStepVisible = async (softAssert = false) => 
+        await assertVisible(this.paymentStep(), softAssert, 'Payment step');
 
-    public async validateDetailsStepMobileVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.detailsMobileStep(), softAssert, 'Details step (mobile)');
-    }
+    public validateDetailsStepMobileVisible = async (softAssert = false) => 
+        await assertVisible(this.detailsMobileStep(), softAssert, 'Details step (mobile)');
 
-    public async validateSummaryStepDesktopVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.summaryDesktopStep(), softAssert, 'Summary step (desktop)');
-    }
+    public validateSummaryStepDesktopVisible = async (softAssert = false) => 
+        await assertVisible(this.summaryDesktopStep(), softAssert, 'Summary step (desktop)');
 
-    public async validateSummaryStepMobileVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.summaryMobileStep(), softAssert, 'Summary step (mobile)');
-    }
+    public validateSummaryStepMobileVisible = async (softAssert = false) => 
+        await assertVisible(this.summaryMobileStep(), softAssert, 'Summary step (mobile)');
 
-    public async validateBonusStepModalVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.modalContainer(), softAssert, 'Bonus step modal');
-    }
+    public validateBonusStepModalVisible = async (softAssert = false) => 
+        await assertVisible(this.modalContainer(), softAssert, 'Bonus step modal');
 
-    public async validatePaymentMethodsVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.paymentMethodsWrapper(), softAssert, 'Payment methods wrapper');
-    }
+    public validatePaymentMethodsVisible = async (softAssert = false) => 
+        await assertVisible(this.paymentMethodsWrapper(), softAssert, 'Payment methods wrapper');
 
-    public async validatePaymentCardVisible(nthCard: number, softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.paymentSingleCard(nthCard), softAssert, `Payment card with number: ${nthCard} `);
-    }
+    public validatePaymentCardVisible = async (nthCard: number, softAssert = false) => 
+        await assertVisible(this.paymentSingleCard(nthCard), softAssert, `Payment card with number: ${nthCard} `);
 
-    public async validateSuccessModalImageVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.successModalImage(), softAssert, 'Success modal image');
-    }
+    public validateSuccessModalImageVisible = async (softAssert = false) => 
+        await assertVisible(this.successModalImage(), softAssert, 'Success modal image');
 
-    public async validateSuccessModalCashierVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.successModalCashier(), softAssert, 'Success modal cashier');
-    }
+    public validateSuccessModalCashierVisible = async (softAssert = false) => 
+        await assertVisible(this.successModalCashier(), softAssert, 'Success modal cashier');
 
-    public async validatePaymentContinueButtonVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.paymentContinueButton(), softAssert, 'Continue button');
-    }
+    public validatePaymentContinueButtonVisible = async (softAssert = false) => 
+        await assertVisible(this.paymentContinueButton(), softAssert, 'Continue button');
 
-    public async clickPaymentContinueButton(): Promise<void> {
-        await this.navigation.clickElement(this.paymentContinueButton(), 'Continue button');
-    }
+    public clickPaymentContinueButton = async () => 
+        await clickElement(this.paymentContinueButton(), 'Continue button');
 
-    public async validateDetailsPIQSectionVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.depositPIQSection(), softAssert, 'Details PIQ section');
-    }
+    public validateDetailsPIQSectionVisible = async (softAssert = false) => 
+        await assertVisible(this.depositPIQSection(), softAssert, 'Details PIQ section');
 
-    public async clickHomeButton(): Promise<void> {
-        await this.navigation.clickElement(this.homeButton(), 'Home button');
-    }
+    public clickHomeButton = async () => 
+        await clickElement(this.homeButton(), 'Home button');
 
-    public async validateHomeButtonVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.homeButton(), softAssert, 'Home button');
-    }
+    public validateHomeButtonVisible = async (softAssert = false) => 
+        await assertVisible(this.homeButton(), softAssert, 'Home button');
 
     @step('I validate the elements of the active step are visible') 
     public async validateActiveStepElements(softAssert = false): Promise<void> {
@@ -154,14 +132,14 @@ export class CashierDeposit {
     @step('I validate payment step elements are visible (mobile)')
     public async validatePaymentStepElementsMobile(softAssert = false): Promise<void> {
         await this.validatePaymentContinueButtonVisible(softAssert);
-        await this.navigation.assertEnabled(this.paymentContinueButton(), softAssert, 'Continue button');
-        await this.navigation.assertNotVisible(this.depositPIQSection(), softAssert, 'Details PIQ section');
+        await assertEnabled(this.paymentContinueButton(), softAssert, 'Continue button');
+        await assertNotVisible(this.depositPIQSection(), softAssert, 'Details PIQ section');
         await this.validatePaymentStepElements(softAssert);
     }
 
     @step('I validate payment step elements are visible (desktop)')
     public async validatePaymentStepElementsDesktop(softAssert = false): Promise<void> {
-        await this.navigation.assertNotVisible(this.paymentContinueButton(), softAssert, 'Continue button');
+        await assertNotVisible(this.paymentContinueButton(), softAssert, 'Continue button');
         await this.validateDetailsPIQSectionVisible(softAssert);
         await this.validatePaymentStepElements(softAssert);
     }
@@ -171,8 +149,8 @@ export class CashierDeposit {
         await this.validatePaymentMethodsVisible(softAssert);
         await this.validatePaymentMethodsHeadingVisible(softAssert);
         await this.validateBackButtonVisible(softAssert);
-        await this.navigation.iterateElements(this.paymentCards(), async (index) => {
-            await this.validatePaymentCardVisible(index, softAssert);
+        await iterateElements(this.paymentCards(), async (index) => {
+            await this.validatePaymentCardVisible(index, softAssert), `Payment cards`;
         });
     }
 
@@ -191,7 +169,7 @@ export class CashierDeposit {
 
     @step('I validate summary step elements (mobile)')
     public async validateSummaryStepElementsMobile(softAssert = false): Promise<void> {
-        await this.navigation.assertNotVisible(this.successModalImage(), softAssert);
+        await assertNotVisible(this.successModalImage(), softAssert);
         await this.validateSummaryStepElements(softAssert);
     }
 
@@ -207,15 +185,15 @@ export class CashierDeposit {
         await this.validateStepCounterVisible(softAssert);
         await this.validateDetailsStepMobileVisible(softAssert);
         await this.validateSummaryStepMobileVisible(softAssert);
-        await this.navigation.assertNotVisible(this.summaryDesktopStep(), softAssert, 'Summary step (desktop)');
+        await assertNotVisible(this.summaryDesktopStep(), softAssert, 'Summary step (desktop)');
     }
 
     @step('I validate payment steps counter (desktop) are visible')
     public async validateStepsCounterDesktop(softAssert = false): Promise<void> {
         await this.validateStepCounterVisible(softAssert);
         await this.validateSummaryStepDesktopVisible(softAssert);
-        await this.navigation.assertNotVisible(this.summaryMobileStep(), softAssert, 'Summary step (mobile)');
-        await this.navigation.assertNotVisible(this.detailsMobileStep(), softAssert, 'Summary step (desktop)');
+        await assertNotVisible(this.summaryMobileStep(), softAssert, 'Summary step (mobile)');
+        await assertNotVisible(this.detailsMobileStep(), softAssert, 'Summary step (desktop)');
     }
 
     @step('I validate that the summary step (common) is visible')

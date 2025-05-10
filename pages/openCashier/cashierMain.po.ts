@@ -1,6 +1,6 @@
 import { Locator, Page } from '@playwright/test';
 import test, { expect } from '../utils/base.po';
-import { Navigation, step, stepParam  } from '../utils/navigation.po';
+import { Navigation, step, stepParam, assertAttribute, assertElementContainsText, clickElement, assertVisible, assertNotVisible, fillInputField, assertEditable, assertEnabled, assertNotEnabled  } from '../utils/navigation.po';
 
 export class CashierMain {
     readonly page: Page;
@@ -27,45 +27,41 @@ export class CashierMain {
     // Actions
     //TODO: this needs steps from the specs
 
-    public async validateModalBodyVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.modalBody(), softAssert, 'Modal body');
-    }
+    public validateModalBodyVisible = async (softAssert = false) => 
+        await assertVisible(this.modalBody(), softAssert, 'Modal body');
 
-    public async validateModalHeadingVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.modalHeading(), softAssert, 'Modal heading');
-    }
+    public validateModalHeadingVisible = async (softAssert = false) => 
+        await assertVisible(this.modalHeading(), softAssert, 'Modal heading');
 
-    public async validateHeadingTitleVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.headingTitle(), softAssert, 'Heading title');
-    }
+    public validateHeadingTitleVisible = async (softAssert = false) => 
+        await assertVisible(this.headingTitle(), softAssert, 'Heading title');
 
-    public async validateHeadingBalanceVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.headingBalance(), softAssert, 'Heading balance');
-    }
+    public validateHeadingBalanceVisible = async (softAssert = false) => 
+        await assertVisible(this.headingBalance(), softAssert, 'Heading balance');
 
-    public async validateRealMoneyBalanceVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.headingRealMoney(), softAssert, 'Real money balance');
-    }
+    public validateRealMoneyBalanceVisible = async (softAssert = false) => 
+        await assertVisible(this.headingRealMoney(), softAssert, 'Real money balance');
 
-    public async validateBonusMoneyBalanceVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.headingBonusMoney(), softAssert, 'Bonus money balance');
-    }
+    public validateBonusMoneyBalanceVisible = async (softAssert = false) => 
+        await assertVisible(this.headingBonusMoney(), softAssert, 'Bonus money balance');
 
-    public async validateWalletTabsVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.walletTabs(), softAssert, 'Wallet tabs');
-    }
+    public validateWalletTabsVisible = async (softAssert = false) => 
+        await assertVisible(this.walletTabs(), softAssert, 'Wallet tabs');
 
-    public async validateDepositHeadingVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.depositHeading(), softAssert, 'Deposit heading');
-    }
+    public validateDepositHeadingVisible = async (softAssert = false) => 
+        await assertVisible(this.depositHeading(), softAssert, 'Deposit heading');
 
-    public async validateWithdrawHeadingVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.withdrawHeading(), softAssert, 'Withdraw heading');
-    }
+    public validateWithdrawHeadingVisible = async (softAssert = false) => 
+        await assertVisible(this.withdrawHeading(), softAssert, 'Withdraw heading');
 
-    public async validateStepsContainerHeadingVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.stepsContainerHeading(), softAssert, 'Steps container heading');
-    }
+    public validateStepsContainerHeadingVisible = async (softAssert = false) => 
+        await assertVisible(this.stepsContainerHeading(), softAssert, 'Steps container heading');
+    
+    public clickDepositHeading = async () => 
+        await clickElement(this.depositHeading(), 'Deposit heading');
+
+    public clickWithdrawHeading = async () => 
+        await clickElement(this.withdrawHeading(), 'Withdraw heading');
 
     @step('I validate all modal elements are visible')
     public async validateAllModalElementsVisible(softAssert = false): Promise<void> {
@@ -81,17 +77,9 @@ export class CashierMain {
         await this.validateStepsContainerHeadingVisible(softAssert);
     }
 
-    public async clickDepositHeading(): Promise<void> {
-        await this.navigation.clickElement(this.depositHeading(), 'Deposit heading');
-    }
-
-    public async clickWithdrawHeading(): Promise<void> {
-        await this.navigation.clickElement(this.withdrawHeading(), 'Withdraw heading');
-    }
-
     @step('I click a wallet tab')
     public async clickWalletTab(tabIndex: number): Promise<void> {
         const walletTab = this.walletTabs().locator(`div:nth-child(${tabIndex})`);
-        await this.navigation.clickElement(walletTab, `Wallet tab ${tabIndex}`);
+        await clickElement(walletTab, `Wallet tab ${tabIndex}`);
     }
 }

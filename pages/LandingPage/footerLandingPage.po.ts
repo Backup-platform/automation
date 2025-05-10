@@ -1,27 +1,22 @@
 import { Locator, Page } from '@playwright/test';
-import { Navigation, step, stepParam } from '../utils/navigation.po';
+import { Navigation, step, stepParam, assertAttribute, iterateElements, assertElementContainsText, clickElement, assertVisible, assertNotVisible, fillInputField, assertEditable, assertEnabled, assertNotEnabled, clickIfVisibleOrFallback, validateAttributes } from '../utils/navigation.po';
 import test from '../utils/base.po';
 
 export class FooterLandingPage {
     readonly page: Page;
-    readonly navigation: Navigation;
 
     constructor(page: Page) {
         this.page = page;
-        this.navigation = new Navigation(page);
     }
 
     // Locators
-    //TODO: add nthelements to the locators
     readonly footerLinksContainer = () => this.page.locator('#footer-links-container');
     readonly footerLinksSections = () => this.page.locator('div[class*="footer_footerNavContainer_"]');
     readonly footerLinkSection = (nthSection: number) => this.footerLinksSections().nth(nthSection);
     readonly footerLinksTitles = (nthSection: number) => this.footerLinkSection(nthSection).locator('div[class*="footer_footerNavigationTitle_"]');
     readonly footerLinks = (nthSection: number) => this.footerLinkSection(nthSection).locator('a[class*="footer_footerNavigationLink_"]').or(
         this.page.locator('div[class*="footer_footerNavigationLink_"]'));
-    readonly footerLink = (nthSection: number, nthLink: number) => this.footerLinkSection(nthSection).locator('a[class*="footer_footerNavigationLink_"]').nth(nthLink).or(
-        this.page.locator('div[class*="footer_footerNavigationLink_"]').nth(nthLink));
-    
+    readonly footerLink = (nthSection: number, nthLink: number) => this.footerLinks(nthSection).nth(nthLink);
 
     readonly footerProvidersContainer = () => this.page.locator('#footer-providers-container');
     readonly paymentMethods = () => this.page.locator('img[class*="footer_paymentMethod_"]');
@@ -32,69 +27,76 @@ export class FooterLandingPage {
     readonly provider = (nthElement: number) => this.providers().nth(nthElement);
 
     readonly footerLicensesContainer = () => this.page.locator('#footer-licenses-container');
-    readonly footerLanguageSwitcher = () => this.page.locator('div[class*="footer_languageSwitcher_"]'); 
+    readonly footerLanguageSwitcher = () => this.page.locator('div[class*="footer_languageSwitcher_"]');
     readonly licenses = () => this.page.locator('#footer-licenses-container p');
     readonly certificates = () => this.page.locator('#footer-certificates-container div');
     readonly certificate = (nthElement: number) => this.certificates().nth(nthElement);
 
 
     // Actions
-    public async validateLinksContainerVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.footerLinksContainer(), softAssert, 'Footer links container');
-    }
+    //TODO: Add visibility and attribute methods if needed
+    public validateLinksContainerVisible = async (softAssert = false) =>
+        await assertVisible(this.footerLinksContainer(), softAssert, 'Footer links container');
 
-    public async validateLinksSectionVisible(nthSection: number, softAssert = false): Promise<void> {
-        const section = this.footerLinksSections().nth(nthSection);
-        await this.navigation.assertVisible(section, softAssert,
-            `Expect links section number ${nthSection} to be visible`);
-    }
+    public validateLinksSectionVisible = async (nthSection: number, softAssert = false) =>
+        await assertVisible(this.footerLinkSection(nthSection), softAssert, `Section number ${nthSection}`);
 
-    public validateLinksTitleVisible = (nthSection: number, softAssert = false) => 
-        this.navigation.assertVisible(this.footerLinksTitles(nthSection), softAssert, `title of links section number ${nthSection}`);
+    public validateLinksTitleVisible = async (nthSection: number, softAssert = false) =>
+        await assertVisible(this.footerLinksTitles(nthSection), softAssert, `title of links section number ${nthSection}`);
 
-    public async validateLinkVisible(nthSection: number, nthLink: number, softAssert = false): Promise<void> {
-        await this.navigation.assertAttribute(this.footerLink(nthSection, nthLink), 'href', false, `Link #${nthLink} in section #${nthSection}`);
-    }
+    public validateLinkVisible = async (nthSection: number, nthLink: number, softAssert = false) =>
+        await assertAttribute(this.footerLink(nthSection, nthLink), 'href', false, `Link #${nthLink} in section #${nthSection}`);
 
-    public async validateProvidersContainerVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.footerProvidersContainer(), softAssert, 'Providers container');
-    }
+    public validateProvidersContainerVisible = async (softAssert = false) =>
+        await assertVisible(this.footerProvidersContainer(), softAssert, 'Providers container');
 
+    public validatePaymentMethodsContainerVisible = async (softAssert = false) =>
+        await assertVisible(this.footerPaymentMethodsContainer(), softAssert, 'Footer payment methods container');
+
+    public validateLicensesContainerVisible = async (softAssert = false) =>
+        await assertVisible(this.footerLicensesContainer(), softAssert, 'Footer licenses container');
+
+    public validateLanguageSwitcherVisible = async (softAssert = false) =>
+        await assertVisible(this.footerLanguageSwitcher(), softAssert, 'Footer language switcher');
+
+    public validateLicensesVisible = async (softAssert = false) =>
+        await assertVisible(this.licenses(), softAssert, 'Footer licenses');
+
+    public validateCertificatesVisible = async (index: number, softAssert = false) =>
+        await assertVisible(this.certificate(index), softAssert, `Certificate number ${index} in footer`);
+
+    public clickLink = async (nthSection: number, nthLink: number) =>
+        await clickElement(this.footerLink(nthSection, nthLink), `Footer link number ${nthLink}`);
+
+    public iterateCertificates = async (softAssert = false) =>
+        await iterateElements(this.certificates(),
+            (index) => this.validateCertificatesVisible(index, softAssert), 'Footer certificates'
+        );
+
+    public iteratePaymentMethods = async (softAssert = false) =>
+        await iterateElements(this.paymentMethods(), (index) =>
+            this.validatePaymentMethodsVisible(index, softAssert), 'Footer payment methods'
+        );
+
+    public validateProviders = async (softAssert = false) =>
+        await iterateElements(this.providers(), (index) =>
+            this.validateProviderVisible(index, softAssert), 'Footer providers'
+        );
+
+    //TODO: Fix iteration methods 
+    //TODO: Add more steps
     @stepParam((nthElement: number) => `I validate payment method number ${nthElement}`)
     public async validatePaymentMethodsVisible(nthElement: number, softAssert = false): Promise<void> {
         await this.validateProvidersContainerVisible(softAssert);
-        await this.navigation.validateAttributes(this.paymentMethod(nthElement), 
-            `Payment method #${nthElement}`, {srcset: null, src:null});
-    }
-
-    public async validatePaymentMethodsContainerVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.footerPaymentMethodsContainer(), softAssert, 'Footer payment methods container');
+        await validateAttributes(this.paymentMethod(nthElement),
+            `Payment method #${nthElement}`, { srcset: null, src: null });
     }
 
     @stepParam((nthElement: number) => `I validate provider number ${nthElement}`)
     public async validateProviderVisible(nthElement: number, softAssert = false): Promise<void> {
         await this.validatePaymentMethodsContainerVisible(softAssert);
-        await this.navigation.validateAttributes(this.provider(nthElement), `Provider number ${nthElement}`, {srcset: null, src: null});
-    }
-
-    public async validateLicensesContainerVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.footerLicensesContainer(), softAssert, 'Footer licenses container');
-    }
-
-    public async validateLanguageSwitcherVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.footerLanguageSwitcher(), softAssert, 'Footer language switcher');
-    }
-
-    public async validateLicensesVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.licenses(), softAssert, 'Footer licenses');
-    }
-
-    public async validateCertificatesVisible(index: number, softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.certificate(index), softAssert, `Certificate number ${index} in footer`);
-    }
-
-    public async clickLink(nthLink: number): Promise<void> {
-        await this.navigation.clickElement(this.footerLinks(nthLink), `Footer link number ${nthLink}`);
+        await validateAttributes(this.provider(nthElement), 
+            `Provider number ${nthElement}`, { srcset: null, src: null });
     }
 
     @step('I validate all elements in footer section')
@@ -105,37 +107,16 @@ export class FooterLandingPage {
         await this.validateLicensesVisible();
     }
 
-    @step('I validate all certificates in the footer')
-    public async validateCertificates(softAssert = false): Promise<void> {
-        await this.navigation.iterateElements(this.certificates(),
-            (index) => this.validateCertificatesVisible(index, softAssert)
-        );
-    }
-
     @step('I validate all links')
     public async validateLinks(softAssert = false, linksToCheck = 1): Promise<void> {
-        await this.navigation.iterateElements(this.footerLinksSections(),
+        await iterateElements(this.footerLinksSections(),
             async (sectionIndex) => {
                 await this.validateLinksSectionVisible(sectionIndex, softAssert);
-                await this.navigation.iterateElements(this.footerLinks(sectionIndex),
-                    (linkIndex) => this.validateLinkVisible(sectionIndex, linkIndex, softAssert),
+                await iterateElements(this.footerLinks(sectionIndex),
+                    (linkIndex) => this.validateLinkVisible(sectionIndex, linkIndex, softAssert), 'Footer links',
                     linksToCheck
                 );
             }
-        );
-    }
-
-    @step('I validate all payment methods')
-    public async validatePaymentMethods(softAssert = false): Promise<void> {
-        await this.navigation.iterateElements(this.paymentMethods(),
-            (index) => this.validatePaymentMethodsVisible(index, softAssert)
-        );
-    }
-
-    @step('I validate all providers')
-    public async validateProviders(softAssert = false): Promise<void> {
-        await this.navigation.iterateElements(this.providers(),
-            (index) => this.validateProviderVisible(index, softAssert)
         );
     }
 

@@ -1,6 +1,6 @@
 import { Locator, Page } from '@playwright/test';
 import test, { expect } from './utils/base.po';
-import { Navigation, step, stepParam } from './utils/navigation.po';
+import { Navigation, step, stepParam, fillInputField, assertVisible,clickElement, assertNotVisible } from './utils/navigation.po';
 import { HeaderMenuDesktop } from './headerMenuDesktop.po';
 import { BottomMenu } from './mobileMenu/bottomMenu.po';
 
@@ -29,21 +29,18 @@ export class LoginPage {
 
     // Actions
 
-    public fillUsername = async (username: string) =>
-        await this.navigation.fillInputField(this.usernameField(), username, 'Username field');
+    public fillUsername = async (username: string) => await fillInputField(this.usernameField(), username, 'Username field');
 
-    public fillPassword = async (password: string) => 
-        await this.navigation.fillInputField(this.passwordField(), password, 'Password field');
+    public fillPassword = async (password: string) => await fillInputField(this.passwordField(), password, 'Password field');
 
-    public clickLoginButton = async () => await this.navigation.clickElement(this.loginButton(), 'Login Button');
+    public clickLoginButton = async () => await clickElement(this.loginButton(), 'Login Button');
 
-    public clickBackButton = async () => await this.navigation.clickElement(this.backButton(), 'Back Button');
+    public clickBackButton = async () => await clickElement(this.backButton(), 'Back Button');
 
-    public clickResetPasswordLink = async () => 
-        await this.navigation.clickElement(this.resetPasswordLink(), 'Reset Password link');
-
-    public validateInputErrorVisible = async (softAssert = false) =>
-        await this.navigation.assertVisible(this.inputError(), softAssert, 'Input error');
+    public clickResetPasswordLink = async () => await clickElement(this.resetPasswordLink(), 'Reset Password link');
+    
+    public validateInputErrorVisible = async (softAssert = false) => 
+        await assertVisible(this.inputError(), softAssert, 'Input error');
 
 
     //TODO: move to locators
@@ -54,9 +51,9 @@ export class LoginPage {
     ): Promise<void> {
         for (const { locator, shouldBeVisible, description } of elements) {
             if (shouldBeVisible) {
-                await this.navigation.assertVisible(locator, softAssert, description);
+                await assertVisible(locator, softAssert, description);
             } else {
-                await this.navigation.assertNotVisible(locator, softAssert, description);
+                await assertNotVisible(locator, softAssert, description);
             }
         }
     }
@@ -106,7 +103,7 @@ export class LoginPage {
         await this.validateElements(elements, false);
     }
 
-    @step('I validate navigation back to {scenario}')
+    @stepParam((scenario: string, expectedURL: string) => `I validate ${scenario} navigation back to ${expectedURL}`)
     public async validateNavigationBack(scenario: string, expectedURL: string): Promise<void> {
         await this.clickBackButton();
         await expect(this.page).toHaveURL(expectedURL, { timeout: 5000 });

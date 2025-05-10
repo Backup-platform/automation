@@ -1,6 +1,6 @@
 import test, { expect } from '../pages/utils/base.po';
 import { Page } from '@playwright/test';
-import { Navigation, step } from '../pages/utils/navigation.po';
+import { Navigation, step, clickElement } from '../pages/utils/navigation.po';
 
 
 export class Banner {
@@ -43,7 +43,7 @@ export class Banner {
 	@step('I clic the accept cookies button')
 	public async acceptCookies(): Promise<void> {
 		await this.page.addLocatorHandler(this.cookiesContainer(), async () => {
-			await this.navigation.clickElement(this.cookiesAcceptButton(), 'Accept cookies');
+			await clickElement(this.cookiesAcceptButton(), 'Accept cookies');
 			//await this.cookiesContainer().waitFor({state: 'hidden'});
 		});
 	}

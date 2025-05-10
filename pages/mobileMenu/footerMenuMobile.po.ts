@@ -1,6 +1,6 @@
 import { Page } from '@playwright/test';
 import test, { expect } from '../utils/base.po';
-import { Navigation, step, stepParam } from '../utils/navigation.po';
+import { Navigation, step, stepParam,  assertAttribute, assertElementContainsText, clickElement, assertVisible, assertNotVisible, fillInputField, assertEditable, assertEnabled, assertNotEnabled } from '../utils/navigation.po';
 import { CashierMain } from '../openCashier/cashierMain.po';
 import { WalletModal } from '../walletModal.po';
 
@@ -29,11 +29,11 @@ export class FooterMenuMobile {
 //TODO: move content to other POMs bottom menu page object
 
 	public async validateLogoVisible(): Promise<void> {
-		await this.navigation.assertVisible(this.headerLogo(), false, 'Header Logo');
+		await assertVisible(this.headerLogo(), false, 'Header Logo');
 	}
 
 	public async validateBottomNavMenuVisible(): Promise<void> {
-		await this.navigation.assertVisible(this.bottomNavMenu(), false, 'Bottom Nav Menu');
+		await assertVisible(this.bottomNavMenu(), false, 'Bottom Nav Menu');
 	}
 
 	//TODO: add step decorator
@@ -46,23 +46,23 @@ export class FooterMenuMobile {
 	}
 
 	public async validateDepositButtonVisible(): Promise<void> {
-		await this.navigation.assertVisible(this.depositButton(), false, 'Deposit button');
+		await assertVisible(this.depositButton(), false, 'Deposit button');
 	}
 
 	public async validateBalanceVisible(): Promise<void> {
-		await this.navigation.assertVisible(this.balance(), false, 'Balance');
+		await assertVisible(this.balance(), false, 'Balance');
 	}
 
 	public async validateShortcutVisible(): Promise<void> {
-		await this.navigation.assertVisible(this.shortcutButton(), false, 'Shortcut button');
+		await assertVisible(this.shortcutButton(), false, 'Shortcut button');
 	}
 
 	public async validateGamesVisible(): Promise<void> {
-		await this.navigation.assertVisible(this.gamesButton(), false, 'Games button');
+		await assertVisible(this.gamesButton(), false, 'Games button');
 	}
 
 	public async clickGames(): Promise<void> {
-		await this.navigation.clickElement(this.gamesButton(), 'Games button');
+		await clickElement(this.gamesButton(), 'Games button');
 	}
 
 	@step(`I get the wallet balance amount`)
@@ -71,7 +71,7 @@ export class FooterMenuMobile {
 	}
 
 	public async clickDepositButton(): Promise<void> {
-		await this.navigation.clickElement(this.depositButton(), 'Deposit button');
+		await clickElement(this.depositButton(), 'Deposit button');
 	}
 	
 	@step(`I click on the deposit button and validate the cashier modal`)

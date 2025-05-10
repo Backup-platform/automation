@@ -1,6 +1,6 @@
 import { Locator, Page } from '@playwright/test';
 import test, { expect } from '../utils/base.po';
-import { Navigation, step, stepParam } from '../utils/navigation.po';
+import { Navigation, step, stepParam, assertVisible, clickElement } from '../utils/navigation.po';
 
 export class LandingPageFAQ {
     readonly page: Page;
@@ -19,31 +19,22 @@ export class LandingPageFAQ {
     readonly faqDropdownAt = (index: number) => this.faqDropdowns().nth(index);
     readonly faqReadMoreSectionAt = (index: number) => this.faqReadMoreSections().nth(index);
 
-    // Helper method to validate element visibility with consistent messaging
-    private async _validateElementVisible(element: Locator, elementName: string, softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(element, softAssert, elementName);
-    }
+    // Actions
+//TODO: fix the "validate" FAQ method 
+    public validateFaqTitleVisible = async (softAssert = false) => 
+        await assertVisible(this.faqTitle(),  softAssert,'FAQ title');
 
-    // Public validation methods
-    public async validateFaqTitleVisible(softAssert = false): Promise<void> {
-        await this._validateElementVisible(this.faqTitle(), 'FAQ title', softAssert);
-    }
+    public validateFaqContainerVisible = async (softAssert = false) =>
+        await assertVisible(this.faqContainer(), softAssert, 'FAQ container');
 
-    public async validateFaqContainerVisible(softAssert = false): Promise<void> {
-        await this._validateElementVisible(this.faqContainer(), 'FAQ container', softAssert);
-    }
+    public validateFaqDropdownVisible = async (index: number, softAssert = false) => 
+        await assertVisible(this.faqDropdownAt(index), softAssert, `FAQ dropdown number ${index}`);
 
-    public async validateFaqDropdownVisible(index: number, softAssert = false): Promise<void> {
-        await this._validateElementVisible(this.faqDropdownAt(index), `FAQ dropdown number ${index}`, softAssert);
-    }
+    public validateFaqReadMoreSectionVisible = async (index: number, softAssert = false) => 
+        await assertVisible(this.faqReadMoreSectionAt(index), softAssert, `FAQ "Read More" number ${index}`);
 
-    public async validateFaqReadMoreSectionVisible(index: number, softAssert = false): Promise<void> {
-        await this._validateElementVisible(this.faqReadMoreSectionAt(index), `FAQ "Read More" number ${index}`, softAssert);
-    }
-
-    public async clickFaqDropdown(index: number): Promise<void> {
-        await this.navigation.clickElement(this.faqDropdownAt(index), `FAQ dropdown number ${index}`);
-    }
+    public clickFaqDropdown = async (index: number) => 
+        await clickElement(this.faqDropdownAt(index), `FAQ dropdown number ${index}`);
 
     @step('I validate FAQ elements are visible')
     public async validateFaqElements(softAssert = false): Promise<void> {
