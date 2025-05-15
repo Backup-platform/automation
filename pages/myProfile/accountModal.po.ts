@@ -36,63 +36,63 @@ export class AccountModal {
     readonly depositButton = () => this.footer().locator('button[class*="primary"]');
 
     // Actions for Account Modal
-    public validateAccountModalVisible = async (softAssert = false) => 
-        await assertVisible(this.accountModal(), softAssert, 'Account modal');
+    public validateAccountModalVisible = async (softAssert = false) =>
+        await assertVisible(this.accountModal(), 'Account modal', softAssert);
 
-    public validateAccountModalHeaderVisible = async (softAssert = false) => 
-        await assertVisible(this.accountModalHeader(), softAssert, 'Account modal header');
+    public validateAccountModalHeaderVisible = async (softAssert = false) =>
+        await assertVisible(this.accountModalHeader(), 'Account modal header', softAssert);
 
-    public validateAccountHeaderTitleVisible = async (softAssert = false) => 
-        await assertVisible(this.accountHeaderTitle(), softAssert, 'Account header title');
+    public validateAccountHeaderTitleVisible = async (softAssert = false) =>
+        await assertVisible(this.accountHeaderTitle(), 'Account header title', softAssert);
 
-    public validateAccountHeaderBalanceVisible = async (softAssert = false) => 
-        await assertVisible(this.accountHeaderBalance(), softAssert, 'Account header balance');
+    public validateAccountHeaderBalanceVisible = async (softAssert = false) =>
+        await assertVisible(this.accountHeaderBalance(), 'Account header balance', softAssert);
 
-    public validateRealMoneyBalanceVisible = async (softAssert = false) => 
-        await assertVisible(this.accountHeaderRealMoney(), softAssert, 'Real money balance');
+    public validateRealMoneyBalanceVisible = async (softAssert = false) =>
+        await assertVisible(this.accountHeaderRealMoney(), 'Real money balance', softAssert);
 
-    public validateBonusMoneyBalanceVisible = async (softAssert = false) => 
-        await assertVisible(this.accountHeaderBonusMoney(), softAssert, 'Bonus money balance');
+    public validateBonusMoneyBalanceVisible = async (softAssert = false) =>
+        await assertVisible(this.accountHeaderBonusMoney(), 'Bonus money balance', softAssert);
 
-    public validateLogoutButtonVisible = async (softAssert = false) => 
-        await assertVisible(this.accountHeaderLogout(), softAssert, 'Logout button');
+    public validateLogoutButtonVisible = async (softAssert = false) =>
+        await assertVisible(this.accountHeaderLogout(), 'Logout button', softAssert);
 
-    public validateAccountHeaderNavBarVisible = async (softAssert = false) => 
-        await assertVisible(this.accountHeaderNavBar(), softAssert, 'Account header navbar');
+    public validateAccountHeaderNavBarVisible = async (softAssert = false) =>
+        await assertVisible(this.accountHeaderNavBar(), 'Account header navbar', softAssert);
 
-    public validateMyWalletTabVisible = async (softAssert = false) => 
-        await assertVisible(this.accountTabMyWallet(), softAssert, 'My Wallet tab');
+    public validateMyWalletTabVisible = async (softAssert = false) =>
+        await assertVisible(this.accountTabMyWallet(), 'My Wallet tab', softAssert);
 
-    public validateWalletBalancesVisible = async (softAssert = false) => 
-        await assertVisible(this.accountWalletBalances(), softAssert, 'Wallet balances section');
+    public validateWalletBalancesVisible = async (softAssert = false) =>
+        await assertVisible(this.accountWalletBalances(), 'Wallet balances section', softAssert);
 
-    public validateRealMoneyWalletVisible = async (softAssert = false) => 
-        await assertVisible(this.accountWalletRealMoney(), softAssert, 'Real money wallet');
+    public validateRealMoneyWalletVisible = async (softAssert = false) =>
+        await assertVisible(this.accountWalletRealMoney(), 'Real money wallet', softAssert);
 
-    public validateBonusMoneyWalletVisible = async (softAssert = false) => 
-        await assertVisible(this.accountWalletBonusMoney(), softAssert, 'Bonus money wallet');
+    public validateBonusMoneyWalletVisible = async (softAssert = false) =>
+        await assertVisible(this.accountWalletBonusMoney(), 'Bonus money wallet', softAssert);
 
-    public validateTotalBalanceWalletVisible = async (softAssert = false) => 
-        await assertVisible(this.accountWalletTotalBalance(), softAssert, 'Total balance wallet');
+    public validateTotalBalanceWalletVisible = async (softAssert = false) =>
+        await assertVisible(this.accountWalletTotalBalance(), 'Total balance wallet', softAssert);
 
-    public validateFooterVisible = async (softAssert = false) => 
-        await assertVisible(this.footer(), softAssert, 'Footer');
+    public validateFooterVisible = async (softAssert = false) =>
+        await assertVisible(this.footer(), 'Footer', softAssert);
 
-    public validateWithdrawButtonVisible = async (softAssert = false) => 
-        await assertVisible(this.withdrawButton(), softAssert, 'Withdraw button');
+    public validateWithdrawButtonVisible = async (softAssert = false) =>
+        await assertVisible(this.withdrawButton(), 'Withdraw button', softAssert);
 
-    public validateDepositButtonVisible = async (softAssert = false) => 
-        await assertVisible(this.depositButton(), softAssert, 'Deposit button');
+    public validateDepositButtonVisible = async (softAssert = false) =>
+        await assertVisible(this.depositButton(), 'Deposit button', softAssert);
 
-    public clickLogoutButton = async (softAssert = false) => 
+    public clickLogoutButton = async (softAssert = false) =>
         await clickElement(this.accountHeaderLogout(), 'Logout button');
 
-    public clickMyWalletTab = async (softAssert = false) => 
+    public clickMyWalletTab = async (softAssert = false) =>
         await clickElement(this.accountTabMyWallet(), 'My Wallet tab');
 
-    public clickWithdrawButton = async (softAssert = false) => 
+    public clickWithdrawButton = async (softAssert = false) =>
         await clickElement(this.withdrawButton(), 'Withdraw button');
 
-    public clickDepositButton = async (softAssert = false) => 
+    public clickDepositButton = async (softAssert = false) =>
         await clickElement(this.depositButton(), 'Deposit button');
 }

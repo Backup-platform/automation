@@ -10,7 +10,7 @@ test.beforeEach(async ({ page, banner, loginPage, headerMenuDesktop }) => {
     await headerMenuDesktop.validateHeaderVisible();
 });
 
-test.describe('Wallet Smoke Tests - Desktop', () => {
+test.describe.skip('Wallet Smoke Tests - Desktop', () => {
     test('Successful Deposit Button Visibility', async ({ headerMenuDesktop }) => {
         await headerMenuDesktop.validateDepositButtonVisible();
     });

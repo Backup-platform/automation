@@ -1,41 +1,27 @@
 import { Page, Locator } from '@playwright/test';
-import test, { expect } from '../utils/base.po';
-import { Navigation, step, stepParam, assertAttribute, assertElementContainsText, clickElement, assertVisible, assertNotVisible, fillInputField, assertEditable, assertEnabled, assertNotEnabled, clickIfVisibleOrFallback, validateAttributes } from '../utils/navigation.po';
+import { step, assertUrl, assertVisible, clickIfVisibleOrFallback, validateAttributes, stepParam } from '../utils/navigation.po';
 import { BottomMenu } from './bottomMenu.po';
-import { LoginPage } from '../loginPage.po';
-import { SignUp } from '../signUp/signUpPage.po';
-
-import { SignUpFirstStep } from '../signUp/signUpFirstStep.po';
 
 export class BurgerMenu {
     readonly page: Page;
-    readonly navigation: Navigation;
-    readonly loginPage: LoginPage;
-    readonly signupPage: SignUp;
     readonly bottomMenu: BottomMenu;
-    readonly signUpFirstStep: SignUpFirstStep;
 
     constructor(page: Page) {
         this.page = page;
-        this.navigation = new Navigation(page);
-        this.signupPage = new SignUp(page);
-        this.loginPage = new LoginPage(page);
         this.bottomMenu = new BottomMenu(page);
-        this.signUpFirstStep = new SignUpFirstStep(page);
     }
 
     //Locators 
-    // TODO: make images etc separate locators so the method actions are reusable
     readonly shortcutButton = () => this.page.locator('#shortcut-btn-shortcut');
     readonly search = () => this.page.locator('input[type="search"]');
     readonly escape = () => this.page.locator('.w-\[2rem\]');
-    readonly home = () => this.page.locator('[class*="mobileMenuNavigationItem"][href="/"]');
-    readonly games = () => this.page.locator('[class*="mobileMenuNavigationItem"][href="/games"]');
-    readonly liveCasino = () => this.page.locator('[class*="mobileMenuNavigationItem"][href="/live-casino/all"]');
-    readonly promotions = () => this.page.locator('[class*="mobileMenuNavigationItem"][href="/promotions"]');
-    readonly tournaments = () => this.page.locator('[class*="mobileMenuNavigationItem"][href="/tournament-promotions"]');
-    readonly vip = () => this.page.locator('[class*="mobileMenuNavigationItem"][href="/vip"]');
-    readonly loyalty = () => this.page.locator('[class*="mobileMenuNavigationItem"][href="/loyalty"]');
+    readonly home = () => this.page.locator('#Burger-menu-nav-link-4');
+    readonly games = () => this.page.locator('[class*="mobileMenuNavigationItem"][href*="/games"]');
+    readonly liveCasino = () => this.page.locator('[class*="mobileMenuNavigationItem"][href*="/live-casino/all"]');
+    readonly promotions = () => this.page.locator('[class*="mobileMenuNavigationItem"][href*="/promotions"]');
+    readonly tournaments = () => this.page.locator('[class*="mobileMenuNavigationItem"][href*="/tournament-promotions"]');
+    readonly vip = () => this.page.locator('[class*="mobileMenuNavigationItem"][href*="/vip"]');
+    readonly loyalty = () => this.page.locator('[class*="mobileMenuNavigationItem"][href*="/loyalty"]');
     readonly register = () => this.page.locator('div[class*="burgerMenu_signUp_"]');
     readonly login = () => this.page.locator('div[class*="burgerMenu_login_"]');
     readonly menuWindow = () => this.page.locator('div[class*="burgerMenu_menuClass_"]');
@@ -48,126 +34,74 @@ export class BurgerMenu {
     readonly searchModalClose = () => this.page.locator('div[class*="searchModalV3_closeButton_"]');
 
  
-    //TODO: 
     //Actions
-    private clickNavigation = async (locator: Locator, description: string) =>
+    @stepParam((locator: Locator, description: string, url?: string) => `I click on the ${description} button`)
+    private async clickNavigation(locator: Locator, description: string, url?: string): Promise<void> {
         await clickIfVisibleOrFallback(locator, async () => await this.openBurgerMenu(), description);
+        if (url) {
+            await assertUrl(this.page, `${process.env.URL}${url}`, true, false);
+        }
+    }
 
-    public validateBottomNavMenuVisible = async (softAssert = false) => 
-        await assertVisible(this.menuWindow(), softAssert, 'Menu window');
+    public validateBurgerMenuVisible = async (softAssert = false) => await assertVisible(this.menuWindow(), 'Menu window', softAssert);
 
-    public validateSearchButtonVisible = async (softAssert = false) => 
-        await assertVisible(this.search(), softAssert, 'Search Button');
+    public validateSearchButtonVisible = async (softAssert = false) => await assertVisible(this.search(), 'Search Button', softAssert);
 
-    public validateHomeButtonVisible = async (softAssert = false) => 
-        await assertVisible(this.home(), softAssert, 'Home Button');
+    public validateHomeButtonVisible = async (softAssert = false) => await assertVisible(this.home(), 'Home Button', softAssert);
 
-    public validateHomeButtonImageVisible = async (softAssert = false) => 
-        await validateAttributes(this.home().locator(this.buttonImage()), 
-        'Home Button image', {srcset: null, src: null});
+    public validateHomeButtonImageVisible = async (softAssert = false) =>
+        await validateAttributes(this.home().locator(this.buttonImage()), 'Home Button image', {srcset: null, src: null}, softAssert);
 
-    public validateGamesButtonVisible = async (softAssert = false) => 
-        await assertVisible(this.games(), softAssert, 'Games Button');
+    public validateGamesButtonVisible = async (softAssert = false) => await assertVisible(this.games(), 'Games Button', softAssert);
 
     public validateGamesButtonImageVisible = async (softAssert = false) => 
-        await validateAttributes(this.games().locator(this.buttonImage()), 
-        'Games Button image', {srcset: null, src: null}, softAssert);
+        await validateAttributes(this.games().locator(this.buttonImage()), 'Games Button image', {srcset: null, src: null}, softAssert);
 
-    public validateLoginButtonVisible = async (softAssert = false) => 
-        await assertVisible(this.login(), softAssert, 'Login Button');
+    public validateLoginButtonVisible = async (softAssert = false) => await assertVisible(this.login(), 'Login Button', softAssert);
 
-    public validateRegisterButtonVisible = async (softAssert = false) => 
-        await assertVisible(this.register(), softAssert, 'Register Button');
+    public validateRegisterButtonVisible = async (softAssert = false) => await assertVisible(this.register(), 'Register Button', softAssert);
 
-    public validateDepositButtonVisible  = async (softAssert = false) => 
-        await assertVisible(this.deposit(), softAssert, 'Deposit Button');
+    public validateDepositButtonVisible = async (softAssert = false) => await assertVisible(this.deposit(), 'Deposit Button', softAssert);
 
-    public fillSearchField = async (value: string, softAssert = false) => 
-        await assertVisible(this.searchModal(), softAssert, 'Search Modal');
+    public validateSearchField = async (softAssert = false) => await assertVisible(this.searchModal(), 'Search Modal', softAssert);
 
-    public clickShortcutButton = async (softAssert = false) => 
-        await this.clickNavigation(this.shortcutButton(), 'Shortcut Button');
+    public clickShortcutButton = async () => await this.clickNavigation(this.shortcutButton(), 'Shortcut Button', '');
 
-    public async clickHomeButton(softAssert = false) : Promise<void> {
-        await this.clickNavigation(this.home(), 'Home Button');
-        await this.navigation.assertUrl(`${process.env.URL}`, softAssert);
-    }
+    public clickHomeButton = async () => await this.clickNavigation(this.home(), 'Home Button', '');
 
-    public async clickGamesButton(softAssert = false) : Promise<void> {
-        await this.clickNavigation(this.games(), 'Games Button');
-        await this.navigation.assertUrl(`${process.env.URL}games/all`, softAssert);
-    }
+    public clickGamesButton = async () => await this.clickNavigation(this.games(), 'Games Button', '/games/all');
 
-    public async clickLiveCasinoButton(softAssert = false): Promise<void> {
-        await this.clickNavigation(this.liveCasino(), 'Live Casino Button');
-        await this.navigation.assertUrl(`${process.env.URL}live-casino/all`, softAssert);
-    }
+    public clickLiveCasinoButton = async () => await this.clickNavigation(this.liveCasino(), 'Live Casino', '/live-casino/all');
 
-    public async clickPromotionsButton(softAssert = false): Promise<void> {
-        await this.clickNavigation(this.promotions(), 'Promotions Button');
-        await this.navigation.assertUrl(`${process.env.URL}promotions`, softAssert);
-    }
+    public clickPromotionsButton = async () => await this.clickNavigation(this.promotions(), 'Promotions', '/promotions');
 
-    public async clickTournamentsButton(softAssert = false): Promise<void> {
-        await this.clickNavigation(this.tournaments(), 'Tournaments Button');
-        await this.navigation.assertUrl(`${process.env.URL}tournament-promotions`, softAssert);
-    }
+    public clickTournamentsButton = async () => await this.clickNavigation(this.tournaments(), 'Tournaments', '/tournament-promotions');
 
-    public async clickVIPButton(softAssert = false): Promise<void> {
-        await this.clickNavigation(this.vip(), 'VIP Button');
-        await this.navigation.assertUrl(`${process.env.URL}vip`, softAssert);
-    }
+    public clickVIPButton = async () => await this.clickNavigation(this.vip(), 'VIP', '/vip');
 
-    public async clickLoyaltyButton(softAssert = false): Promise<void> {
-        await this.clickNavigation(this.loyalty(), 'Loyalty Button');
-        await this.navigation.assertUrl(`${process.env.URL}loyalty`, softAssert);
-    }
+    public clickLoyaltyButton = async () => await this.clickNavigation(this.loyalty(), 'Loyalty', '/loyalty');
 
-    @step('I click on the my bonuses button')
-    public async clickLoginButton(softAssert = false): Promise<void> {
-        await this.clickNavigation(this.login(), 'Login Button');
-        await this.loginPage.validateLoginWindowElementsVisible(softAssert);
-        await this.loginPage.clickBackButton();
-    }
+    public clickLoginButton = async () => await this.clickNavigation(this.login(), 'Login');
 
-    @step('I click on the register button')
-    public async clickRegisterButton(softAssert = false): Promise<void> {
-        await this.clickNavigation(this.register(), 'Register Button');
-        await this.signUpFirstStep.validatePageElements();
-        await this.signupPage.successEscapeButton().click();
-    }
+    public clickRegisterButton = async () => await this.clickNavigation(this.register(), 'Register');
 
-    //TODO: this needs to be a locator
-    public async clickSupportButton(softAssert = false): Promise<void> {
-        await this.clickNavigation(this.support(), 'Support Button');
-        await assertVisible(this.page.locator('div[data-embed*="chat"]'), softAssert, 'Support Page');
-        await clickElement(this.page.locator('button[aria-label*="Minimize widget"]'), 'Support Page');
-    }
+    public clickSupportButton = async () => await this.clickNavigation(this.support(), 'Support');
 
-    public async clickLogoutButton(softAssert = false): Promise<void> {
-        await this.clickNavigation(this.logout(), 'Logout Button');
-        await this.loginPage.validateMobileLoginState(false);
-    }
+    public clickLogoutButton = async () => await this.clickNavigation(this.logout(), 'Logout');
 
-    //TODO: needs locator
-    public async clickDepositButton(softAssert = false): Promise<void> {
-        await this.clickNavigation(this.deposit(), 'Deposit Button');
-        await expect(this.page.locator('div[class*="walletModal_modalContent_"]'), 'Expect walet modal to be visible').toBeVisible();
-        await clickElement(this.page.locator('div[class*="walletModal_closeBtn_"]'), 'Close Button') //TODO: 
-    }
+    public clickDepositButton = async () => await this.clickNavigation(this.deposit(), 'Deposit');
 
     @step('I open the burger menu')
     public async openBurgerMenu(): Promise<void> {
         await this.bottomMenu.validateBurgerButtonVisible(true);
-        await this.bottomMenu.clickBurgerMenuButton(true);
-        await this.validateBottomNavMenuVisible(true);
+        await this.bottomMenu.clickBurgerMenuButton();
+        await this.validateBurgerMenuVisible(true);
     }
 
     @step('I validate the shortcut button is visible')
     public async validateShortcutButtonVisible(softAssert = false): Promise<void> {
-        await assertVisible(this.shortcutButton(), softAssert, 'Shortcut Button');
-        await assertVisible(this.shortcutButton().locator(this.buttonImage()), 
-            softAssert, 'Shortcut Button image');
+        await assertVisible(this.shortcutButton(), 'Shortcut Button', softAssert);
+        await assertVisible(this.shortcutButton().locator(this.buttonImage()), 'Shortcut Button image', softAssert);
     }
 
     @step('I validate the home button, its image and atributes are visible')
@@ -184,74 +118,58 @@ export class BurgerMenu {
 
     @step('I validate the live casino button is visible')
     public async validateLiveCasinoButtonVisible(softAssert = false): Promise<void> {
-        await assertVisible(this.liveCasino(), softAssert, 'Live Casino Button');
-        await validateAttributes(this.liveCasino().locator(this.buttonImage()), 'Live Button image', {srcset: null, src: null});
+        await assertVisible(this.liveCasino(), 'Live Casino Button', softAssert);
+        await validateAttributes(this.liveCasino().locator(this.buttonImage()), 'Live Button image', {srcset: null, src: null}, softAssert);
     }
 
     @step('I validate the promotions button is visible')
     public async validatePromotionsButtonVisible(softAssert = false): Promise<void> {
-        await assertVisible(this.promotions(), softAssert, 'Promotions Button');
-        await assertVisible(this.promotions().locator(this.buttonImage()), 
-            softAssert, 'Promotions Button image');
-        await assertAttribute(this.promotions().locator(this.buttonImage()), 'srcset');
-        await assertAttribute(this.promotions().locator(this.buttonImage()), 'src');
+        await assertVisible(this.promotions(), 'Promotions Button', softAssert);
+        await validateAttributes(this.promotions().locator(this.buttonImage()), 'Promotions Button image', {srcset: null, src: null}, softAssert);
     }
 
     @step('I validate the tournaments button is visible')
     public async validateTournamentsButtonVisible(softAssert = false): Promise<void> {
-        await assertVisible(this.tournaments(), softAssert, 'Tournaments Button');
-        await assertVisible(this.tournaments().locator(this.buttonImage()), 
-            softAssert, 'Tournaments Button image');
-        await assertAttribute(this.tournaments().locator(this.buttonImage()), 'srcset');
-        await assertAttribute(this.tournaments().locator(this.buttonImage()), 'src');
+        await assertVisible(this.tournaments(), 'Tournaments Button', softAssert);
+        await validateAttributes(this.tournaments().locator(this.buttonImage()), 'Tournaments Button image', {srcset: null, src: null}, softAssert);
     }
 
     @step('I validate the VIP button is visible')
     public async validateVIPButtonVisible(softAssert = false): Promise<void> {
-        await assertVisible(this.vip(), softAssert, 'VIP Button');
-        await assertVisible(this.vip().locator(this.buttonImage()), 
-            softAssert, 'VIP Button image');
-        await assertAttribute(this.vip().locator(this.buttonImage()), 'srcset');
-        await assertAttribute(this.vip().locator(this.buttonImage()), 'src');
+        await assertVisible(this.vip(), 'VIP Button', softAssert);
+        await validateAttributes(this.vip().locator(this.buttonImage()), 'VIP Button image', {srcset: null, src: null}, softAssert);
     }
 
     @step('I validate the loyalty button is visible')
     public async validateLoyaltyButtonVisible(softAssert = false): Promise<void> {
-        await assertVisible(this.loyalty(), softAssert, 'Loyalty Button');
-        await assertVisible(this.loyalty().locator(this.buttonImage()), 
-            softAssert, 'Loyalty Button image');
-        await assertAttribute(this.loyalty().locator(this.buttonImage()), 'srcset');
-        await assertAttribute(this.loyalty().locator(this.buttonImage()), 'src');
+        await assertVisible(this.loyalty(), 'Loyalty Button', softAssert);
+        await validateAttributes(this.loyalty().locator(this.buttonImage()), 'Loyalty Button image', {srcset: null, src: null}, softAssert);
     }
 
     @step('I validate the support button is visible')
     public async validateSupportButtonVisible(softAssert = false): Promise<void> {
-        await assertVisible(this.support(), softAssert, 'Support Button');
-        await assertVisible(this.support().locator(this.buttonImage()), 
-            softAssert, 'Support Button image');
-        await assertAttribute(this.support().locator(this.buttonImage()), 'srcset');
-        await assertAttribute(this.support().locator(this.buttonImage()), 'src');
+        await assertVisible(this.support(), 'Support Button', softAssert);
+        await validateAttributes(this.support().locator(this.buttonImage()), 'Support Button image', {srcset: null, src: null}, softAssert);
     }
 
     @step('I validate the logout button is visible')
     public async validateLogoutButtonVisible(softAssert = false): Promise<void> {
-        await assertVisible(this.logout(), softAssert, 'Logout Button');
-        await assertVisible(this.logout().locator(this.buttonImage()), 
-            softAssert, 'Logout Button image');
-        await assertAttribute(this.logout().locator(this.buttonImage()), 'srcset');
-        await assertAttribute(this.logout().locator(this.buttonImage()), 'src');
+        await assertVisible(this.logout(), 'Logout Button', softAssert);
+        await validateAttributes(this.logout().locator(this.buttonImage()), 'Logout Button image', {srcset: null, src: null}, softAssert);
     }
 
     @step('I click on the search button')
     public async clickSearchField(softAssert = false): Promise<void> {
         await this.clickNavigation(this.search(), 'Search Button');
-        await assertVisible(this.searchModal(), softAssert, 'Search Modal');
+        await assertVisible(this.searchModal(), 'Search Modal', softAssert);
         await this.searchModalClose().click();
     }
 
     @step('I validate the menu elements for a guest')
     public async validateMenuElementsForGuest(softAssert :boolean): Promise<void> {
-            await this.validateBottomNavMenuVisible(true);
+
+            //TODO: add not visible elements 
+            await this.validateBurgerMenuVisible(true);
             await this.validateSearchButtonVisible(softAssert);
             await this.validateHomeButtonVisible(softAssert);
             await this.validateGamesButtonVisible(softAssert);
@@ -265,7 +183,8 @@ export class BurgerMenu {
 
     @step('I validate the menu elements for a member')
     public async validateMenuElementsForMember(softAssert = false): Promise<void> {
-            await this.validateBottomNavMenuVisible(true);
+            //TODO: add not visible elements 
+            await this.validateBurgerMenuVisible(true);
             await this.validateSearchButtonVisible(softAssert);
             await this.validateHomeButtonVisible(softAssert);
             await this.validateGamesButtonVisible(softAssert);

@@ -17,12 +17,11 @@ test.describe.skip('Test mobile game is responsive', () => {
 		[GameProviders.providers.booming, GameProviders.providers.yggdrasil]
 	];
 	for (const game of providers) {
-		test(`Validate ${game} Opens`, async ({ footerMenuMobile, gameProviders }) => {
-			await footerMenuMobile.validateLogoVisible();
-			await footerMenuMobile.validateBottomNavVisible();
-			await footerMenuMobile.clickGames();
-			await gameProviders.selectMobileProvidersFromDropdown(game);
-			//TODO: validate game page
+		test(`Validate ${game} Opens`, async ({ gameProviders }) => {
+			// await footerMenuMobile.validateLogoVisible();
+			// await footerMenuMobile.validateBottomNavVisible();
+			// await footerMenuMobile.clickGames();
+			// await gameProviders.selectMobileProvidersFromDropdown(game);
 			// await page.locator('div[id="5men\:FruityBoobsParty-gcs"]>div>div>button').click();
 			// await page.waitForTimeout(17000);
 			// await page.locator('div[class*="gamePlay_sideControls"] a[href*="games/all"]').click();

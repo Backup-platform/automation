@@ -11,9 +11,6 @@ test.beforeEach(async ({ page, banner }) => {
 });
 
 test.describe("Landing Page Regression Tests - Mobile", () => {
-	test.beforeEach(async ({ }, testInfo) => {
-		if (!testInfo.project.name.includes('mobile')) { test.skip(); }
-	});
 
 	test.describe("Guest", () => {
 		test.use({ storageState: "playwright/.auth/noAuthentication.json" });
@@ -28,12 +25,12 @@ test.describe("Landing Page Regression Tests - Mobile", () => {
 			await topCategories.validateCardElements();
 			await topCategories.clickShowAll();
 			await page.goBack();
-			await topCategories.validateTopCardNavigation('slots/all', 2);
+			await topCategories.validateTopCardNavigation('/slots/all', 2);
 		});
 
 		test("Validate Game categories elements for a guest", async ({ gamesCategories, page }) => {
 			await gamesCategories.validateGameCardElements();
-			await gamesCategories.clickShowAll(0, 'slots/new-releases');
+			await gamesCategories.clickShowAll(0, '/slots/new-releases');
 			await page.goBack();
 			await gamesCategories.validateCTAbuttonsForGuests(0, 0, true);
 		});
@@ -41,7 +38,7 @@ test.describe("Landing Page Regression Tests - Mobile", () => {
 		test("Validate promotion elements for a guest", async ({ promotionsLandingPage, page }) => {
 			await promotionsLandingPage.validateCardElements();
 			await promotionsLandingPage.validateCardTitleVisible(0);
-			await promotionsLandingPage.clickShowAll('promotions');
+			await promotionsLandingPage.clickShowAll('/promotions');
 			await page.goBack();
 			await promotionsLandingPage.validateCTAbuttonsForGuests(0, true);
 		});
@@ -57,12 +54,12 @@ test.describe("Landing Page Regression Tests - Mobile", () => {
 			await topCategories.validateCardElements();
 			await topCategories.clickShowAll();
 			await page.goBack();
-			await topCategories.validateTopCardNavigation('slots/all', 2);
+			await topCategories.validateTopCardNavigation('/slots/all', 2);
 		});
 
 		test("Validate Game categories elements for a member", async ({ gamesCategories, page }) => {
 			await gamesCategories.validateGameCardElements();
-			await gamesCategories.clickShowAll(0, 'slots/new-releases');
+			await gamesCategories.clickShowAll(0, '/slots/new-releases');
 			await page.goBack();
 			await gamesCategories.validateCTAbuttonsForMembers(0, 0, true);
 		});
@@ -70,7 +67,7 @@ test.describe("Landing Page Regression Tests - Mobile", () => {
 		test("Validate promotion elements for a member", async ({ promotionsLandingPage, page }) => {
 			await promotionsLandingPage.validateCardElements();
 			await promotionsLandingPage.validateCardTitleVisible(0);
-			await promotionsLandingPage.clickShowAll('promotions');
+			await promotionsLandingPage.clickShowAll('/promotions');
 			await page.goBack();
 			await promotionsLandingPage.validateCTAbuttonsForMembers(0, true);
 		});

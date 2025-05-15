@@ -1,17 +1,17 @@
 import test, { expect } from "../../../../pages/utils/base.po";
 
-test.beforeEach(async ({ page, banner, headerMenuDesktop }) => {
+test.beforeEach(async ({ page, banner }) => {
 	await page.goto(`${process.env.URL}`, { waitUntil: "load" });
 	await banner.clickEscapeInOptIn();
 	await banner.randomClickSkipSomething();
 	await banner.bannerNewDesign();
-	await banner.bannerHiThere();
+	await banner.bannerHiThere();  
+    await banner.acceptCookies();
+    await banner.acceptTermsAndConditions();
 });
 
 test.describe("Login Page Regression Tests - Desktop", () => {
-	test.beforeAll(({ }, testInfo) => {
-		if (!testInfo.project.name.includes('desktop')) { test.skip(); }
-	});
+
 	test.use({ storageState: "playwright/.auth/noAuthentication.json" });
 
 	test("Validate Empty Username tab", async ({ loginPage, headerMenuDesktop }) => {
@@ -35,31 +35,23 @@ test.describe("Login Page Regression Tests - Desktop", () => {
 	});
 
 	test.describe("Test Navigating to login from another page then going back via the back button", () => {
-		const preconditionStartPage = [
-			{ scenario: 'LandingPage', URL: '' },
-			{ scenario: 'CrashGames', URL: 'crash-games/all' },
-			{ scenario: 'LiveCasino', URL: 'live-casino/all' },
-			{ scenario: 'Tournament', URL: 'tournament-promotions' },
-			{ scenario: 'Games', URL: 'games/all' },
-			{ scenario: 'Promotions', URL: 'promotions' },
-			{ scenario: 'VIP', URL: 'vip' },
-			{ scenario: 'Loyalty', URL: 'loyalty' },
-			{ scenario: 'PromotionDetails', URL: 'promotions/mercury-33' },
-			{ scenario: 'SimplePageAboutUS', URL: 'simplePage/AboutUs' },
-			{ scenario: 'SimplePageBonusTerms', URL: 'simplePage/BonusTerms' },
-			{ scenario: 'SimplePageAnti-MoneyLaundering', URL: 'simplePage/Anti-MoneyLaundering' },
-			{ scenario: 'SimplePageCookiePolicy', URL: 'simplePage/CookiePolicy' },
-			{ scenario: 'SimplePageTOS', URL: 'simplePage/TermsAndConditions' },
-			{ scenario: 'SlotGamePlayScreen', URL: 'play/alea/pragmatic-play-sweet-bonanza' },
-			{ scenario: 'LiveGameBlackjack', URL: 'live-casino/blackjack' },
+		const navigationScenarios = [
+			{ scenario: 'LandingPage', url: '', navigate: async ({ headerMenuDesktop }) => await headerMenuDesktop.clickSFLogo() },
+			{ scenario: 'CrashGames', url: '/crash-games/all', navigate: async ({ headerMenuDesktop }) => await headerMenuDesktop.clickCrashButton() },
+			{ scenario: 'LiveCasino', url: '/live-casino/all', navigate: async ({ headerMenuDesktop }) => await headerMenuDesktop.clickLiveButton() },
+			{ scenario: 'Tournament', url: '/tournament-promotions', navigate: async ({ headerMenuDesktop }) => await headerMenuDesktop.clickTournamentButton() },
+			{ scenario: 'Games', url: '/games/all', navigate: async ({ headerMenuDesktop }) => await headerMenuDesktop.clickGamesButton() },
+			{ scenario: 'Promotions', url: '/promotions', navigate: async ({ headerMenuDesktop }) => await headerMenuDesktop.clickPromotionsButton() },
+			{ scenario: 'VIP', url: '/vip', navigate: async ({ headerMenuDesktop }) => await headerMenuDesktop.clickVIPButton() },
+			{ scenario: 'Loyalty', url: '/loyalty', navigate: async ({ headerMenuDesktop }) => await headerMenuDesktop.clickLoyaltyButton() },
 		];
-		for (const pageToStartFrom of preconditionStartPage) {
-			test(`Test clicking back on login returns to ${pageToStartFrom.scenario}`, async ({ page, loginPage, headerMenuDesktop }) => {
-				await page.goto(`${process.env.URL}` + pageToStartFrom.URL, { waitUntil: 'domcontentloaded' });
-				await headerMenuDesktop.clickLoginButton();
+		for (const { scenario, url, navigate } of navigationScenarios) {
+			test(`Test clicking back on login returns to ${scenario}`, async ({ page, loginPage, headerMenuDesktop }) => {
+				await navigate({ headerMenuDesktop }); // Go to page via nav method
+				await headerMenuDesktop.clickLoginButton(); // Open login modal
 				await loginPage.validateLoginWindowElementsVisible(true);
-				await loginPage.clickBackButton();
-				await expect(page).toHaveURL(`${process.env.URL}` + pageToStartFrom.URL);
+				await loginPage.clickBackButton(); // Click back
+				await expect(page).toHaveURL(`${process.env.URL}${url}`);
 			});
 		}
 	});

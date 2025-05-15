@@ -1,5 +1,5 @@
 import test, { expect } from '../../pages/utils/base.po';
-
+/*
 test.beforeEach(async ({ page, banner, landingPage,loginPage,headerMenuDesktop }) => {
 	await page.goto(`${process.env.URL}`);
 	await banner.bannerNewDesign();
@@ -17,3 +17,4 @@ test.describe.skip('Login Desktop', () => {
         await headerMenuDesktop.validateDepositButtonVisible();
 	});
 });
+*/

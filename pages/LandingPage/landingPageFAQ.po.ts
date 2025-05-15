@@ -22,16 +22,16 @@ export class LandingPageFAQ {
     // Actions
 //TODO: fix the "validate" FAQ method 
     public validateFaqTitleVisible = async (softAssert = false) => 
-        await assertVisible(this.faqTitle(),  softAssert,'FAQ title');
+        await assertVisible(this.faqTitle(), 'FAQ title', softAssert);
 
     public validateFaqContainerVisible = async (softAssert = false) =>
-        await assertVisible(this.faqContainer(), softAssert, 'FAQ container');
+        await assertVisible(this.faqContainer(), 'FAQ container', softAssert);
 
-    public validateFaqDropdownVisible = async (index: number, softAssert = false) => 
-        await assertVisible(this.faqDropdownAt(index), softAssert, `FAQ dropdown number ${index}`);
+    public validateFaqDropdownVisible = async (index: number, softAssert = false) =>
+        await assertVisible(this.faqDropdownAt(index), `FAQ dropdown number ${index}`, softAssert);
 
-    public validateFaqReadMoreSectionVisible = async (index: number, softAssert = false) => 
-        await assertVisible(this.faqReadMoreSectionAt(index), softAssert, `FAQ "Read More" number ${index}`);
+    public validateFaqReadMoreSectionVisible = async (index: number, softAssert = false) =>
+        await assertVisible(this.faqReadMoreSectionAt(index), `FAQ "Read More" number ${index}`, softAssert);
 
     public clickFaqDropdown = async (index: number) => 
         await clickElement(this.faqDropdownAt(index), `FAQ dropdown number ${index}`);

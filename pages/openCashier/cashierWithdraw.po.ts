@@ -40,63 +40,63 @@ export class CashierWithdraw {
 
 
     // Actions for Validations
-    public validateStepsContainerVisible = async (softAssert = false) => 
-        await assertVisible(this.stepsContainer(), softAssert, 'Deposit steps');
+    public validateStepsContainerVisible = async (softAssert = false) =>
+        await assertVisible(this.stepsContainer(), `Deposit steps`, softAssert);
 
-    public validatePaymentStepDesktopVisible = async (softAssert = false) => 
-        await assertVisible(this.paymentDesktopStep(), softAssert, 'Payment step (desktop)');
+    public validatePaymentStepDesktopVisible = async (softAssert = false) =>
+        await assertVisible(this.paymentDesktopStep(), `Payment step (desktop)`, softAssert);
 
-    public validateSummaryStepDesktopVisible = async (softAssert = false) => 
-        await assertVisible(this.summaryDesktopStep(), softAssert, 'Summary step (desktop)');
+    public validateSummaryStepDesktopVisible = async (softAssert = false) =>
+        await assertVisible(this.summaryDesktopStep(), `Summary step (desktop)`, softAssert);
 
-    public validatePaymentStepMobileVisible = async (softAssert = false) => 
-        await assertVisible(this.paymentMobileStep(), softAssert, 'Payment step (mobile)');
+    public validatePaymentStepMobileVisible = async (softAssert = false) =>
+        await assertVisible(this.paymentMobileStep(), `Payment step (mobile)`, softAssert);
 
-    public validateDetailsStepMobileVisible = async (softAssert = false) => 
-        await assertVisible(this.detailsMobileStep(), softAssert, 'Details step (mobile)');
+    public validateDetailsStepMobileVisible = async (softAssert = false) =>
+        await assertVisible(this.detailsMobileStep(), `Details step (mobile)`, softAssert);
 
-    public validateSummaryStepMobileVisible = async (softAssert = false) => 
-        await assertVisible(this.summaryMobileStep(), softAssert, 'Summary step (mobile)');
+    public validateSummaryStepMobileVisible = async (softAssert = false) =>
+        await assertVisible(this.summaryMobileStep(), `Summary step (mobile)`, softAssert);
 
-    public validateContinueButtonVisible = async (softAssert = false) => 
-        await assertVisible(this.continueButton(), softAssert, 'Continue button');
+    public validateContinueButtonVisible = async (softAssert = false) =>
+        await assertVisible(this.continueButton(), `Continue button`, softAssert);
 
-    public validateSuccessModalImageVisible = async (softAssert = false) => 
-        await assertVisible(this.successModalImage(), softAssert, 'Success modal image');
+    public validateSuccessModalImageVisible = async (softAssert = false) =>
+        await assertVisible(this.successModalImage(), `Success modal image`, softAssert);
 
-    public validateSuccessModalCashierVisible = async (softAssert = false) => 
-        await assertVisible(this.successModalCashier(), softAssert, 'Success modal cashier');
+    public validateSuccessModalCashierVisible = async (softAssert = false) =>
+        await assertVisible(this.successModalCashier(), `Success modal cashier`, softAssert);
 
-    public validateHomeButtonVisible = async (softAssert = false) => 
-        await assertVisible(this.homeButton(), softAssert, 'Home button');
+    public validateHomeButtonVisible = async (softAssert = false) =>
+        await assertVisible(this.homeButton(), `Home button`, softAssert);
 
-    public validateBackButtonVisible = async (softAssert = false) => 
-        await assertVisible(this.backButton(), softAssert, 'Back button');
+    public validateBackButtonVisible = async (softAssert = false) =>
+        await assertVisible(this.backButton(), `Back button`, softAssert);
 
-    public validatePaymentMethodsVisible = async (softAssert = false) => 
-        await assertVisible(this.paymentMethodsWrapper(), softAssert, 'Payment methods wrapper');
+    public validatePaymentMethodsVisible = async (softAssert = false) =>
+        await assertVisible(this.paymentMethodsWrapper(), `Payment methods wrapper`, softAssert);
 
-    public validatePaymentMethodsHeadingVisible = async (softAssert = false) => 
-        await assertVisible(this.paymentMethodsHeading(), softAssert, 'Payment methods heading');
+    public validatePaymentMethodsHeadingVisible = async (softAssert = false) =>
+        await assertVisible(this.paymentMethodsHeading(), `Payment methods heading`, softAssert);
 
     public validatePaymentCardVisible = async (nthCard: number, softAssert = false) => 
-        await assertVisible(this.paymentSingleCard(nthCard), softAssert, `Payment card with number: ${nthCard}`);
+        await assertVisible(this.paymentSingleCard(nthCard), `Payment card with number: ${nthCard}`, softAssert);
 
-    public validateDetailsPIQSectionVisible = async (softAssert = false) => 
-        await assertVisible(this.depositPIQSection(), softAssert, 'Details PIQ section');
+    public validateDetailsPIQSectionVisible = async (softAssert = false) =>
+        await assertVisible(this.depositPIQSection(), `Details PIQ section`, softAssert);
 
-    public validatePaymentContinueButtonVisible = async (softAssert = false) => 
-        await assertVisible(this.continueButton(), softAssert, 'Continue button');
+    public validatePaymentContinueButtonVisible = async (softAssert = false) =>
+        await assertVisible(this.continueButton(), `Continue button`, softAssert);
 
     // Actions for Interactions
-    public clickContinueButton = async () => 
-        await clickElement(this.continueButton(), 'Continue button');
+    public clickContinueButton = async () =>
+        await clickElement(this.continueButton(), `Continue button`);
 
-    public clickHomeButton = async () => 
-        await clickElement(this.homeButton(), 'Home button');
+    public clickHomeButton = async () =>
+        await clickElement(this.homeButton(), `Home button`);
 
-    public clickBackButton = async () => 
-        await clickElement(this.backButton(), 'Back button');
+    public clickBackButton = async () =>
+        await clickElement(this.backButton(), `Back button`);
 
     public selectPaymentCard = async (nthCard: number) => 
         await clickElement(this.paymentSingleCard(nthCard), `Payment card ${nthCard}`);
@@ -104,14 +104,14 @@ export class CashierWithdraw {
     @step('I validate payment step elements are visible (mobile)')
     public async validatePaymentStepElementsMobile(softAssert = false): Promise<void> {
         await this.validatePaymentContinueButtonVisible(softAssert);
-        await assertEnabled(this.continueButton(), softAssert, 'Continue button');
-        await assertNotVisible(this.depositPIQSection(), softAssert, 'Details PIQ section');
+        await assertEnabled(this.continueButton(), `Continue button`, softAssert);
+        await assertNotVisible(this.depositPIQSection(), `Details PIQ section`, softAssert);
         await this.validatePaymentStepElements(softAssert);
     }
 
     @step('I validate payment step elements are visible (desktop)')
     public async validatePaymentStepElementsDesktop(softAssert = false): Promise<void> {
-        await assertNotVisible(this.continueButton(), softAssert, 'Continue button');
+        await assertNotVisible(this.continueButton(), `Continue button`, softAssert);
         await this.validateDetailsPIQSectionVisible(softAssert);
         await this.validatePaymentStepElements(softAssert);
     }
@@ -120,7 +120,7 @@ export class CashierWithdraw {
     public async validatePaymentStepElements(softAssert = false): Promise<void> {
         await this.validatePaymentMethodsVisible(softAssert);
         await this.validatePaymentMethodsHeadingVisible(softAssert);
-        await assertNotVisible(this.backButton(), softAssert, 'Back button');
+        await assertNotVisible(this.backButton(), `Back button`, softAssert);
         await iterateElements(this.paymentCards(), async (index) => {
             await this.validatePaymentCardVisible(index, softAssert), 'Payment card'
         });
@@ -141,7 +141,7 @@ export class CashierWithdraw {
 
     @step('I validate summary step elements (mobile)')
     public async validateSummaryStepElementsMobile(softAssert = false): Promise<void> {
-        await assertNotVisible(this.successModalImage(), softAssert);
+        await assertNotVisible(this.successModalImage(), `Success modal image`, softAssert);
         await this.validateSummaryStepElements(softAssert);
     }
 
@@ -158,8 +158,8 @@ export class CashierWithdraw {
         await this.validatePaymentStepMobileVisible(softAssert);
         await this.validateDetailsStepMobileVisible(softAssert);
         await this.validateSummaryStepMobileVisible(softAssert);
-        await assertNotVisible(this.paymentDesktopStep(), softAssert, 'Payment step (desktop)');
-        await assertNotVisible(this.summaryDesktopStep(), softAssert, 'Summary step (desktop)');
+        await assertNotVisible(this.paymentDesktopStep(), `Payment step (desktop)`, softAssert);
+        await assertNotVisible(this.summaryDesktopStep(), `Summary step (desktop)`, softAssert);
     }
 
     @step('I validate withdraw steps counter (desktop)')
@@ -167,8 +167,53 @@ export class CashierWithdraw {
         await this.validateStepsContainerVisible(softAssert);
         await this.validatePaymentStepDesktopVisible(softAssert);
         await this.validateSummaryStepDesktopVisible(softAssert);
-        await assertNotVisible(this.summaryMobileStep(), softAssert, 'Summary step (mobile)');
-        await assertNotVisible(this.detailsMobileStep(), softAssert, 'Details step (desktop)');
+        await assertNotVisible(this.summaryMobileStep(), `Summary step (mobile)`, softAssert);
+        await assertNotVisible(this.detailsMobileStep(), `Details step (mobile)`, softAssert);
+    }
+
+    @step('I perform the withdraw UI flow up to payment details')
+    public async withdrawFlowUpToPayment(options: {
+        isDesktop: boolean
+    }) {
+        const { isDesktop } = options;
+        // Modal elements and step counters
+        if (isDesktop) {
+            await this.validateStepsCounterDesktop();
+            await this.validatePaymentStepElementsDesktop();
+        } else {
+            await this.validateStepsCounterMobile();
+            await this.validatePaymentStepElementsMobile();
+        }
+        // At this point, the flow is ready for paymentIQ handling
+    }
+
+    @step('I perform the withdraw UI flow after payment details')
+    public async withdrawFlowAfterPayment(options: {
+        isDesktop: boolean,
+        getBalance: () => Promise<number>
+    }) {
+        const { isDesktop, getBalance } = options;
+        if (isDesktop) {
+            await this.validateSummaryStepElementsDesktop();
+        } else {
+            await this.validateSummaryStepElementsMobile();
+        }
+        await this.clickHomeButton();
+        const realMoneyAfterWithdrawMenu = await getBalance();
+        return { realMoneyAfterWithdrawMenu };
+    }
+
+    @step('I validate withdraw summary from cashier modal')
+    public async validateWithdrawSummaryFromCashierModal(options: {
+        isDesktop: boolean,
+        clickDeposit: () => Promise<void>,
+        getCashierRealMoney: () => Promise<number>,
+        expectedAmount: number
+    }) {
+        const { clickDeposit, getCashierRealMoney, expectedAmount } = options;
+        await clickDeposit();
+        const realMoneyAfterWithdrawCahier = await getCashierRealMoney();
+        return { realMoneyAfterWithdrawCahier };
     }
 
 }

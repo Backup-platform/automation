@@ -36,34 +36,34 @@ export class FooterLandingPage {
     // Actions
     //TODO: Add visibility and attribute methods if needed
     public validateLinksContainerVisible = async (softAssert = false) =>
-        await assertVisible(this.footerLinksContainer(), softAssert, 'Footer links container');
+        await assertVisible(this.footerLinksContainer(), 'Footer links container', softAssert);
 
     public validateLinksSectionVisible = async (nthSection: number, softAssert = false) =>
-        await assertVisible(this.footerLinkSection(nthSection), softAssert, `Section number ${nthSection}`);
+        await assertVisible(this.footerLinkSection(nthSection), `Section number ${nthSection}`, softAssert);
 
     public validateLinksTitleVisible = async (nthSection: number, softAssert = false) =>
-        await assertVisible(this.footerLinksTitles(nthSection), softAssert, `title of links section number ${nthSection}`);
+        await assertVisible(this.footerLinksTitles(nthSection), `title of links section number ${nthSection}`, softAssert);
 
     public validateLinkVisible = async (nthSection: number, nthLink: number, softAssert = false) =>
-        await assertAttribute(this.footerLink(nthSection, nthLink), 'href', false, `Link #${nthLink} in section #${nthSection}`);
+        await assertAttribute(this.footerLink(nthSection, nthLink), 'href', `Link #${nthLink} in section #${nthSection}`, softAssert);
 
     public validateProvidersContainerVisible = async (softAssert = false) =>
-        await assertVisible(this.footerProvidersContainer(), softAssert, 'Providers container');
+        await assertVisible(this.footerProvidersContainer(), 'Providers container', softAssert);
 
     public validatePaymentMethodsContainerVisible = async (softAssert = false) =>
-        await assertVisible(this.footerPaymentMethodsContainer(), softAssert, 'Footer payment methods container');
+        await assertVisible(this.footerPaymentMethodsContainer(), 'Footer payment methods container', softAssert);
 
     public validateLicensesContainerVisible = async (softAssert = false) =>
-        await assertVisible(this.footerLicensesContainer(), softAssert, 'Footer licenses container');
+        await assertVisible(this.footerLicensesContainer(), 'Footer licenses container', softAssert);
 
     public validateLanguageSwitcherVisible = async (softAssert = false) =>
-        await assertVisible(this.footerLanguageSwitcher(), softAssert, 'Footer language switcher');
+        await assertVisible(this.footerLanguageSwitcher(), 'Footer language switcher', softAssert);
 
     public validateLicensesVisible = async (softAssert = false) =>
-        await assertVisible(this.licenses(), softAssert, 'Footer licenses');
+        await assertVisible(this.licenses(), 'Footer licenses', softAssert);
 
     public validateCertificatesVisible = async (index: number, softAssert = false) =>
-        await assertVisible(this.certificate(index), softAssert, `Certificate number ${index} in footer`);
+        await assertVisible(this.certificate(index), `Certificate number ${index} in footer`, softAssert);
 
     public clickLink = async (nthSection: number, nthLink: number) =>
         await clickElement(this.footerLink(nthSection, nthLink), `Footer link number ${nthLink}`);

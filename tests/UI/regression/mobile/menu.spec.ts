@@ -10,14 +10,11 @@ test.beforeEach(async ({ page, banner }) => {
 });
 
 test.describe("Menu Regression Tests - Mobile", () => {
-    test.beforeAll(({ }, testInfo) => {
-        if (!testInfo.project.name.includes('mobile')) { test.skip(); }
-    });
 
-    test("Validate header menu navigation for a member", async ({ burgerMenu, page }) => {
+    test("Validate menu navigation for a member", async ({ burgerMenu, page }) => {
         await page.goto(`${process.env.URL}`, { waitUntil: "domcontentloaded" });
         await burgerMenu.openBurgerMenu();
-        await burgerMenu.validateBottomNavMenuVisible(true);
+        await burgerMenu.validateMenuElementsForMember(true);
         await burgerMenu.clickSearchField(true);
         await page.reload();
 
@@ -35,15 +32,15 @@ test.describe("Menu Regression Tests - Mobile", () => {
         test.use({ storageState: "playwright/.auth/noAuthentication.json" });
         test("Validate header menu navigation for a guest", async ({ burgerMenu, page }) => {
             await burgerMenu.openBurgerMenu();
-            await burgerMenu.validateBottomNavMenuVisible(true);
+            await burgerMenu.validateMenuElementsForGuest(true);
             await burgerMenu.clickSearchField(true);
             await page.reload();
-            await burgerMenu.clickHomeButton(true);
-            await burgerMenu.clickGamesButton(true);
-            await burgerMenu.clickPromotionsButton(true);
-            await burgerMenu.clickVIPButton(true);
-            await burgerMenu.clickLoyaltyButton(true);
-            await burgerMenu.clickSupportButton(true);
+            await burgerMenu.clickHomeButton();
+            await burgerMenu.clickGamesButton();
+            await burgerMenu.clickPromotionsButton();
+            await burgerMenu.clickVIPButton();
+            await burgerMenu.clickLoyaltyButton();
+            await burgerMenu.clickSupportButton();
         });
     });
 });

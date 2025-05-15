@@ -30,13 +30,23 @@ export class Banner {
 	readonly sideBannerCloseBtn = () => this.page.locator('.small-notifications-wrapper .close-btn');
 	readonly cookiesContainer = () => this.page.locator('div[class*="cookies_cookiesContainer_"]');
 	readonly cookiesAcceptButton = () => this.page.locator('button[class*="cookies_cookiesAcceptBtn_"]');
+	readonly termsAndConditionsModal = () => this.page.locator('[class*="terms_modalContent_"]');
+	readonly acceptTermsAndConditionsButton = () => this.page.locator('div[class*="terms_modalHeader_"]');
 	
 	//Actions
 	@step('I click skip new design')
 	public async randomBannerNewDesign(): Promise<void> {
 		await this.page.addLocatorHandler(this.bannerNewDesign(), async () => {
 			await this.skipNewDesign().click();
-			//await this.bannerNewDesign().waitFor({state: 'hidden'});
+			await this.bannerNewDesign().waitFor({state: 'hidden'});
+		});
+	}
+	
+	@step('I accept terms and conditions')
+	public async acceptTermsAndConditions(): Promise<void> {
+		await this.page.addLocatorHandler(this.termsAndConditionsModal(), async () => {
+			await this.acceptTermsAndConditionsButton().click();
+			await this.bannerNewDesign().waitFor({state: 'hidden'});
 		});
 	}
 
@@ -44,7 +54,7 @@ export class Banner {
 	public async acceptCookies(): Promise<void> {
 		await this.page.addLocatorHandler(this.cookiesContainer(), async () => {
 			await clickElement(this.cookiesAcceptButton(), 'Accept cookies');
-			//await this.cookiesContainer().waitFor({state: 'hidden'});
+			await this.cookiesContainer().waitFor({state: 'hidden'});
 		});
 	}
 
@@ -73,7 +83,7 @@ export class Banner {
 			var countRows = await this.sideBannerCloseBtn().count();
 			for (var i = 0; i < countRows; ++i) {
 				await this.sideBannerCloseBtn().nth(i).click();
-				await this.sideBanner2().waitFor({ state: 'hidden' });
+				//await this.sideBanner2().waitFor({ state: 'hidden' });
 			}
 		});
 	}

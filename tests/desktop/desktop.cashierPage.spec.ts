@@ -1,5 +1,5 @@
 import test, { expect } from "../../pages/utils/base.po";
-
+/*
 
 test.beforeEach(async ({ page, banner, paymentIQ }) => {
     await page.goto(`${process.env.URL}`, { waitUntil: "load" });
@@ -74,11 +74,11 @@ test.describe("Landing Page Smoke Tests", () => {
         });
 
         testData.forEach(({ amount, cardNumber, expiry, cvv }) => {
-            test(`Validate cashier with amount ${amount}`, async ({ footerMenuMobile, cashierMain, cashierDeposit, page, cashierWithdraw, paymentIQ }) => {
+            test(`Validate cashier with amount ${amount}`, async ({ bottomMenu, cashierMain, cashierDeposit, cashierWithdraw, paymentIQ }) => {
 
-                const initialRealMoney = await footerMenuMobile.getWalletBalance();
+                const initialRealMoney = await bottomMenu.getWalletBalance();
 
-                await footerMenuMobile.clickDepositButton();
+                await bottomMenu.clickDepositButton();
                 await cashierMain.validateAllModalElementsVisible();
                 await cashierDeposit.validateStepsCounterMobile();
                 await cashierDeposit.validateBonusStepElements();
@@ -92,10 +92,10 @@ test.describe("Landing Page Smoke Tests", () => {
                 await paymentIQ.validateDepositIframeLocatorsVisible();
 
                 await cashierDeposit.clickHomeButton();
-                const realMoneyAfterDepositMenu = await footerMenuMobile.getWalletBalance();
+                const realMoneyAfterDepositMenu = await bottomMenu.getWalletBalance();
                 await expect(await realMoneyAfterDepositMenu).toBeCloseTo(await initialRealMoney + parseFloat(amount), 2);
 
-                await footerMenuMobile.clickDepositButton();
+                await bottomMenu.clickDepositButton();
                 const realMoneyAfterDepositCahier = parseFloat(await cashierMain.headingRealMoney().innerText());
                 await expect(await realMoneyAfterDepositCahier).toBeCloseTo(await initialRealMoney + parseFloat(amount), 2);
 
@@ -112,14 +112,15 @@ test.describe("Landing Page Smoke Tests", () => {
                 await paymentIQ.validateWithdrawIframeLocatorsVisible();
 
                 await cashierWithdraw.clickHomeButton();
-                const realMoneyAfterWithdrawMenu = await footerMenuMobile.getWalletBalance();
+                const realMoneyAfterWithdrawMenu = await bottomMenu.getWalletBalance();
                 await expect(await realMoneyAfterWithdrawMenu).toBeCloseTo(await realMoneyAfterDepositMenu - parseFloat(amount), 2);
 
-                await footerMenuMobile.clickDepositButton();
+                await bottomMenu.clickDepositButton();
                 const realMoneyAfterWithdrawCahier = parseFloat(await cashierMain.headingRealMoney().innerText());
                 await expect(await realMoneyAfterWithdrawCahier).toBeCloseTo(await realMoneyAfterDepositMenu - parseFloat(amount), 2);
             });
         });
     });
 });
+*/
 

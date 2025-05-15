@@ -1,6 +1,6 @@
 import { Locator, Page } from '@playwright/test';
 import test, { expect } from '../utils/base.po';
-import { Navigation, step, stepParam, assertAttribute, assertElementContainsText, clickElement, assertVisible, assertNotVisible, fillInputField, assertEditable, assertEnabled, assertNotEnabled, clickIfVisibleOrFallback, validateAttributes } from '../utils/navigation.po';
+import { Navigation, step, stepParam, assertAttribute, assertUrl, getIndicesByAttribute, assertElementContainsText, clickElement, assertVisible, assertNotVisible, fillInputField, assertEditable, assertEnabled, assertNotEnabled, clickIfVisibleOrFallback, validateAttributes } from '../utils/navigation.po';
 import { pathToFileURL } from 'url';
 
 export class LandingPageCarousel {
@@ -32,43 +32,43 @@ export class LandingPageCarousel {
 
 	//Actions
 	public validateContainerVisible = async (softAssert = false) =>
-		await assertVisible(this.container(), softAssert, 'Promotion container');
+		await assertVisible(this.container(), 'Promotion container', softAssert);
 
 	public validateVisibleSectionVisible = async (softAssert = false) =>
-		await assertVisible(this.visibleSection(), softAssert, 'Promotion section');
+		await assertVisible(this.visibleSection(), 'Promotion section', softAssert);
 
 	public validateDotsContainerVisible = async (softAssert = false) =>
-		await assertVisible(this.dotsContainer(), softAssert, 'Dots container');
+		await assertVisible(this.dotsContainer(), 'Dots container', softAssert);
 
 	public validateDotsVisible = async (softAssert = false) =>
-		await assertVisible(this.dots(), softAssert, 'Dots');
+		await assertVisible(this.dots(), 'Dots', softAssert);
 
 	public validateArrowLeftButtonVisible = async (softAssert = false) =>
-		await assertVisible(this.arrowLeftButton(), softAssert, 'Left arrow button');
+		await assertVisible(this.arrowLeftButton(), 'Left arrow button', softAssert);
 
 	public validateArrowRightButtonVisible = async (softAssert = false) =>
-		await assertVisible(this.arrowRightButton(), softAssert, 'Right arrow button');
+		await assertVisible(this.arrowRightButton(), 'Right arrow button', softAssert);
 
 	public validatePromotionsEntriesVisible = async (nthElement: number, softAssert = false) =>
-		await assertVisible(this.promotionEntries().nth(nthElement), softAssert, `Container number ${nthElement}`);
+		await assertVisible(this.promotionEntries().nth(nthElement), `Container number ${nthElement}`, softAssert);
 
 	public validateEnterButtonVisible = async (softAssert = false) =>
-		await assertVisible(this.enterButton(), softAssert, 'Enter button');
+		await assertVisible(this.enterButton(), 'Enter button', softAssert);
 
 	public validateEnterButtonLinkVisible = async (softAssert = false) =>
-		await assertVisible(this.userReceiveBonusLink(), softAssert, 'Enter button link');
+		await assertVisible(this.userReceiveBonusLink(), 'Enter button link', softAssert);
 
 	public validateReceiveBonusButtonVisible = async (softAssert = false) =>
-		await assertVisible(this.receiveBonusButton(), softAssert, 'Receive bonus button');
+		await assertVisible(this.receiveBonusButton(), 'Receive bonus button', softAssert);
 
 	public validatePromotionsTitlesVisible = async (nthElement: number, softAssert = false) =>
-		await assertVisible(this.promotionsTitles().nth(nthElement), softAssert, `Title number ${nthElement}`);
+		await assertVisible(this.promotionsTitles().nth(nthElement), `Title number ${nthElement}`, softAssert);
 
 	public validatePromotionsSubtitlesVisible = async (nthElement: number, softAssert = false) =>
-		await assertVisible(this.promotionsSubtitles().nth(nthElement), softAssert, `Subtitle number ${nthElement}`);
+		await assertVisible(this.promotionsSubtitles().nth(nthElement), `Subtitle number ${nthElement}`, softAssert);
 
 	public validatePromotionsTextVisible = async (nthElement: number, softAssert = false) =>
-		await assertVisible(this.promotionsText().nth(nthElement), softAssert, `Text number ${nthElement}`);
+		await assertVisible(this.promotionsText().nth(nthElement), `Text number ${nthElement}`, softAssert);
 
 	public clickArrowLeftButton = async () => await clickElement(this.arrowLeftButton(), 'Left arrow button');
 
@@ -86,10 +86,9 @@ export class LandingPageCarousel {
 	//TODO: maybe an arrow function but this is fine due to the decorator
 	@stepParam((index) => `I validate the dot at index ${index} has active class`)
 	async validateDotIsActive(index: number, softAssert = false): Promise<void> {
-		await assertAttribute(this.dots().nth(index), 
-			"class", softAssert, `Carousel dot ${index}`,
-			new RegExp(this.dotsActiveClass).source
-		);
+		await assertAttribute(this.dots().nth(index), "class", 
+		`Carousel dot ${index}`, softAssert, 
+		new RegExp(this.dotsActiveClass).source);
 	}
 
 	//TODO: fix the steps methods they look bad and have nth element etc
@@ -115,7 +114,7 @@ export class LandingPageCarousel {
 
 	//TODO: not used might be reused in navigation
 	async getActiveDotIndex(): Promise<number> {
-		const activeIndices = await this.navigation.getIndicesByAttribute(this.dots(), 'class', this.dotsActiveClass);
+		const activeIndices = await getIndicesByAttribute(this.dots(), 'class', this.dotsActiveClass);
 		expect(activeIndices.length,
 			`Expect exactly one active element with class "${this.dotsActiveClass}", found - ${activeIndices.length}.`).toEqual(1)
 		return activeIndices[0];
@@ -157,7 +156,7 @@ export class LandingPageCarousel {
 	public async validateGetBonusNavigation(softAssert = false): Promise<void> {
 		await this.clickDot(0);
 		await this.clickReceiveBonusButton();
-		await this.navigation.assertUrl(`${process.env.URL}promotions`);
+		await assertUrl(this.page, `${process.env.URL}promotions`);
 	}
 
 	@step('I validate carousel enter navigation for a guest')

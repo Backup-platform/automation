@@ -1,6 +1,6 @@
 import { Locator, Page } from '@playwright/test';
 import test, { expect } from '../utils/base.po';
-import { Navigation, step, stepParam, assertAttribute, assertElementContainsText, clickElement, assertVisible, assertNotVisible, fillInputField, assertEditable, assertEnabled, assertNotEnabled, clickIfVisibleOrFallback, validateAttributes } from '../utils/navigation.po';
+import { Navigation, step, assertUrl, assertUrlContains, stepParam, assertAttribute, assertElementContainsText, clickElement, assertVisible, assertNotVisible, fillInputField, assertEditable, assertEnabled, assertNotEnabled, clickIfVisibleOrFallback, validateAttributes } from '../utils/navigation.po';
 
 export class GamesCategories {
     readonly page: Page;
@@ -30,44 +30,40 @@ export class GamesCategories {
 
     //Actions
     public validateCategoryTitlesVisible = async (nthElement: number, softAssert = false) =>
-        await assertVisible(this.title(nthElement), softAssert, `Category title ${nthElement}`);
+        await assertVisible(this.title(nthElement), `Category title ${nthElement}`, softAssert);
 
     public validateShowAllButtonsVisible = async (nthElement: number, softAssert = false) =>
-        await assertVisible(this.showAll(nthElement), softAssert, `Show All button ${nthElement}`);
+        await assertVisible(this.showAll(nthElement), `Show All button ${nthElement}`, softAssert);
 
     public validateGameCardsContainerVisible = async (nthElement: number, softAssert = false) =>
-        await assertVisible(this.cardsContainers().nth(nthElement), softAssert,
-            `Game card container ${nthElement}`);
+        await assertVisible(this.cardsContainers().nth(nthElement), `Game card container ${nthElement}`, softAssert);
 
     public validateGameCardVisible = async (nthCategory: number, nthCard: number, softAssert = false) =>
-        await assertVisible(this.cards(nthCategory).nth(nthCard), softAssert,
-            `Card ${nthCard} in category ${nthCategory}`);
+        await assertVisible(this.cards(nthCategory).nth(nthCard), `Card ${nthCard} in category ${nthCategory}`, softAssert);
 
     public validateGameTitleVisible = async (nthCategory: number, nthCard: number, softAssert = false) =>
-        await assertVisible(this.cardTitle(nthCategory, nthCard), softAssert,
-            `Card ${nthCard} Title in category ${nthCategory}`);
+        await assertVisible(this.cardTitle(nthCategory, nthCard), `Card ${nthCard} Title in category ${nthCategory}`, softAssert);
 
     public validateGameSubtitleVisible = async (nthCategory: number, nthCard: number, softAssert = false) =>
-        await assertVisible(this.cardSubtitles(nthCategory, nthCard), softAssert,
-            `Card ${nthCard} Subtitle in category ${nthCategory}`);
+        await assertVisible(this.cardSubtitles(nthCategory, nthCard), `Card ${nthCard} Subtitle in category ${nthCategory}`, softAssert);
 
     public validateGameImageVisible = async (nthCategory: number, nthCard: number, softAssert = false) =>
         await validateAttributes(this.cardImage(nthCategory, nthCard), 
             `Card ${nthCard} Image in category ${nthCategory}`, {src: null, srcset: null}, softAssert);
 
     public validatePlayNowVisible = async (nthCategory: number, nthCard: number, softAssert = false) =>
-        await assertVisible(this.playNow(nthCategory, nthCard), softAssert,
-            `Card ${nthCard} Play Now button in category ${nthCategory}`);
+        await assertVisible(this.playNow(nthCategory, nthCard), 
+            `Card ${nthCard} Play Now button in category ${nthCategory}`, softAssert);
 
     public validateTryForFunVisible = async (nthCategory: number, nthCard: number, softAssert = false) =>
-        await assertVisible(this.tryForFun(nthCategory, nthCard), softAssert,
-            `Card ${nthCard} Try for Fun button in category ${nthCategory}`);
+        await assertVisible(this.tryForFun(nthCategory, nthCard), 
+            `Card ${nthCard} Try for Fun button in category ${nthCategory}`, softAssert);
 
     public validateTryForFunNotVisible = async (nthCategory: number, nthCard: number, softAssert = false) =>
-        await assertNotVisible(this.tryForFun(nthCategory, nthCard), softAssert,
-            `Card ${nthCard} Try for Fun button in category ${nthCategory}`);
+        await assertNotVisible(this.tryForFun(nthCategory, nthCard),
+            `Card ${nthCard} Try for Fun button in category ${nthCategory}`, softAssert);
 
-    public clickTryForFunButton = async (nthCategory: number, nthCard: number) => 
+    public clickTryForFunButton = async (nthCategory: number, nthCard: number) =>
         await clickElement(this.tryForFun(nthCategory, nthCard),
             `Card ${nthCard} Try for Fun button in category ${nthCategory}`);
 
@@ -81,7 +77,7 @@ export class GamesCategories {
             `Show All menu button in category ${nthElement}`);
         const URL = `${process.env.URL}${newURL}`
         await this.page.waitForURL(URL, { waitUntil: "domcontentloaded" });
-        await this.navigation.assertUrl(URL);
+        await assertUrl(this.page, URL);
     }
 
     @step('I validate the CTA buttons for members')
@@ -89,19 +85,19 @@ export class GamesCategories {
         await this.validateTryForFunNotVisible(nthCategory, nthCard, softAssert);
         await this.clickPlayNowButton(nthCategory, nthCard);
         //TODO: need a more specific validation
-        await this.page.waitForURL('**/https://stage.spacefortuna1.com/play/**', { waitUntil: "domcontentloaded" });
-        await this.navigation.assertUrlContains(['spacefortuna1.com/play'], softAssert);
+        await this.page.waitForURL(`${process.env.URL}/play/**`, { waitUntil: "domcontentloaded" });
+        await assertUrlContains(this.page, ['spacefortuna1.com/en/play'], softAssert);
     }
 
     @step('I validate the CTA buttons for guests')
     public async validateCTAbuttonsForGuests(nthCategory: number, nthCard: number, isMobile: boolean, softAssert = false): Promise<void> {
         await this.clickPlayNowButton(nthCategory, nthCard);
-        await assertVisible(this.page.locator('#login-modal'), softAssert, 'Login modal');
+        await assertVisible(this.page.locator('#login-modal'), 'Login modal', softAssert);
         await clickElement(this.page.locator('#login-modal-close-btn'), 'Close button');
         await this.clickTryForFunButton(nthCategory, nthCard);
         //TODO: need a more specific validation
-        await this.page.waitForURL('**/https://stage.spacefortuna1.com/play/**', { waitUntil: "domcontentloaded" });
-        await this.navigation.assertUrlContains(['spacefortuna1.com/play'], softAssert);
+        await this.page.waitForURL(`${process.env.URL}/play/**`, { waitUntil: "domcontentloaded" });
+        await assertUrlContains(this.page, ['spacefortuna1.com/en/play'], softAssert);
     }
 
     @step('I validate the Game card elements')

@@ -1,7 +1,6 @@
 import test, { expect } from "../../../pages/utils/base.po";
 
-
-test.beforeEach(async ({ page, banner, paymentIQ }) => {
+test.beforeEach(async ({ page, banner }) => {
     await page.goto(`${process.env.URL}`, { waitUntil: "load" });
     await banner.clickEscapeInOptIn();
     await banner.randomClickSkipSomething();
@@ -9,7 +8,8 @@ test.beforeEach(async ({ page, banner, paymentIQ }) => {
     await banner.randomBannerHiThere();
     await banner.acceptCookies();
     await banner.randomBannerNewDesign();
-    await paymentIQ.deleteAccountIfDropdownVisible(true);
+    //await paymentIQ.deleteAccountIfDropdownVisible(true);
+    await banner.acceptTermsAndConditions();
 });
 
 const testData = [
@@ -17,53 +17,63 @@ const testData = [
 ];
 
 test.describe("Landing Page Smoke Tests", () => {
-    test.describe("Desktop", () => {
+    test.describe.only("Desktop", () => {
         test.beforeEach(async ({ }, testInfo) => {
             if (!testInfo.project.name.includes('desktop')) { test.skip(); }
         });
 
         testData.forEach(({ amount, cardNumber, expiry, cvv }) => {
-            test(`Validate cashier with amount ${amount}`, async ({ headerMenuDesktop, cashierMain, cashierDeposit, page, cashierWithdraw, paymentIQ }) => {
+            test(`Validate cashier with amount ${amount}`, async ({ headerMenuDesktop, cashierMain, cashierDeposit, cashierWithdraw, paymentIQ }) => {
 
-                const initialRealMoney = await headerMenuDesktop.getBalanceAmmount();
+                // Deposit flow up to payment
+                const { initialRealMoney } = await cashierDeposit.depositFlowUpToPayment({
+                    isDesktop: true,
+                    clickDeposit: () => headerMenuDesktop.clickDepositButton(),
+                    getBalance: () => headerMenuDesktop.getBalanceAmmount()
+                });
 
-                await headerMenuDesktop.clickDepositButton();
-                await cashierMain.validateAllModalElementsVisible();
-                await cashierDeposit.validateStepsCounterDesktop();
-                await cashierDeposit.validateActiveStepElements();
-                await cashierDeposit.validateBonusStepElements();
-                await cashierDeposit.clickDepositWithoutBonus();
-                await cashierDeposit.validatePaymentStepElementsDesktop(true);
+                // PaymentIQ actions
                 await paymentIQ.fillCardDetails(amount, cardNumber, expiry, cvv);
                 await paymentIQ.clickSetAmountButton();
-                await cashierDeposit.validateSummaryStepElementsDesktop();
-                await paymentIQ.validateDepositIframeLocatorsVisible();
 
-                await cashierDeposit.clickHomeButton();
-                const realMoneyAfterDepositMenu = await headerMenuDesktop.getBalanceAmmount();
+                // Deposit flow after payment
+                const { realMoneyAfterDepositMenu } = await cashierDeposit.depositFlowAfterPayment({
+                    isDesktop: true, getBalance: () => headerMenuDesktop.getBalanceAmmount()
+                });
+
                 await expect(await realMoneyAfterDepositMenu).toBeCloseTo(await initialRealMoney + parseFloat(amount), 2);
 
-                await headerMenuDesktop.clickDepositButton();
-                const realMoneyAfterDepositCahier = parseFloat(await cashierMain.headingRealMoney().innerText());
-                await expect(await realMoneyAfterDepositCahier).toBeCloseTo(await initialRealMoney + parseFloat(amount), 2);
+                // Validate summary from cashier modal
+                const { realMoneyAfterDepositCahier } = await cashierDeposit.validateDepositSummaryFromCashierModal({
+                    isDesktop: true,
+                    clickDeposit: () => headerMenuDesktop.clickDepositButton(),
+                    getCashierRealMoney: async () => parseFloat(await cashierMain.headingRealMoney().innerText()),
+                    expectedAmount: initialRealMoney + parseFloat(amount)
+                });
+                await expect(realMoneyAfterDepositCahier).toBeCloseTo(await initialRealMoney + parseFloat(amount), 2);
 
-                await cashierMain.validateAllModalElementsVisible();
-                await cashierMain.clickWithdrawHeading();
-                await cashierMain.validateAllModalElementsVisible();
-                await cashierWithdraw.validateStepsCounterDesktop();
-                await cashierWithdraw.validatePaymentStepElementsDesktop();
+                // Withdraw flow up to payment
+                await cashierMain.openWithdrawModalAndValidate();
+                await cashierWithdraw.withdrawFlowUpToPayment({ isDesktop: true });
+
+                // PaymentIQ actions for withdraw
                 await paymentIQ.fillAmount(amount);
                 await paymentIQ.clickSetAmountButton();
-                await cashierWithdraw.validateSummaryStepElementsDesktop();
-                await paymentIQ.validateWithdrawIframeLocatorsVisible();
 
-                await cashierWithdraw.clickHomeButton();
-                const realMoneyAfterWithdrawMenu = await headerMenuDesktop.getBalanceAmmount();
+                // Withdraw flow after payment
+                const { realMoneyAfterWithdrawMenu } = await cashierWithdraw.withdrawFlowAfterPayment({
+                    isDesktop: true, getBalance: () => headerMenuDesktop.getBalanceAmmount()
+                });
                 await expect(await realMoneyAfterWithdrawMenu).toBeCloseTo(await realMoneyAfterDepositMenu - parseFloat(amount), 2);
 
-                await headerMenuDesktop.clickDepositButton();
-                const realMoneyAfterWithdrawCahier = parseFloat(await cashierMain.headingRealMoney().innerText());
-                await expect(await realMoneyAfterWithdrawCahier).toBeCloseTo(await realMoneyAfterDepositMenu - parseFloat(amount), 2);
+                // Validate withdraw summary from cashier modal
+                const { realMoneyAfterWithdrawCahier } = await cashierWithdraw.validateWithdrawSummaryFromCashierModal({
+                    isDesktop: true,
+                    clickDeposit: () => headerMenuDesktop.clickDepositButton(),
+                    getCashierRealMoney: async () => parseFloat(await cashierMain.headingRealMoney().innerText()),
+                    expectedAmount: realMoneyAfterDepositMenu - parseFloat(amount)
+                });
+                await expect(realMoneyAfterWithdrawCahier).toBeCloseTo(await realMoneyAfterDepositMenu - parseFloat(amount), 2);
             });
         });
     });
@@ -74,50 +84,59 @@ test.describe("Landing Page Smoke Tests", () => {
         });
 
         testData.forEach(({ amount, cardNumber, expiry, cvv }) => {
-            test(`Validate cashier with amount ${amount}`, async ({ footerMenuMobile, cashierMain, cashierDeposit, page, cashierWithdraw, paymentIQ }) => {
+            test(`Validate cashier with amount ${amount}`, async ({ bottomMenu, cashierMain, cashierDeposit, cashierWithdraw, paymentIQ }) => {
 
-                const initialRealMoney = await footerMenuMobile.getWalletBalance();
+                // Deposit flow up to payment
+                const { initialRealMoney } = await cashierDeposit.depositFlowUpToPayment({
+                    isDesktop: false,
+                    clickDeposit: () => bottomMenu.clickDepositButton(),
+                    getBalance: () => bottomMenu.getWalletBalance()
+                });
 
-                await footerMenuMobile.clickDepositButton();
-                await cashierMain.validateAllModalElementsVisible();
-                await cashierDeposit.validateStepsCounterMobile();
-                await cashierDeposit.validateBonusStepElements();
-                await cashierDeposit.clickDepositWithoutBonus();
-                await cashierDeposit.validatePaymentStepElementsMobile();
-                await cashierDeposit.clickPaymentContinueButton();
-                await cashierDeposit.validateDetailsStepElementsMobile();
+                // PaymentIQ actions
                 await paymentIQ.fillCardDetails(amount, cardNumber, expiry, cvv);
                 await paymentIQ.clickSetAmountButton();
-                await cashierDeposit.validateSummaryStepElementsMobile();
-                await paymentIQ.validateDepositIframeLocatorsVisible();
 
-                await cashierDeposit.clickHomeButton();
-                const realMoneyAfterDepositMenu = await footerMenuMobile.getWalletBalance();
+                // Deposit flow after payment
+                const { realMoneyAfterDepositMenu } = await cashierDeposit.depositFlowAfterPayment({
+                    isDesktop: false,
+                    getBalance: () => bottomMenu.getWalletBalance()
+                });
+
                 await expect(await realMoneyAfterDepositMenu).toBeCloseTo(await initialRealMoney + parseFloat(amount), 2);
 
-                await footerMenuMobile.clickDepositButton();
-                const realMoneyAfterDepositCahier = parseFloat(await cashierMain.headingRealMoney().innerText());
-                await expect(await realMoneyAfterDepositCahier).toBeCloseTo(await initialRealMoney + parseFloat(amount), 2);
+                // Validate summary from cashier modal
+                const { realMoneyAfterDepositCahier } = await cashierDeposit.validateDepositSummaryFromCashierModal({
+                    isDesktop: false,
+                    clickDeposit: () => bottomMenu.clickDepositButton(),
+                    getCashierRealMoney: async () => parseFloat(await cashierMain.headingRealMoney().innerText()),
+                    expectedAmount: initialRealMoney + parseFloat(amount)
+                });
+                await expect(realMoneyAfterDepositCahier).toBeCloseTo(await initialRealMoney + parseFloat(amount), 2);
 
-                await cashierMain.validateAllModalElementsVisible();
-                await cashierMain.clickWithdrawHeading();
-                await cashierMain.validateAllModalElementsVisible();
-                await cashierWithdraw.validateStepsCounterMobile();
-                await cashierWithdraw.validatePaymentStepElementsMobile();
-                await cashierWithdraw.clickContinueButton();
-                await cashierWithdraw.validateDetailsStepElementsMobile();
+                // Withdraw flow up to payment
+                await cashierMain.openWithdrawModalAndValidate();
+                await cashierWithdraw.withdrawFlowUpToPayment({ isDesktop: false });
+
+                // PaymentIQ actions for withdraw
                 await paymentIQ.fillAmount(amount);
                 await paymentIQ.clickSetAmountButton();
-                await cashierWithdraw.validateSummaryStepElementsMobile();
-                await paymentIQ.validateWithdrawIframeLocatorsVisible();
 
-                await cashierWithdraw.clickHomeButton();
-                const realMoneyAfterWithdrawMenu = await footerMenuMobile.getWalletBalance();
+                // Withdraw flow after payment
+                const { realMoneyAfterWithdrawMenu } = await cashierWithdraw.withdrawFlowAfterPayment({
+                    isDesktop: false,
+                    getBalance: () => bottomMenu.getWalletBalance()
+                });
                 await expect(await realMoneyAfterWithdrawMenu).toBeCloseTo(await realMoneyAfterDepositMenu - parseFloat(amount), 2);
 
-                await footerMenuMobile.clickDepositButton();
-                const realMoneyAfterWithdrawCahier = parseFloat(await cashierMain.headingRealMoney().innerText());
-                await expect(await realMoneyAfterWithdrawCahier).toBeCloseTo(await realMoneyAfterDepositMenu - parseFloat(amount), 2);
+                // Validate withdraw summary from cashier modal
+                const { realMoneyAfterWithdrawCahier } = await cashierWithdraw.validateWithdrawSummaryFromCashierModal({
+                    isDesktop: false,
+                    clickDeposit: () => bottomMenu.clickDepositButton(),
+                    getCashierRealMoney: async () => parseFloat(await cashierMain.headingRealMoney().innerText()),
+                    expectedAmount: realMoneyAfterDepositMenu - parseFloat(amount)
+                });
+                await expect(realMoneyAfterWithdrawCahier).toBeCloseTo(await realMoneyAfterDepositMenu - parseFloat(amount), 2);
             });
         });
     });

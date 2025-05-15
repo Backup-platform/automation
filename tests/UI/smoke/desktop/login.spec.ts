@@ -1,24 +1,25 @@
 import test, { expect } from "../../../../pages/utils/base.po";
 
-test.beforeEach(async ({ page, banner, headerMenuDesktop }) => {
+test.beforeEach(async ({ page, banner }) => {
 	await page.goto(`${process.env.URL}`, { waitUntil: "load" });
-	await banner.clickEscapeInOptIn();
-	await banner.randomClickSkipSomething();
-	await banner.bannerNewDesign();
-	await banner.bannerHiThere();
+    await banner.clickEscapeInOptIn();
+    await banner.randomClickSkipSomething();
+    await banner.bannerNewDesign();
+    await banner.bannerHiThere();
+    await banner.acceptCookies();
+    await banner.acceptTermsAndConditions();
 });
 
 test.describe("Login Page Smoke Tests - Desktop", () => {
-	test.beforeAll(({ }, testInfo) => {
-		if (!testInfo.project.name.includes('desktop')) { test.skip(); }
-	});
 	test.use({ storageState: "playwright/.auth/noAuthentication.json" });
 
 	test("Validate Login", async ({ loginPage, headerMenuDesktop, page }) => {
+		await headerMenuDesktop.validateLoggedOutState(false);
 		await headerMenuDesktop.clickLoginButton();
+		await loginPage.validateLoginWindowElementsVisible(false);
 		await loginPage.actionLogin(`${process.env.USER}`, `${process.env.PASS}`);
 		await page.waitForURL(`${process.env.URL}`, { waitUntil: 'domcontentloaded' });
-		await loginPage.validateDesktopLoginState(true);
+		await headerMenuDesktop.validateLoggedInState(false);
 	});
 
 	test("Test all login page elements are visible", async ({ loginPage, headerMenuDesktop }) => {
@@ -34,6 +35,7 @@ test.describe("Login Page Smoke Tests - Desktop", () => {
 		for (const fields of wrongCredentials) {
 			test(`Test login with ${fields.scenario}`, async ({ loginPage, headerMenuDesktop }) => {
 				await headerMenuDesktop.clickLoginButton();
+				await loginPage.validateLoginWindowElementsVisible(true);
 				await loginPage.actionLogin(fields.username, fields.password);
 				await loginPage.validateInputErrorVisible();
 			});

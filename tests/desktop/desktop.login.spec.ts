@@ -1,27 +1,34 @@
 import { BottomMenu } from "../../pages/mobileMenu/bottomMenu.po";
 import test, { expect } from "../../pages/utils/base.po";
-
+import { assertUrl } from "../../pages/utils/navigation.po";
+/*
 test.beforeEach(async ({ page, banner, headerMenuDesktop, navigation }) => {
 	await page.goto(`${process.env.URL}`, { waitUntil: "load" });
 	await banner.clickEscapeInOptIn();
 	await banner.randomClickSkipSomething();
+	await banner.acceptCookies();
 	await banner.bannerNewDesign();
 	await banner.bannerHiThere();
+	await banner.acceptTermsAndConditions();
 });
 
 test.describe("Login Page Smoke Tests", () => {
-
+	//TODO: add tests that validate menu items are visible while logged in - soft assert.
+	//TODO: add tests that validate menu items are visible while logged out - soft assert.
+	//TODO: add more validations you are logged in or logged out. 
 
 	test.describe("desktop", () => {
 		test.beforeAll(({ }, testInfo) => {
 			if (!testInfo.project.name.includes('desktop')) { test.skip(); }
 		});
 		test.use({ storageState: "playwright/.auth/noAuthentication.json" });
-		test("Validate Login", async ({ loginPage, headerMenuDesktop, navigation, page }) => {
+		test("Validate Login", async ({ loginPage, headerMenuDesktop, page }) => {
+			await headerMenuDesktop.validateLoggedOutState(false);
 			await headerMenuDesktop.clickLoginButton();
+			await loginPage.validateLoginWindowElementsVisible(false);
 			await loginPage.actionLogin(`${process.env.USER}`, `${process.env.PASS}`);
 			await page.waitForURL(`${process.env.URL}`, { waitUntil: 'domcontentloaded' });
-			await loginPage.validateDesktopLoginState(true);
+			await headerMenuDesktop.validateLoggedInState(false);
 		});
 
 		test("Test all login page elements are visible", async ({ loginPage, headerMenuDesktop }) => {
@@ -52,12 +59,13 @@ test.describe("Login Page Smoke Tests", () => {
 		});
 
 		test.use({ storageState: "playwright/.auth/noAuthentication.json" });
-		test("Validate Login Mobile", async ({ loginPage, bottomMenu, navigation, page }) => {
+		test("Validate Login Mobile", async ({ loginPage, bottomMenu, page }) => {
+			await bottomMenu.validateLoggedOutState(false);
 			await bottomMenu.clickLoginButton();
-			await loginPage.validateLoginWindowElementsVisible(true);
+			await loginPage.validateLoginWindowElementsVisible(false);
 			await loginPage.actionLogin(`${process.env.USER}`, `${process.env.PASS}`);
 			await page.waitForURL(`${process.env.URL}`, { waitUntil: 'domcontentloaded' });
-			await loginPage.validateMobileLoginState(true);
+			await bottomMenu.validateLoggedInState(false);
 		});
 
 		test("Test all login page elements are visible", async ({ loginPage, bottomMenu }) => {
@@ -96,9 +104,7 @@ test.describe("Login Page Regression Tests", () => {
 			await loginPage.validateInputErrorVisible();
 		});
 
-		/**
-		 * Tests made by marina
-		 */
+		//Tests made by marina
 		test.use({ storageState: "playwright/.auth/noAuthentication.json" });
 		test("Validate Empty Password tab", async ({ loginPage, headerMenuDesktop }) => {
 			await headerMenuDesktop.clickLoginButton();
@@ -107,9 +113,7 @@ test.describe("Login Page Regression Tests", () => {
 			await loginPage.validateInputErrorVisible();
 		});
 
-		/**
-		 * Test Made by Marina
-		 */
+		// Test Made by Marina
 		test.use({ storageState: "playwright/.auth/noAuthentication.json" });
 		test("Validate Empty Username and Password tab", async ({ loginPage, headerMenuDesktop }) => {
 			await headerMenuDesktop.clickLoginButton();
@@ -119,32 +123,25 @@ test.describe("Login Page Regression Tests", () => {
 
 		test.describe("Test Navigating to login from another page then going back via the back button", () => {
 			test.use({ storageState: "playwright/.auth/noAuthentication.json" });
-			const preconditionStartPage = [
-				{ scenario: 'LandingPage', URL: '' },
-				{ scenario: 'CrashGames', URL: 'crash-games/all' },
-				{ scenario: 'LiveCasino', URL: 'live-casino/all' },
-				{ scenario: 'Tournament', URL: 'tournament-promotions' },
-				{ scenario: 'Games', URL: 'games/all' },
-				{ scenario: 'Promotions', URL: 'promotions' },
-				{ scenario: 'VIP', URL: 'vip' },
-				{ scenario: 'Loyalty', URL: 'loyalty' },
-				{ scenario: 'PromotionDetails', URL: 'mercury-33' },
-				{ scenario: 'SimplePageAboutUS', URL: 'simplePage/AboutUs' },
-				{ scenario: 'SimplePageBonusTerms', URL: 'simplePage/BonusTerms' },
-				{ scenario: 'SimplePageAnti-MoneyLaundering', URL: 'simplePage/Anti-MoneyLaundering' },
-				{ scenario: 'SimplePageCookiePolicy', URL: 'simplePage/CookiePolicy' },
-				{ scenario: 'SimplePageTOS', URL: 'simplePage/TermsAndConditions' },
-				{ scenario: 'SlotGamePlayScreen', URL: 'play/alea/pragmatic-play-sweet-bonanza' },
-				{ scenario: 'LiveGameBlackjack', URL: 'live-casino/blackjack' },
+
+			const navigationScenarios = [
+				{ scenario: 'LandingPage', url: '', navigate: async ({ headerMenuDesktop }) => await headerMenuDesktop.clickSFLogo() },
+				{ scenario: 'CrashGames', url: '/crash-games/all', navigate: async ({ headerMenuDesktop }) => await headerMenuDesktop.clickCrashButton() },
+				{ scenario: 'LiveCasino', url: '/live-casino/all', navigate: async ({ headerMenuDesktop }) => await headerMenuDesktop.clickLiveButton() },
+				{ scenario: 'Tournament', url: '/tournament-promotions', navigate: async ({ headerMenuDesktop }) => await headerMenuDesktop.clickTournamentButton() },
+				{ scenario: 'Games', url: '/games/all', navigate: async ({ headerMenuDesktop }) => await headerMenuDesktop.clickGamesButton() },
+				{ scenario: 'Promotions', url: '/promotions', navigate: async ({ headerMenuDesktop }) => await headerMenuDesktop.clickPromotionsButton() },
+				{ scenario: 'VIP', url: '/vip', navigate: async ({ headerMenuDesktop }) => await headerMenuDesktop.clickVIPButton() },
+				{ scenario: 'Loyalty', url: '/loyalty', navigate: async ({ headerMenuDesktop }) => await headerMenuDesktop.clickLoyaltyButton() },
 			];
-			for (const pageToStartFrom of preconditionStartPage) {
-				test.use({ storageState: "playwright/.auth/noAuthentication.json" });
-				test(`Test clicking back on login returns to ${pageToStartFrom.scenario}`, async ({ page, loginPage, headerMenuDesktop }) => {
-					await page.goto(`${process.env.URL}` + pageToStartFrom.URL, { waitUntil: 'domcontentloaded' });
-					await headerMenuDesktop.clickLoginButton();
+
+			for (const { scenario, url, navigate } of navigationScenarios) {
+				test(`Test clicking back on login returns to ${scenario}`, async ({ page, loginPage, headerMenuDesktop }) => {
+					await navigate({ headerMenuDesktop }); // Go to page via nav method
+					await headerMenuDesktop.clickLoginButton(); // Open login modal
 					await loginPage.validateLoginWindowElementsVisible(true);
-					await loginPage.clickBackButton();
-					await expect(page).toHaveURL(`${process.env.URL}` + pageToStartFrom.URL);
+					await loginPage.clickBackButton(); // Click back
+					await expect(page).toHaveURL(`${process.env.URL}${url}`);
 				});
 			}
 		});
@@ -180,32 +177,40 @@ test.describe("Login Page Regression Tests", () => {
 
 		test.describe("Test Navigating to login from another page then going back via the back button", () => {
 			test.use({ storageState: "playwright/.auth/noAuthentication.json" });
-			const preconditionStartPage = [
-				{ scenario: 'LandingPage', URL: '' },
-				{ scenario: 'CrashGames', URL: 'crash-games/all' },
-				{ scenario: 'LiveCasino', URL: 'live-casino/all' },
-				{ scenario: 'Tournament', URL: 'tournament-promotions' },
-				{ scenario: 'Games', URL: 'games/all' },
-				{ scenario: 'Promotions', URL: 'promotions' },
-				{ scenario: 'VIP', URL: 'vip' },
-				{ scenario: 'Loyalty', URL: 'loyalty' },
-				{ scenario: 'PromotionDetails', URL: 'promotions/mercury-33' },
-				{ scenario: 'SimplePageAboutUS', URL: 'simplePage/AboutUs' },
-				{ scenario: 'SimplePageBonusTerms', URL: 'simplePage/BonusTerms' },
-				{ scenario: 'SimplePageAnti-MoneyLaundering', URL: 'simplePage/Anti-MoneyLaundering' },
-				{ scenario: 'SimplePageCookiePolicy', URL: 'simplePage/CookiePolicy' },
-				{ scenario: 'SimplePageTOS', URL: 'simplePage/TermsAndConditions' },
-				{ scenario: 'SlotGamePlayScreen', URL: 'play/alea/pragmatic-play-sweet-bonanza' },
-				{ scenario: 'LiveGameBlackjack', URL: 'live-casino/blackjack' },
+			const navigationScenarios = [
+				{
+					scenario: 'Loyalty',
+					url: '/loyalty',
+					navigate: async ({ burgerMenu }) => await burgerMenu.clickLoyaltyButton(),
+				},
+				{
+					scenario: 'VIP',
+					url: '/vip',
+					navigate: async ({ burgerMenu }) => await burgerMenu.clickVIPButton(),
+				},
+				{
+					scenario: 'Promotions',
+					url: '/promotions',
+					navigate: async ({ burgerMenu }) => await burgerMenu.clickPromotionsButton(),
+				},
+				{
+					scenario: 'Games',
+					url: '/games/all',
+					navigate: async ({ burgerMenu }) => await burgerMenu.clickGamesButton(),
+				},
+				{
+					scenario: 'Home',
+					url: '',
+					navigate: async ({ burgerMenu }) => await burgerMenu.clickHomeButton(),
+				}
+				// Add more as needed
 			];
-			for (const pageToStartFrom of preconditionStartPage) {
-				test.use({ storageState: "playwright/.auth/noAuthentication.json" });
-				test(`Test clicking back on login returns to ${pageToStartFrom.scenario}`, async ({ page, loginPage, bottomMenu }) => {
-					await page.goto(`${process.env.URL}${pageToStartFrom.URL}`, { waitUntil: 'domcontentloaded' });
+			for (const { scenario, url, navigate } of navigationScenarios) {
+				test(`Test clicking back on login returns to ${scenario}`, async ({ loginPage, bottomMenu, burgerMenu }) => {
+					await navigate({ burgerMenu: burgerMenu });
 					await bottomMenu.clickLoginButton();
 					await loginPage.validateLoginWindowElementsVisible(true);
-					await loginPage.clickBackButton();
-					await expect(page).toHaveURL(`${process.env.URL}` + pageToStartFrom.URL);
+					await loginPage.validateNavigationBack(scenario, `${process.env.URL}${url}`);
 				});
 			}
 		});
@@ -213,6 +218,10 @@ test.describe("Login Page Regression Tests", () => {
 
 
 });
+
+
+
+
 
 /**
  * e2e tests - fill in the spaces for marina's tests.

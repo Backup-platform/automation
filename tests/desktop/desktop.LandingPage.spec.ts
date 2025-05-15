@@ -1,5 +1,5 @@
 import test, { expect } from "../../pages/utils/base.po";
-
+/*
 test.beforeEach(async ({ page, banner, headerMenuDesktop, navigation }) => {
     await page.goto(`${process.env.URL}`, { waitUntil: "load" });
     await banner.clickEscapeInOptIn();
@@ -203,3 +203,4 @@ test.describe("Landing Page Regression Tests", () => {
         });
     });
 });
+*/
