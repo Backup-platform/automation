@@ -2,16 +2,14 @@ import { test as base, Page } from '@playwright/test';
 import { LoginPage } from '../loginPage.po';
 import { LandingPage } from '../LandingPage/landingPage.po';
 import { HeaderMenuDesktop } from '../headerMenuDesktop.po';
-import { FooterMenuMobile } from '../footerMenuMobile.po';
 import { GameProviders } from '../gameProviders.po';
 import { Banner } from '../banner.po';
 import { Promotions } from '../promotions.po';
 import { PromotionDetails } from '../promotion.details.po';
 import { PromotionTabs } from '../promotionTabs.po';
-import { SignUp } from '../signUp/signUpPage.po';
+import { SignUpEmail } from '../signUp/SignUpEmail.po';
 import { WalletModal } from '../walletModal.po';
 import { ResetPasswordFrame } from '../resetPasswordFrame.po';
-import { Navigation } from './navigation.po';
 import { LandingPageCarousel } from '../LandingPage/landingPageCarousel.po';
 import { TopCategories } from '../LandingPage/topCategories.po';
 import { GamesCategories } from '../LandingPage/gamesCategories.po';
@@ -33,16 +31,14 @@ type pages = {
 	loginPage: LoginPage;
 	landingPage: LandingPage;
 	headerMenuDesktop: HeaderMenuDesktop;
-	footerMenuMobile: FooterMenuMobile;
 	gameProviders: GameProviders;
 	banner: Banner;
 	promotions: Promotions;
 	promotionDetails: PromotionDetails;
 	promotionTabs: PromotionTabs;
-	signUp: SignUp;
+	signUpEmail: SignUpEmail;
 	walletModal: WalletModal;
 	resetPasswordFrame: ResetPasswordFrame;
-	navigation: Navigation;
 	landingPageCarousel: LandingPageCarousel;
 	topCategories: TopCategories;
 	gamesCategories: GamesCategories;
@@ -63,7 +59,7 @@ type pages = {
 
 function createPageFixture<T>(PageObject: new (page: Page) => T) {
 	return async ({ page }, use, testInfo) => {
-	  console.log(`Initializing ${PageObject.name} for project: ${testInfo.project.name}`);
+	  //console.log(`Initializing ${PageObject.name} for project: ${testInfo.project.name}`);
 	  await use(new PageObject(page));
 	};
   }
@@ -72,16 +68,14 @@ const test = base.extend<pages>({
 	loginPage: createPageFixture(LoginPage),
 	landingPage: createPageFixture(LandingPage),
 	headerMenuDesktop: createPageFixture(HeaderMenuDesktop),
-	footerMenuMobile: createPageFixture(FooterMenuMobile),
 	gameProviders: createPageFixture(GameProviders),
 	banner: createPageFixture(Banner),
 	promotions: createPageFixture(Promotions),
 	promotionDetails: createPageFixture(PromotionDetails),
 	promotionTabs: createPageFixture(PromotionTabs),
-	signUp: createPageFixture(SignUp),
+	signUpEmail: createPageFixture(SignUpEmail),
 	walletModal: createPageFixture(WalletModal),
 	resetPasswordFrame: createPageFixture(ResetPasswordFrame),
-	navigation: createPageFixture(Navigation),
 	landingPageCarousel: createPageFixture(LandingPageCarousel),
 	topCategories: createPageFixture(TopCategories),
 	gamesCategories: createPageFixture(GamesCategories),

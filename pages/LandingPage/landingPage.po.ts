@@ -1,12 +1,10 @@
 import { Page } from '@playwright/test';
-import test, { expect } from '../utils/base.po';
 import { FooterLandingPage } from './footerLandingPage.po';
 import { GamesCategories } from './gamesCategories.po';
 import { LandingPageCarousel } from './landingPageCarousel.po';
 import { LandingPageFAQ } from './landingPageFAQ.po';
 import { PromotionsLandingPage } from './promotionsLandingPage.po';
 import { TopCategories } from './topCategories.po';
-import { step, stepParam } from '../utils/navigation.po';
 
 
 export class LandingPage {

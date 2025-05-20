@@ -1,351 +1,340 @@
 import { Locator, Page } from '@playwright/test';
 import test, { expect } from './base.po';
 
-export class Navigation {
-	readonly page: Page;
 
-	constructor(page: Page) {
-		this.page = page;
-	}
-    //TODO: make a method that interacts with the callendar 
-
-	public async isMobileOrDesktop(projectName: string): Promise<boolean> {
-		return false;
-		//TODO:
-	};
-
-	/**
-	 * Asserts that an element is visible, 
-	 * with an option for soft or strict assertions.
-	 * 
-	 * @param element - The element to be checked for visibility.
-	 * @param softAssert - If true, performs a soft assertion (logs failures without stopping the test).
-	 *                     If false, performs a strict assertion (fails the test immediately if the check fails).
-	 * @param elementName - Element for the custom message to be displayed if the assertion fails.
-	 * 
-	 * Usage:
-	 * - Use `softAssert = true` for logging-only checks, allowing the test to continue on failure.
-	 * - Use `softAssert = false` to stop the test if the element is not visible.
-	 * 
-	 * Example:
-	 * `await this.assertVisible(this.loginButton(), false, 'Login button should be visible');`
-	 */
-	@stepParam((element: Locator, softAssert: boolean, elementName: string) => `I expect ${elementName} is visible`)
-	public async assertVisible(element: Locator, softAssert: boolean = false, elementName?: string): Promise<void> {
-		if (softAssert) {
-			await expect.soft(element).toBeVisible();
-		} else {
-			await expect(element).toBeVisible();
-		}
-	}
-
-	@stepParam((element: Locator, softAssert: boolean, elementName: string) => `I expect ${elementName} is NOT visible`)
-	public async assertNotVisible(element: Locator, softAssert: boolean = false, elementName?: string): Promise<void> {
-		if (softAssert) {
-			await expect.soft(element).not.toBeVisible();
-		} else {
-			await expect(element).not.toBeVisible();
-		}
-	}
-
-
-	/**
-	 * Asserts that the given element is enabled, 
-	 * with an option for soft or strict assertions.
-	 *
-	 * @param {Locator} element - The element to check.
-	 * @param {boolean} [softAssert=false] - If true, performs a soft assertion.
-	 * @param {string} [elementName] - The name of the element for logging purposes.
-	 */
-	@stepParam((element: Locator, softAssert: boolean, elementName: string) => `I expect ${elementName} is enabled`)
-	public async assertEnabled(element: Locator, softAssert: boolean = false, elementName?: string): Promise<void> {
-		if (softAssert) {
-			await expect.soft(element, `Expect ${elementName} to be enabled`).toBeEnabled();
-		} else {
-			await expect(element, `Expect ${elementName} to be enabled`).toBeEnabled();
-		}
-	}
-
-	@stepParam((element: Locator, softAssert: boolean, elementName: string) => `I expect ${elementName} is NOT enabled`)
-	public async assertNotEnabled(element: Locator, softAssert: boolean = false, elementName?: string): Promise<void> {
-		if (softAssert) {
-			await expect.soft(element, `Expect ${elementName} to not be enabled`).not.toBeEnabled();
-		} else {
-			await expect(element, `Expect ${elementName} to not be enabled`).not.toBeEnabled();
-		}
-	}
-
-	private async assertCondition(
-		element: Locator,
-		assertionType: 'visible' | 'enabled' | 'editable',
-		shouldMatch: boolean,
-		softAssert: boolean = false,
-		elementName: string = 'Element'
-	): Promise<void> {
-		const action = shouldMatch ? '' : 'NOT ';
-		const message = `Expect ${elementName} to ${action}be ${assertionType}`;
-
-		// Map assertion types to Playwright's `expect` API
-		const assertionMap = {
-			visible: {
-				positive: () => expect(element, message).toBeVisible(),
-				negative: () => expect(element, message).not.toBeVisible(),
-			},
-			enabled: {
-				positive: () => expect(element, message).toBeEnabled(),
-				negative: () => expect(element, message).not.toBeEnabled(),
-			},
-			editable: {
-				positive: () => expect(element, message).toBeEditable(),
-				negative: () => expect(element, message).not.toBeEditable(),
-			},
-		};
-
-		const assertion = assertionMap[assertionType][shouldMatch ? 'positive' : 'negative'];
-
-		// Perform soft or strict assertion
-		if (softAssert) {
-			await expect.soft(element, message)[shouldMatch ? 'toBe' : 'not.toBe'](assertionType);
-		} else {
-			await assertion();
-		}
-	}
-	/**
-	 * Asserts that the given element is editable, 
-	 * with an option for soft or strict assertions.
-	 *
-	 * @param {Locator} element - The element to check.
-	 * @param {boolean} [softAssert=false] - If true, performs a soft assertion.
-	 * @param {string} [elementName] - The name of the element for logging purposes.
-	 */
-	public async assertEditable(element: Locator, softAssert: boolean = false, elementName?: string): Promise<void> {
-		if (softAssert) {
-			await expect.soft(element, `Expect ${elementName} to be editable`).toBeEditable();
-		} else {
-			await expect(element, `Expect ${elementName} to be editable`).toBeEditable();
-		}
-	}
-
-	public async assertNotEditable(element: Locator, softAssert: boolean = false, elementName?: string): Promise<void> {
-		if (softAssert) {
-			await expect.soft(element, `Expect ${elementName} to be NOT editable`).not.toBeEditable();
-		} else {
-			await expect(element, `Expect ${elementName} to be NOT editable`).not.toBeEditable();
-		}
-	}
-
-	/**
-	 * Asserts that an element has a specific attribute with the expected value.
-	 * 
-	 * @param element - The `Locator` for the target element.
-	 * @param attributeType - The attribute name to check (e.g., `aria-label`, `data-test-id`).
-	 * @param attributeText - The expected value of the attribute. Default is .* - which will just check that the attribute exists (non-empty).
-	 * @param softAssert - If true, performs a soft assertion, allowing test execution to continue even if the assertion fails. Default is `false`.
-	 * @param message - Optional custom message to display if the assertion fails.
-	 * 
-	 * @throws Will throw an error if the attribute does not match the expected value (or if element or attribute is not found), unless `softAssert` is true.
-	 */
-	@stepParam((element: Locator, attributeType: string, softAssert: boolean, message: string) => `I expect ${message} has attribute ${attributeType}`)
-	public async assertAttribute(
-		element: Locator,
-		attributeType: string,
-		softAssert: boolean = false,
-	): Promise<void> {
-		const message = `Expected element has attribute ${attributeType}`;
-		const expectation = softAssert ? expect.soft(element, message) : expect(element, message);
-		await expectation.toHaveAttribute(attributeType);
-	}
-
-	/**
-	 * Clicks on an element after verifying its visibility.
-	 * Performs a soft or strict assertion for visibility based on the `softAssert` parameter.
-	 * @param element - The element to be clicked.
-	 * @param softAssert - If true, performs a soft assertion (does not stop test on failure); 
-	 *                     if false, performs a strict assertion (fails test on visibility failure).
-	 * @param description - A description message used in the assertion to clarify which element is expected to be visible.
-	 */
-	@stepParam((element: Locator, softAssert: boolean, description: string) => `I click on ${description}`)
-	public async clickElement(element: Locator, softAssert: boolean, description: string): Promise<void> {
-		await this.assertVisible(element, softAssert, description);
-		await this.assertEnabled(element, softAssert, description);
-		await element.click();
-	}
-
-	/**
-	 * Checks if an element contains the specified text after verifying its visibility.
-	 * Performs a soft or strict assertion for visibility based on the `softAssert` parameter.
-	 * @param element - The element to be checked.
-	 * @param text - The text that the element should contain.
-	 * @param softAssert - If true, performs a soft assertion (does not stop test on failure); 
-	 *                     if false, performs a strict assertion (fails test on visibility or text check failure).
-	 * @param description - A description message used in the assertion to clarify which element is expected to contain the text.
-	 */
-	public async assertElementContainsText(element: Locator, text: string, softAssert: boolean, description: string): Promise<void> {
-		await this.assertVisible(element, softAssert, description);
-		if (softAssert) {
-			await expect.soft(element, `Expect ${description} to contain text: ${text}`).toContainText(text);
-		} else {
-			await expect(element, `Expect ${description} to contain text: ${text}`).toContainText(text);
-		}
-	}
-
-	/**
-	 * Fills an input field after verifying its visibility and editability.
-	 * Performs a soft or strict assertion for visibility and editability based on the `softAssert` parameter.
-	 * @param element - The input field to be filled.
-	 * @param value - The value to fill into the input field.
-	 * @param softAssert - If true, performs a soft assertion (does not stop test on failure); 
-	 *                     if false, performs a strict assertion (fails test on visibility/editability failure).
-	 * @param description - A description message used in the assertion to clarify which element is expected to be visible and editable.
-	 */
-	@stepParam((element: Locator, softAssert: boolean, description: string, value: string) => `I fill ${description} with ${value}`)
-	public async fillInputField(element: Locator, value: string, softAssert: boolean, description: string): Promise<void> {
-		await this.assertVisible(element, softAssert, description);
-		await this.assertEditable(element, softAssert, description);
-		await element.fill(value);
-	}
-
-	/**
-	 * Validates that the current page URL matches the expected URL.
-	 * 
-	 * @param expectedUrl - The URL that you expect the current page to match.
-	 * @param softAssert - If true, performs a soft assertion (logs failures without stopping the test). Default is `false`.
-	 * 
-	 * Usage:
-	 * - Use `softAssert = true` to log failures and continue the test.
-	 * - Use `softAssert = false` to stop the test if the URL does not match.
-	 * 
-	 * Example:
-	 * `await this.assertUrl('https://example.com/dashboard', false);`
-	 */
-	public async assertUrl(
-		expectedUrl: string,
-		softAssert: boolean = false,
-	): Promise<void> {
-		const message = `Expected to be on URL: ${expectedUrl}`;
-		const expectation = softAssert ? expect.soft(this.page, message) : expect(this.page, message);
-		await expectation.toHaveURL(expectedUrl);
-	}
-
-	/**
-	 * Asserts that the current URL contains all specified substrings.
-	 * 
-	 * @param expectedSubstrings - An array of substrings expected to be present in the current URL.
-	 * @param softAssert - If true, logs failures without stopping the test; otherwise, fails immediately.
-	 * 
-	 * Example:
-	 * ```typescript
-	 * await navigation.assertUrlContains(['location=testingnet.com', 'console=Test'], false);
-	 * ```
-	 */
-	//TODO: add a method that checks if the URL contains a SINGLE specific substring and refactor this method to use it
-	public async assertUrlContains(
-		expectedSubstrings: string[],
-		softAssert: boolean = false
-	): Promise<void> {
-		const currentUrl = this.page.url();
-
-		for (const substring of expectedSubstrings) {
-			const message = `Expected URL to contain: ${substring}. Current URL: ${currentUrl}`;
-			if (softAssert) {
-				await expect.soft(currentUrl, message).toContain(substring);
-			} else {
-				await expect(currentUrl, message).toContain(substring);
-			}
-		}
-	}
-
-
-	/**
-	 * Retrieves the indices of elements within a given locator that match a specific attribute-value pair.
-	 *
-	 * @param locator   The Playwright Locator representing the elements to be checked.
-	 * @param attribute The name of the attribute to evaluate (e.g., "class", "href", "id").
-	 * @param value     The expected value of the attribute to match.
-	 * @return          A promise that resolves to an array of indices of elements matching the attribute-value pair.
-	 *
-	 * @example
-	 * // Example usage to find elements with the class "active"
-	 * const indices = await getIndicesByAttribute(page.locator(".example-class"), "class", "active");
-	 * console.log(indices); // Output: [0, 3]
-	 */
-	public async getIndicesByAttribute(locator: Locator, attribute: string, value: string): Promise<number[]> {
-		return await locator.evaluateAll((elements, { attribute, value }) =>
-			elements.map((el, index) => {
-				const classList = el.getAttribute(attribute)?.split(' ') || [];
-				return classList.some(className => className.includes(value)) ? index : -1;
-			}).filter(index => index !== -1),
-			{ attribute, value }
-		);
-	}
-
-	/**
-	 * Iterates over elements located by a specified Playwright locator and performs an action on each element.
-	 * 
-	 * @param locator - The Playwright `Locator` object representing the elements to iterate over.
-	 * @param action - An asynchronous callback function that performs an operation for each element. 
-	 *                 The callback receives the current element index as its argument.
-	 * @param elementsToCheck - Optional. The maximum number of elements to iterate over. 
-	 *                          If not provided, the method will iterate over all elements found by the locator.
-	 * 
-	 * @returns A Promise that resolves when all specified actions have been completed.
-	 * 
-	 * @example
-	 * // Example usage: Iterating over all elements in a list and validating each one
-	 * await iterateElements(
-	 *     page.locator('.list-item'),
-	 *     async (index) => {
-	 *         const element = page.locator('.list-item').nth(index);
-	 *         await expect(element).toBeVisible();
-	 *     }
-	 * );
-	 * 
-	 * @throws Will throw an error if the `locator` is invalid or the `action` callback fails for any iteration.
-	 */
-	public async iterateElements(
-		locator: Locator,
-		action: (index: number) => Promise<void>,
-		elementsToCheck?: number
-	): Promise<void> {
-		const count = elementsToCheck ?? await locator.count();
-		for (let i = 0; i < count; i++) {
-			await action(i);
-		}
-	}
-
-
-	/**
-	 * Clicks an element if it's visible. If not, executes the fallback action to make it visible, then clicks the element.
-	 * 
-	 * @param targetElement - The element to click (the one we want to ensure is visible and clicked).
-	 * @param fallbackAction - A function to execute if the target element is not visible (e.g., opening a menu).
-	 * @param softAssert - Optional. Whether to use soft assertions (default is `false`).
-	 * @param targetName - A name or description of the target element (for logging/debugging purposes).
-	 */
-	public async clickIfVisibleOrFallback(
-		targetElement: Locator,
-		fallbackAction: () => Promise<void>,
-		softAssert: boolean = false,
-		targetName?: string
-	): Promise<void> {
-		await test.step(`I click on ${targetName}`, async () => {
-			// If the element is visible, click it and return
-			if (await targetElement.isVisible()) {
-				return await this.clickElement(targetElement, softAssert, `${targetName}`);
-			}
-
-			// Otherwise, fallback using the provided action
-			await fallbackAction();
-			await targetElement.waitFor({ state: 'visible' });
-			await this.clickElement(targetElement, softAssert, `${targetName} after fallback`);
-		});
-	}
-
+/**
+ * Core assertion engine for visibility, enabled, or editable states.
+ *
+ * @param element - Playwright Locator of the element to assert.
+ * @param assertionType - Type of assertion: 'visible', 'enabled', or 'editable'.
+ * @param shouldMatch - If true, asserts the element matches the state; if false, asserts the opposite.
+ * @param description - Name or description of the element for logging. Default is 'Element'.
+ * @param softAssert - If true, logs failures without stopping the test (soft assertion). Default is false.
+ * @returns Promise<void>
+ */
+function stepMessage(description: string, action: string, state?: string) {
+    return `Expect ${description} to${action ? ' ' + action : ''}${state ? ' be ' + state : ''}`.replace(/  +/g, ' ');
 }
 
+export async function assertCondition(
+  element: Locator,
+  assertionType: 'visible' | 'enabled' | 'editable',
+  shouldMatch: boolean,
+  description: string = 'Element',
+  softAssert: boolean = false
+): Promise<void> {
+  const action = shouldMatch ? '' : 'NOT';
+  const message = stepMessage(description, action, assertionType);
+
+  // Choose the correct expect API
+  const assertionExpect = softAssert ? expect.soft : expect;
+
+  // Map our three assertion types onto Playwright's expect API
+  const assertionMap = {
+    visible: {
+      positive: async () => await assertionExpect(element, message).toBeVisible(),
+      negative: async () => await assertionExpect(element, message).not.toBeVisible(),
+    },
+    enabled: {
+      positive: async () => await assertionExpect(element, message).toBeEnabled(),
+      negative: async () => await assertionExpect(element, message).not.toBeEnabled(),
+    },
+    editable: {
+      positive: async () => await assertionExpect(element, message).toBeEditable(),
+      negative: async () => await assertionExpect(element, message).not.toBeEditable(),
+    },
+  };
+
+  await test.step(message, async () => {
+    const fn = assertionMap[assertionType][shouldMatch ? 'positive' : 'negative'];
+    await fn();
+  });
+}
+
+/**
+ * Asserts that an element is visible.
+ *
+ * @param element - Playwright Locator of the element to check.
+ * @param description - Name or description of the element for logging. Default is 'Element'.
+ * @param softAssert - If true, logs failures without stopping the test. Default is false.
+ * @returns Promise<void>
+ */
+export async function assertVisible(element: Locator, description: string = 'Element', softAssert: boolean = false): Promise<void> {
+    await assertCondition(element, 'visible', true, description, softAssert);
+}
+
+/**
+ * Asserts that an element is not visible.
+ *
+ * @param element - Playwright Locator of the element to check.
+ * @param description - Name or description of the element for logging. Default is 'Element'.
+ * @param softAssert - If true, logs failures without stopping the test. Default is false.
+ * @returns Promise<void>
+ */
+export async function assertNotVisible(element: Locator, description: string = 'Element', softAssert: boolean = false): Promise<void> {
+    await assertCondition(element, 'visible', false, description, softAssert);
+}
+
+/**
+ * Asserts that an element has a specific attribute, optionally with a value. Checks visibility first.
+ *
+ * @param element - Playwright Locator for the target element.
+ * @param attributeType - The attribute name to check (e.g., 'aria-label', 'data-test-id').
+ * @param softAssert - If true, performs a soft assertion. Default is false.
+ * @param elementName - Optional name of the element for logging. Default is 'Element'.
+ * @param attributeValue - Optional expected value of the attribute.
+ * @returns Promise<void>
+ * @throws Will throw if the element is not visible or doesn't have the attribute, unless softAssert is true.
+ */
+export async function assertAttribute(
+    element: Locator,
+    attributeType: string,
+    description: string = 'Element',
+    softAssert: boolean = false,
+    attributeValue?: string | RegExp
+): Promise<void> {
+    await test.step(attributeValue
+        ? stepMessage(description, '', `${attributeType}=${attributeValue}`)
+        : stepMessage(description, '', attributeType),
+        async () => {
+            await assertVisible(element, description, softAssert);
+            const expectation = softAssert ? expect.soft(element) : expect(element);
+            if (attributeValue) {
+                await expectation.toHaveAttribute(attributeType, attributeValue);
+            } else {
+                await expectation.toHaveAttribute(attributeType);
+            }
+        });
+}
+
+/**
+ * Validates multiple attributes of an element.
+ *
+ * @param locator - Playwright Locator of the element.
+ * @param description - Description for logging and error messages.
+ * @param attributes - Object mapping attribute names to their expected values (or null for presence only).
+ * @param softAssert - If true, logs failures without stopping the test. Default is false.
+ * @returns Promise<void>
+ */
+export async function validateAttributes(
+    locator: Locator,
+    description: string,
+    attributes: Record<string, string | null>,
+    softAssert = false
+): Promise<void> {
+    await test.step(`I validate ${description} has the correct attributes`, async () => {
+        for (const [attributeType, attributeValue] of Object.entries(attributes)) {
+            await assertAttribute(locator, attributeType, description, softAssert, attributeValue || undefined);
+        }
+    });
+}
+
+/**
+ * Asserts that an element is enabled.
+ *
+ * @param element - Playwright Locator of the element to check.
+ * @param description - Name or description of the element for logging. Default is 'Element'.
+ * @param softAssert - If true, logs failures without stopping the test. Default is false.
+ * @returns Promise<void>
+ */
+export async function assertEnabled(element: Locator, description: string = 'Element', softAssert: boolean = false): Promise<void> {
+    await assertCondition(element, 'enabled', true, description, softAssert);
+}
+
+/**
+ * Asserts that an element is not enabled.
+ *
+ * @param element - Playwright Locator of the element to check.
+ * @param description - Name or description of the element for logging. Default is 'Element'.
+ * @param softAssert - If true, logs failures without stopping the test. Default is false.
+ * @returns Promise<void>
+ */
+export async function assertNotEnabled(element: Locator, description: string = 'Element', softAssert: boolean = false): Promise<void> {
+    await assertCondition(element, 'enabled', false, description, softAssert);
+}
+
+/**
+ * Asserts that an element is editable.
+ *
+ * @param element - Playwright Locator of the element to check.
+ * @param description - Name or description of the element for logging. Default is 'Element'.
+ * @param softAssert - If true, logs failures without stopping the test. Default is false.
+ * @returns Promise<void>
+ */
+export async function assertEditable(element: Locator, description: string = 'Element', softAssert: boolean = false): Promise<void> {
+    await assertCondition(element, 'editable', true, description, softAssert);
+}
+
+/**
+ * Asserts that an element is not editable.
+ *
+ * @param element - Playwright Locator of the element to check.
+ * @param description - Name or description of the element for logging. Default is 'Element'.
+ * @param softAssert - If true, logs failures without stopping the test. Default is false.
+ * @returns Promise<void>
+ */
+export async function assertNotEditable(element: Locator, description: string = 'Element', softAssert: boolean = false): Promise<void> {
+    await assertCondition(element, 'editable', false, description, softAssert);
+}
+
+/**
+ * Clicks on an element after verifying its visibility and enabled state.
+ *
+ * @param element - Playwright Locator of the element to click.
+ * @param description - Description of the element for logging and error messages.
+ * @returns Promise<void>
+ */
+export async function clickElement(element: Locator, description: string): Promise<void> {
+    await test.step(`I click on ${description}`, async () => {
+        await assertVisible(element, description);
+        await assertEnabled(element, description);
+        await element.click();
+    });
+}
+
+/**
+ * Checks if an element contains the specified text.
+ *
+ * @param element - Playwright Locator of the element to check.
+ * @param text - Text to check for within the element.
+ * @param softAssert - If true, logs failures without stopping the test.
+ * @param description - Description of the element for logging and error messages.
+ * @returns Promise<void>
+ */
+export async function assertElementContainsText(element: Locator, text: string, description: string, softAssert: boolean = false): Promise<void> {
+    await test.step(`I expect ${description} to contain text: ${text}`, async () => {
+        await assertVisible(element, description, softAssert);
+        const expectation = softAssert ? expect.soft(element) : expect(element);
+        await expectation.toContainText(text);
+    });
+}
+
+/**
+ * Fills an input field after verifying its visibility and editability.
+ *
+ * @param element - Playwright Locator of the input field.
+ * @param value - Value to fill into the input field.
+ * @param description - Description of the input field for logging and error messages.
+ * @returns Promise<void>
+ */
+export async function fillInputField(element: Locator, value: string, description: string): Promise<void> {
+    await test.step(`I fill ${description} with ${value}`, async () => {
+        await element.waitFor({ state: 'visible' });
+        await assertVisible(element, description);
+        await assertEditable(element, description);
+        await element.fill(value);
+    });
+}
+
+/**
+ * Clicks an element if visible, otherwise executes a fallback action.
+ *
+ * @param element - Playwright Locator of the target element.
+ * @param fallbackAction - Fallback action to execute if the element is not visible.
+ * @param description - Optional name of the target element for logging and error messages.
+ * @returns Promise<void>
+ */
+export async function clickIfVisibleOrFallback(
+    element: Locator,
+    fallbackAction: () => Promise<void>,
+    description: string
+): Promise<void> {
+    await test.step(`I click on ${description}`, async () => {
+        if (!(await element.isVisible())) {
+            await fallbackAction();
+        }
+        await clickElement(element, `${description} after fallback`);
+    });
+}
+
+/**
+ * Gets indices of elements with a specific attribute value.
+ *
+ * @param locator - Playwright Locator of the elements to check.
+ * @param attribute - Attribute name to check.
+ * @param value - Value to match within the attribute.
+ * @returns Promise<number[]> Array of indices matching the criteria.
+ */
+export async function getIndicesByAttribute(
+    locator: Locator,
+    attribute: string,
+    value: string
+): Promise<number[]> {
+    return await test.step(
+        `Get indices of elements with attribute [${attribute}] containing value "${value}"`,
+        async () => {
+            return locator.evaluateAll(
+                (elements, { attribute, value }) =>
+                    elements
+                        .map((el, index) => {
+                            const attrValue = el.getAttribute(attribute);
+                            const classList = attrValue?.split(' ') || [];
+                            return classList.some(className => className.includes(value)) ? index : -1;
+                        })
+                        .filter(index => index !== -1),
+                { attribute, value }
+            );
+        }
+    );
+}
+
+/**
+ * Iterates over elements and performs an action on each.
+ *
+ * @param locator - Playwright Locator of the elements to iterate over.
+ * @param action - Async callback function to execute for each element index.
+ * @param description - Optional description for logging. Default is 'A number of elements'.
+ * @param elementsToCheck - Optional number of elements to iterate over. If not provided, iterates all.
+ * @returns Promise<void>
+ */
+export async function iterateElements(
+    locator: Locator,
+    action: (index: number) => Promise<void>,
+    description = 'A number of elements',
+    elementsToCheck?: number
+): Promise<void> {
+    await test.step(`I iterate over ${description}`, async () => {
+        const count = elementsToCheck ?? await locator.count();
+        for (let i = 0; i < count; i++) {
+            await action(i);
+        }
+    });
+}
+
+/**
+ * Watches and removes overlay fog elements from the page (internal helper).
+ *
+ * @param page - Playwright Page object.
+ * @returns Promise<void>
+ */
+async function watchAndRemoveFog(page: any): Promise<void> {
+    await page.addInitScript(() => {
+        const observer = new MutationObserver((mutations) => {
+            for (const mutation of mutations) {
+                for (const node of mutation.addedNodes) {
+                    if (!(node instanceof HTMLElement)) continue;
+                    if (node.matches?.('overlay-fog')) {
+                        node.remove();
+                        continue;
+                    }
+                    const fog = node.querySelector?.('overlay-fog');
+                    if (fog) fog.remove();
+                }
+            }
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+    });
+}
+
+/**
+ * Decorator to wrap methods in a test step.
+ *
+ * @param stepName - Optional custom step name for the test step.
+ * @returns Method decorator function.
+ */
 export function step(stepName?: string) {
 	return function decorator(target: Function, context: ClassMethodDecoratorContext) {
-		return async function repalacmentMethod(...args: any[]) {
+		return async function replacementMethod(...args: any[]) {
 			const name = stepName || `${this.constructor.name}.${(context.name as string)}`;
 			return test.step(name, async () => {
 				return await target.call(this, ...args);
@@ -354,13 +343,19 @@ export function step(stepName?: string) {
 	}
 }
 
+/**
+ * Decorator to wrap methods in a test step with parameterized names.
+ *
+ * @param stepName - Function or string for custom step name, or undefined for default.
+ * @returns Method decorator function.
+ */
 export function stepParam(stepName?: string | ((...args: any[]) => string)) {
 	return function decorator(target: Function, context: ClassMethodDecoratorContext) {
 		return async function replacementMethod(this: any, ...args: any[]) {
 			const name = typeof stepName === 'function'
 				? stepName(...args) // Use the args to compute the step name
 				: stepName || `${this.constructor.name}.${context.name as string}`;
-			
+
 			return test.step(name, async () => {
 				return await target.apply(this, args); // Ensure the original method runs in the correct context
 			});
@@ -368,34 +363,81 @@ export function stepParam(stepName?: string | ((...args: any[]) => string)) {
 	};
 }
 
+/**
+ * Waits for a URL condition to be met and asserts the URL.
+ *
+ * @param page - Playwright Page object.
+ * @param urlCondition - The expected URL (string or RegExp) or a custom condition function.
+ * @param description - Description for the step.
+ * @param waitUntilDomContentLoaded - If true, waits for DOM content to be loaded before asserting. Default is false.
+ * @param softAssert - If true, logs failures without stopping the test. Default is false.
+ * @returns Promise<void>
+ */
+async function waitForAndAssertUrl(
+	page: Page,
+	urlCondition: string | RegExp | ((url: URL) => boolean),
+	description: string,
+	waitUntilDomContentLoaded: boolean,
+	softAssert: boolean
+): Promise<void> {
+  await test.step(description, async () => {
+    if (waitUntilDomContentLoaded) {
+      await page.waitForLoadState('domcontentloaded', { timeout: 10000 });
+    }
 
-async function watchAndRemoveFog(page: any) {
-    await page.addInitScript(() => {
-        const observer = new MutationObserver((mutations) => {
-            for (const mutation of mutations) {
-                for (const node of mutation.addedNodes) {
-                    if (!(node instanceof HTMLElement)) continue;
+    const msg = `Expected URL to match ${urlCondition}, but got ${page.url()}`;
+    const assertion = softAssert ? expect.soft(page, msg) : expect(page, msg);
+    await assertion.toHaveURL(urlCondition);
+  });
+}
 
-                    // Check if the added node is the overlay
-                    if (node.matches?.('overlay-fog')) {
-                        console.log('Removing overlay-fog:', node);
-                        node.remove();
-                        continue;
-                    }
+export async function assertUrl(
+	page: Page,
+	expectedUrl: string | RegExp,
+	waitUntilDomContentLoaded = true,
+	softAssert = false
+): Promise<void> {
+	await waitForAndAssertUrl(
+		page,
+		expectedUrl,
+		`Assert page URL is ${expectedUrl}`,
+		waitUntilDomContentLoaded,
+		softAssert
+	);
+}
 
-                    // Or if it contains the overlay
-                    const fog = node.querySelector?.('overlay-fog');
-                    if (fog) {
-                        console.log('Removing overlay-fog (child):', fog);
-                        fog.remove();
-                    }
-                }
-            }
-        });
+export async function assertUrlContains(
+	page: Page,
+	expectedSubstrings: string[],
+	waitUntilDomContentLoaded = true,
+	softAssert = false
+): Promise<void> {
+	await waitForAndAssertUrl(
+		page,
+		url => expectedSubstrings.every(substring => url.toString().includes(substring)),
+		`Assert URL contains: ${expectedSubstrings.join(', ')}`,
+		waitUntilDomContentLoaded,
+		softAssert
+	);
+}
 
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true,
-        });
+/**
+ * Performs a navigation click and asserts the URL.
+ *
+ * @param page - Playwright Page object.
+ * @param locator - Playwright Locator of the element to click.
+ * @param description - Description of the element for logging and error messages.
+ * @param expectedPath - Expected URL path after navigation.
+ * @returns Promise<void>
+ */
+export async function performNavigationClick(
+    page: Page,
+    locator: Locator,
+    description: string,
+    expectedPath: string
+): Promise<void> {
+    await test.step(`Perform navigation click on ${description} and assert url is ${expectedPath}`, async () => {
+        await clickElement(locator, description);
+        await assertUrl(page, `${expectedPath}`, true);
     });
 }

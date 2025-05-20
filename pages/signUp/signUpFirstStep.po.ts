@@ -1,16 +1,14 @@
 import { Locator, Page } from '@playwright/test';
 import test, { expect } from '../utils/base.po';
-import { Navigation, step, stepParam } from '../utils/navigation.po';
+import { step, stepParam, assertElementContainsText, clickElement,assertVisible, fillInputField, assertEnabled, assertNotEnabled  } from '../utils/navigation.po';
 
 export type ErrorFieldsLocator = 'email' | 'password' | 'firstName' | 'lastName' | 'city' | 'address' | 'zipCode'
 
 export class SignUpFirstStep {
     readonly page: Page;
-    readonly navigation: Navigation;
 
     constructor(page: Page) {
         this.page = page;
-        this.navigation = new Navigation(page);
     }
 
     //Locators - should work for both mobile and desktop
@@ -19,81 +17,93 @@ export class SignUpFirstStep {
     private readonly nextStepButton = () => this.page.locator("#registration-next-step-btn");
     private readonly passwordRemindersContainer = () => this.page.locator('.mt-2.gap-2');
     private readonly passwordReminders = () => this.page.locator('.mt-2 .gap-2');
-    private readonly passwordReminderMinus = () => this.page.locator("span[class*='passwordRequirements_minus_']");
+    private readonly passwordReminderMinus = () => this.page.locator("span[class*='passwordRequirements_x_']");
     private readonly passwordReminderCheck = () => this.page.locator("span[class*='passwordRequirements_check_']");
     private readonly fieldError = (fieldError: ErrorFieldsLocator) => this.page.locator(`label[class*="field_error"][for*=${fieldError}]`);
     public readonly emailError = () => this.page.locator('label[class*="field_error"][for*="email"]');
     public readonly passwordError = () => this.page.locator('label[class*="field_error"][for*="password"]');
     private readonly passwordStrength = () => this.page.locator('progress[class*="passwordMeter_password_strength_meter_progress"]');
 
-    @step('I validate the email field is visible')
-    public async validateEmailVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.email(), softAssert, 'Email field');
+    private async validateFieldVisibility(fieldLocator: Locator, fieldName: string, softAssert = false) {
+        await assertVisible(fieldLocator, `${fieldName} field`, softAssert);
     }
 
-    @step('I fill the email field')
-    public async fillEmail(userEmail: string) {
-        await this.navigation.fillInputField(this.email(), userEmail, false, 'Email field');
+    private async fillField(fieldLocator: Locator, value: string, fieldName: string) {
+        await fillInputField(fieldLocator, value, `${fieldName} field`);
     }
 
-    @step('I validate the password field is visible')
-    public async validatePasswordVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.password(), softAssert, 'Password field');
-    }
+    public validateEmailVisible = async (softAssert = false) =>
+        await this.validateFieldVisibility(this.email(), 'Email', softAssert);
 
-    @step('I fill the password field')
-    public async fillPassword(password: string) {
-        await this.navigation.fillInputField(this.password(), password, false, 'Password field');
-    }
+    public fillEmail = async (userEmail: string) =>
+        await this.fillField(this.email(), userEmail, 'Email');    
 
-    @step('I validate the next button is enabled')
-    public async validateNextButtonEnabled(softAssert = false): Promise<void> {
-        await this.navigation.assertEnabled(this.nextStepButton(), softAssert, 'Next button');
-    }
+    public validatePasswordVisible = async (softAssert = false) =>
+        await this.validateFieldVisibility(this.password(), 'Password', softAssert);
+    
+    public fillPassword = async (password: string) =>
+        await this.fillField(this.password(), password, 'Password');
+
+    public validateNextButtonEnabled = async (softAssert = false) =>
+        await assertEnabled(this.nextStepButton(), 'Next button', softAssert);
+
+    public validateNextButtonNotEnabled = async (softAssert = false) =>
+        await assertNotEnabled(this.nextStepButton(), 'Next button', softAssert);
+
+    public validateNextButtonVisible = async (softAssert = false) =>
+        await assertVisible(this.nextStepButton(), 'Next button', softAssert);
+
+    public clickNextButton = async () =>
+        await clickElement(this.nextStepButton(), 'Next button');
+
+    public validatePasswordStrengthMeter = async (softAssert = false) =>
+        await assertVisible(this.passwordStrength(), 'Password strength meter', softAssert);
+
+    public validateError = async (fieldWithError: ErrorFieldsLocator) => 
+        await assertVisible(this.fieldError(fieldWithError), `Field error ${fieldWithError}`, false);
 
 
-    public async validateNextButtonNotEnabled(softAssert = false): Promise<void> {
-        await this.navigation.assertNotEnabled(this.nextStepButton(), softAssert, 'Next button');
-    }
-
-    @step('I validate the next button is visible')
-    public async validateNextButtonVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.nextStepButton(), softAssert, 'Next button');
-    }
-
-    @step('I click the Next button')
-    public async clickNextButton() {
-        await this.navigation.clickElement(this.nextStepButton(), false, 'Next button');
-    }
-
-    @step('I fill the first registration step')
+    @stepParam((userEmail: string, password: string) => 
+        `I fill in the email field with email ${userEmail} and password ${password}`)
     public async fillFirstStep(userEmail?: string, password?: string) {
         const time = Date.now();
-        await this.fillEmail(time + '_' + userEmail);
-        await this.fillPassword(time + '_' + password);
-        //TODO: make a method to add a datetime to email
+        await this.fillEmail(`${time}_${userEmail}`);
+        await this.fillPassword(`${time}_${password}`);
+    }
+
+    private async validatePasswordReminderState(reminderText: string, shouldShowMinus: boolean, softAssert = false) {
+        await assertElementContainsText(
+            this.passwordRemindersContainer(),
+            reminderText,
+            'Password reminder container',
+            softAssert
+        );
+
+        const reminders = await this.passwordReminders().all();
+
+        for (const reminder of reminders) {
+            const text = await reminder.innerText();
+            const isMatch = text.trim() === reminderText.trim();
+    
+            const minusLocator = reminder.locator(this.passwordReminderMinus());
+            const checkLocator = reminder.locator(this.passwordReminderCheck());
+    
+            const expectMinusVisible = isMatch ? shouldShowMinus : !shouldShowMinus;
+            const expectCheckVisible = isMatch ? !shouldShowMinus : shouldShowMinus;
+    
+            await expect(minusLocator, `Minus icon for "${text}"`).toBeVisible({ visible: expectMinusVisible });
+            await expect(checkLocator, `Check icon for "${text}"`).toBeVisible({ visible: expectCheckVisible });
+        }
     }
 
     @stepParam((reminderText: string) => `Password reminder for ${reminderText} is check and the others are minus`)
     public async validatePasswordCheck(reminderText: string) {
-        await this.validatePasswordReminder(reminderText, false);
-    }
-
-    @step('I validate the password strength meter is visible')
-    public async validatePasswordStrengthMeter() {
-        await this.navigation.assertVisible(this.passwordStrength(), false, 'Password strength meter');
-        //TODO: await expect(this.passwordStrength()).toBeVisible();
-    }
-
-    @stepParam((fieldWithError: ErrorFieldsLocator) => `I validate the ${fieldWithError} error is visible`)
-    public async validateError(fieldWithError: ErrorFieldsLocator) {
-        await this.navigation.assertVisible(this.fieldError(fieldWithError), false, `Field error ${fieldWithError}`);
-        //TODO: await expect(this.fieldError(fieldWithError), 'I validate that the ' + fieldWithError + ' error is visible').toBeVisible();
+        await this.validatePasswordReminderState(reminderText, false);
     }
 
     @step()
     public async validatePasswordMinus(reminderText: string) {
-        await this.validatePasswordReminder(reminderText, true);
+        await this.validatePasswordReminderState(reminderText, true);
     }
 
     @step('I validate the first registration step elements')
@@ -102,22 +112,4 @@ export class SignUpFirstStep {
         await this.validatePasswordVisible();
         await this.validateNextButtonVisible();
     }
-
-    @step('I validate the first registration step elements')
-    private async validatePasswordReminder(reminderText: string, shouldShowMinus: boolean) {
-        await this.navigation.assertElementContainsText(this.passwordRemindersContainer(), reminderText, false, 'Password reminder is visible');
-
-        const reminders = await this.passwordReminders().all();
-        for (const reminder of reminders) {
-            const isMatchingReminder = await reminder.innerText() === reminderText;
-            const minusVisible = isMatchingReminder ? shouldShowMinus : !shouldShowMinus;
-            const checkVisible = isMatchingReminder ? !shouldShowMinus : shouldShowMinus;
-
-            await expect(reminder.locator(this.passwordReminderMinus()), `Expect ${await reminder.innerText()} to have minus visible: ${minusVisible}`)
-                .toBeVisible({ visible: minusVisible });
-            await expect(reminder.locator(this.passwordReminderCheck()), `Expect ${await reminder.innerText()} to have check visible: ${checkVisible}`)
-                .toBeVisible({ visible: checkVisible });
-        }
-    }
 }
-

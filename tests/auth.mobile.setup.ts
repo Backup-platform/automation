@@ -4,7 +4,6 @@
 import test, { expect } from '../pages/utils/base.po';
 import { test as setup } from '@playwright/test';
 import { devices } from '@playwright/test';
-import { LandingPage } from '../pages/LandingPage/landingPage.po';
 import { Banner } from '../pages/banner.po';
 import { HeaderMenuDesktop } from '../pages/headerMenuDesktop.po';
 import { LoginPage } from '../pages/loginPage.po';
@@ -23,9 +22,8 @@ setup('Authenticate for Mobile', async ({ page }) => {
 
 	await page.goto(`${process.env.URL}`,{ waitUntil: 'domcontentloaded' });
 	await headerMenuDesktop.clickLoginButton();
-	await page.waitForTimeout(10000);
 	await loginPage.actionLogin(`${process.env.USER}`, `${process.env.PASS}`);
-	await page.waitForURL(`${process.env.URL}`, {waitUntil: 'domcontentloaded'});
+	await page.waitForEvent("load");
 	await expect(page.locator('img[src*="Mobile_Bottom_Nav_My_Bonuses_icon_f21202f625.svg"]')).toBeVisible({ timeout: 20000 });
 	//TODO: FIX ME await landingPage.clickAcceptCookiesButton();
 

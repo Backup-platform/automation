@@ -5,15 +5,15 @@ test.beforeEach(async ({ page }) => {
 });
 
 
-test.skip('Validate game is interactable', async ({ footerMenuMobile, gameProviders, page, context }) => {
+test.skip('Validate game is interactable', async ({ bottomMenu, gameProviders, page, context }) => {
 /**
  * TODO: design a scenario for navigating to a game validating it works and goes back to landing page.
  */
 
 	const game = ['#producer-Betsoft '];
-	await footerMenuMobile.validateLogoVisible();
-	await footerMenuMobile.validateBottomNavVisible();
-	await footerMenuMobile.clickGames();
+	// await bottomMenu.validateLogoVisible();
+	// await bottomMenu.validateBottomNavVisible();
+	// await bottomMenu.clickGames();
 	await gameProviders.selectMobileProvidersFromDropdown(game);
 	//await page.locator('#apply-filters-btn').click();
 	//await page.locator('div[id="1514-gcs"]>div>div>button').click();

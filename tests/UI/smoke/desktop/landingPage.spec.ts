@@ -1,6 +1,6 @@
 import test, { expect } from "../../../../pages/utils/base.po";
 
-test.beforeEach(async ({ page, banner, headerMenuDesktop, navigation }) => {
+test.beforeEach(async ({ page, banner }) => {
     await page.goto(`${process.env.URL}`, { waitUntil: "load" });
     await banner.clickEscapeInOptIn();
     await banner.randomClickSkipSomething();
@@ -11,11 +11,8 @@ test.beforeEach(async ({ page, banner, headerMenuDesktop, navigation }) => {
 });
 
 test.describe("Landing Page Smoke Tests - Desktop", () => {
-    test.beforeEach(async ({ }, testInfo) => {
-        if (!testInfo.project.name.includes('desktop')) { test.skip(); }
-    });
 
-    test("Validate page elements are visible for a member", async ({ landingPage, topCategories }) => {
+    test("Validate page elements are visible for a member", async ({ landingPage }) => {
         await landingPage.validateCarouselElementsAreVisibleForMember();
         await landingPage.validateTopCategoriesElements();
         await landingPage.validateGameCategoriesElements();

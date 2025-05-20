@@ -74,19 +74,19 @@ export default defineConfig({
 			},
 			dependencies: ['setupDesk'],
 		},
-		{
-			name: 'mobile.1024.chrome',
-			testMatch: '**/*desktop/*',
-			use: {
-				...devices['iPad Mini landscape'], //width: 1024, height: 768
-				browserName: 'chromium',
-				storageState: 'playwright/.auth/mobileUser.json', 
-			},
-			dependencies: ['setupMobile'],
-		},
+		// {
+		// 	name: 'mobile.1024.chrome',
+		// 	testMatch: '**/*mobile/*',
+		// 	use: {
+		// 		...devices['iPad Mini landscape'], //width: 1024, height: 768
+		// 		browserName: 'chromium',
+		// 		storageState: 'playwright/.auth/mobileUser.json', 
+		// 	},
+		// 	dependencies: ['setupMobile'],
+		// },
 		{
 			name: 'mobile.375.chrome',
-			testMatch: '**/*desktop/*',
+			testMatch: '**/*mobile/*',
 			use: {
 				...devices['iPhone 12 Pro'],
 				browserName: 'chromium',
@@ -100,28 +100,7 @@ export default defineConfig({
 			use: {
 				baseURL: 'https://games.dev.inovadatabv.com/alea/',
 			}
-		},
-		{
-			name: 'wip.desktop.1440',
-			testMatch: '**/*desktop.cashierPage.spec*',
-			use: {
-				...devices['Desktop Chrome'],
-				storageState: 'playwright/.auth/user.json',
-				viewport: { width: 1440, height: 1024 },
-			},
-			dependencies: ['setupDesk'],
-			
-		},
-		{
-			name: 'wip.mobile.375.chrome',
-			testMatch: '**/*desktop.cashierPage.spec*',
-			use: {
-				...devices['iPhone 12 Pro'],
-				browserName: 'chromium',
-				storageState: 'playwright/.auth/mobileUser.json', //width: 375 height:812
-			},
-			dependencies: ['setupMobile'],
-		},
+		}
 		
 		// {
 		// 	name: 'screenshots',

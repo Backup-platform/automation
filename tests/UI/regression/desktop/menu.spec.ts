@@ -7,12 +7,11 @@ test.beforeEach(async ({ page, banner }) => {
     await banner.randomBannerNewDesign();
     await banner.sideBannerClickCloseBtn();
     await banner.randomBannerHiThere();
+    await banner.acceptCookies();
+    await banner.acceptTermsAndConditions();
 });
 
 test.describe("Menu Regression Tests - Desktop", () => {
-    test.beforeAll(({ }, testInfo) => {
-        if (!testInfo.project.name.includes('desktop')) { test.skip(); }
-    });
 
     test.use({ storageState: "playwright/.auth/noAuthentication.json" });
     test("Validate header menu navigation for a guest", async ({ headerMenuDesktop, page }) => {

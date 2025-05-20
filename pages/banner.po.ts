@@ -1,18 +1,16 @@
 import test, { expect } from '../pages/utils/base.po';
 import { Page } from '@playwright/test';
-import { Navigation, step } from '../pages/utils/navigation.po';
+import { step, clickElement } from '../pages/utils/navigation.po';
 
 
 export class Banner {
 	readonly page: Page;
-	readonly navigation: Navigation;
 
 	constructor(page: Page) {
 		this.page = page;
-		this.navigation = new Navigation(page)
 	}
 
-	//Locators //
+	//Locators
 	readonly skipHiThere = () => this.page.locator('.introjs-customskipbutton');
 	readonly skipNewDesign = () => this.page.locator('.introjs-customskipbutton');
 	readonly bannerNewDesign = () => this.page.locator(".introjs-tooltip-title") //.getByText('A New Universe Of Fun'); //this.page.getByRole('heading', { name: 'A New Universe Of Fun' });
@@ -28,21 +26,31 @@ export class Banner {
 	readonly sideBannerCloseBtn = () => this.page.locator('.small-notifications-wrapper .close-btn');
 	readonly cookiesContainer = () => this.page.locator('div[class*="cookies_cookiesContainer_"]');
 	readonly cookiesAcceptButton = () => this.page.locator('button[class*="cookies_cookiesAcceptBtn_"]');
+	readonly termsAndConditionsModal = () => this.page.locator('[class*="terms_modalContent_"]');
+	readonly acceptTermsAndConditionsButton = () => this.page.locator('div[class*="terms_modalHeader_"]');
 	
 	//Actions
 	@step('I click skip new design')
 	public async randomBannerNewDesign(): Promise<void> {
 		await this.page.addLocatorHandler(this.bannerNewDesign(), async () => {
 			await this.skipNewDesign().click();
-			//await this.bannerNewDesign().waitFor({state: 'hidden'});
+			await this.bannerNewDesign().waitFor({state: 'hidden'});
+		});
+	}
+	
+	@step('I accept terms and conditions')
+	public async acceptTermsAndConditions(): Promise<void> {
+		await this.page.addLocatorHandler(this.termsAndConditionsModal(), async () => {
+			await this.acceptTermsAndConditionsButton().click();
+			await this.bannerNewDesign().waitFor({state: 'hidden'});
 		});
 	}
 
 	@step('I clic the accept cookies button')
 	public async acceptCookies(): Promise<void> {
 		await this.page.addLocatorHandler(this.cookiesContainer(), async () => {
-			await this.navigation.clickElement(this.cookiesAcceptButton(), false, 'Accept cookies');
-			//await this.cookiesContainer().waitFor({state: 'hidden'});
+			await clickElement(this.cookiesAcceptButton(), 'Accept cookies');
+			await this.cookiesContainer().waitFor({state: 'hidden'});
 		});
 	}
 
@@ -71,7 +79,7 @@ export class Banner {
 			var countRows = await this.sideBannerCloseBtn().count();
 			for (var i = 0; i < countRows; ++i) {
 				await this.sideBannerCloseBtn().nth(i).click();
-				await this.sideBanner2().waitFor({ state: 'hidden' });
+				//await this.sideBanner2().waitFor({ state: 'hidden' });
 			}
 		});
 	}

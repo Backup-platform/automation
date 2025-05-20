@@ -1,6 +1,6 @@
 import test, { expect } from "../../../../pages/utils/base.po";
 
-test.beforeEach(async ({ page, banner, headerMenuDesktop }) => {
+test.beforeEach(async ({ page, banner }) => {
 	await page.goto(`${process.env.URL}`, { waitUntil: "load" });
 	await banner.clickEscapeInOptIn();
 	await banner.randomClickSkipSomething();
@@ -8,12 +8,10 @@ test.beforeEach(async ({ page, banner, headerMenuDesktop }) => {
 	await banner.randomBannerHiThere();
 	await banner.acceptCookies();
 	await banner.randomBannerNewDesign();
+    await banner.acceptTermsAndConditions();
 });
 
 test.describe("Landing Page Regression Tests - Desktop", () => {
-	test.beforeEach(async ({ }, testInfo) => {
-		if (!testInfo.project.name.includes('desktop')) { test.skip(); }
-	});
 
 	test.describe("Guest", () => {
 		test.use({ storageState: "playwright/.auth/noAuthentication.json" });
@@ -24,26 +22,26 @@ test.describe("Landing Page Regression Tests - Desktop", () => {
 			await signUpFirstStep.validatePageElements();
 		});
 
-		test("Validate top Categories elements for a guest", async ({ topCategories, page }) => {
+		test("Validate top Categories elements for a guest", async ({ topCategories, headerMenuDesktop }) => {
 			await topCategories.validateCardElements();
 			await topCategories.clickShowAll();
-			await page.goBack();
-			await topCategories.validateTopCardNavigation('slots/all', 2);
+			await headerMenuDesktop.navigateToHomePageViaLogo();
+			await topCategories.validateTopCardNavigation('/slots/all', 2);
 		});
 
-		test("Validate Game categories elements for a guest", async ({ gamesCategories, page }) => {
+		test("Validate Game categories elements for a guest", async ({ gamesCategories, headerMenuDesktop }) => {
 			await gamesCategories.validateGameCardElements();
-			await gamesCategories.clickShowAll(0, 'slots/new-releases');
-			await page.goBack();
+			await gamesCategories.clickShowAll(0, '/slots/new-releases');
+			await headerMenuDesktop.navigateToHomePageViaLogo();
 			await gamesCategories.validateCTAbuttonsForGuests(0, 0, false);
 		});
 
-		test("Validate promotion elements for a guest", async ({ promotionsLandingPage, page }) => {
+		test("Validate promotion elements for a guest", async ({ promotionsLandingPage, headerMenuDesktop }) => {
 			await promotionsLandingPage.validateCardElements();
-			await promotionsLandingPage.validateCardTitleVisible(0);
-			await promotionsLandingPage.clickShowAll('promotions');
-			await page.goBack();
-			await promotionsLandingPage.validateCTAbuttonsForGuests(0, true);
+			await promotionsLandingPage.validateCardTitleVisible(1);
+			await promotionsLandingPage.clickShowAll('/promotions');
+			await headerMenuDesktop.navigateToHomePageViaLogo();
+			await promotionsLandingPage.validateCTAbuttonsForGuests(1, true);
 		});
 	});
 
@@ -53,26 +51,26 @@ test.describe("Landing Page Regression Tests - Desktop", () => {
 			await landingPageCarousel.validateGetBonusNavigation();
 		});
 
-		test("Validate top Categories elements for a member", async ({ topCategories, page }) => {
+		test("Validate top Categories elements for a member", async ({ topCategories, headerMenuDesktop }) => {
 			await topCategories.validateCardElements();
 			await topCategories.clickShowAll();
-			await page.goBack();
-			await topCategories.validateTopCardNavigation('slots/all', 2);
+			await headerMenuDesktop.navigateToHomePageViaLogo();
+			await topCategories.validateTopCardNavigation('/slots/all', 2);
 		});
 
-		test("Validate Game categories elements for a member", async ({ gamesCategories, page }) => {
+		test("Validate Game categories elements for a member", async ({ gamesCategories, headerMenuDesktop }) => {
 			await gamesCategories.validateGameCardElements();
-			await gamesCategories.clickShowAll(0, 'slots/new-releases');
-			await page.goBack();
+			await gamesCategories.clickShowAll(0, '/slots/new-releases');
+			await headerMenuDesktop.navigateToHomePageViaLogo();
 			await gamesCategories.validateCTAbuttonsForMembers(0, 0, false);
 		});
 
-		test("Validate promotion elements for a member", async ({ promotionsLandingPage, page }) => {
+		test("Validate promotion elements for a member", async ({ promotionsLandingPage, headerMenuDesktop }) => {
 			await promotionsLandingPage.validateCardElements();
-			await promotionsLandingPage.validateCardTitleVisible(0);
-			await promotionsLandingPage.clickShowAll('promotions');
-			await page.goBack();
-			await promotionsLandingPage.validateCTAbuttonsForMembers(0, true);
+			await promotionsLandingPage.validateCardTitleVisible(1);
+			await promotionsLandingPage.clickShowAll('/promotions');
+			await headerMenuDesktop.navigateToHomePageViaLogo();
+			await promotionsLandingPage.validateCTAbuttonsForMembers(1, true);
 		});
 	});
 });

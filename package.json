@@ -4,21 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test:landingPageSmoke": "npx playwright test --project=desktop.1440 --grep \"Landing Page Smoke Tests\"",
-    "test:landingPageRegression": "npx playwright test --grep \"Landing page Regression Tests\"",
-    "test:LoginPageSmoke": "npx playwright test --grep \"Login Page Smoke Tests\"",
-    "test:LoginPageRegression": "npx playwright test --grep \"Login page Regression Tests\"",
-    "test:MenuSmoke": "npx playwright test --grep \"Menu Smoke Tests\"",
-    "test:MenuRegression": "npx playwright test --grep \"Menu Regression Tests\"",
-    "test:SignUpSmoke": "npx playwright test --grep \"Signup Smoke Tests\"",
-    "test:SignUpRegression": "npx playwright test --grep \"Signup Regression Tests\"",
     "test": "npx playwright test",
-    "test:smoke": "npx playwright test --grep \".*\\Smoke Tests\"",
-    "test:regression": "npx playwright test --grep \".*\\Regression Tests\"",
-    "test:api": "npx playwright test --grep \".*\\API Tests\"",
-    "report": "allure generate allure-results -o allure-report --clean && allure open allure-report",
-    "test:wip": "set TEST_PROJECT=\"wip.desktop.1440\" && npx playwright test --project=wip.desktop.1440 --headed --trace on-first-retry",
-    "test:wip2": "set TEST_PROJECT=\"wip.mobile.375.chrome\" && npx playwright test --project=wip.mobile.375.chrome --headed --trace on-first-retry"
+    "test:e2e": "npx playwright test --grep \"e2e\"",
+    "test:api": "npx playwright test --grep \"API\"",
+    "test:smoke": "npx playwright test --grep \"smoke\"",
+    "test:regression": "npx playwright test --grep \"regression\""
+    
   },
   "keywords": [],
   "author": "",

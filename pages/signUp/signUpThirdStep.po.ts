@@ -1,6 +1,6 @@
 import { Locator, Page } from '@playwright/test';
 import test, { expect } from '../utils/base.po';
-import { Navigation, step, stepParam } from '../utils/navigation.po';
+import { step, stepParam, clickElement,assertVisible, fillInputField, assertEditable, assertCondition } from '../utils/navigation.po';
 
 export type Country = 'France' | 'Canada';
 export type CountryCode = '+33' | '+1';
@@ -9,11 +9,9 @@ export type ErrorFieldsLocator = 'email' | 'password' | 'firstName' | 'lastName'
 
 export class SignUpThirdStep {
     readonly page: Page;
-    readonly navigation: Navigation;
 
     constructor(page: Page) {
         this.page = page;
-        this.navigation = new Navigation(page);
     }
 
     //Locators - should work for both mobile and desktop
@@ -33,81 +31,58 @@ export class SignUpThirdStep {
     private readonly fieldError = (fieldError: ErrorFieldsLocator) => this.page.locator(`label[class*="field_error"][for*=${fieldError}]`);
 
     //Actions
-    @step('I validate the city field is visible')
-    public async validateCityVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.city(), softAssert, 'City field');
+    public validateCityVisible = async (softAssert = false) => await assertVisible(this.city(), 'City field', softAssert);
+
+    public fillCity = async (city: string) => await fillInputField(this.city(), city, 'City field');
+
+    public validateAddressVisible = async (softAssert = false) => await assertVisible(this.address(), 'Address field', softAssert);
+
+    public fillAddress = async (address: string) => await fillInputField(this.address(), address, 'Address field');
+
+    public validatePostCodeVisible = async (softAssert = false) => await assertVisible(this.postCode(), 'Post code field', softAssert);
+
+    public fillPostCode = async (postCode: string) => await fillInputField(this.postCode(), postCode, 'Post code field');
+
+    public validatePhoneVisible = async (softAssert = false) => await assertVisible(this.phone(), 'Phone field', softAssert);
+
+    public fillPhone = async (phone: string) => await fillInputField(this.phone(), phone, 'Phone field');
+
+    public validateCountryButtonVisible = async (softAssert = false) =>
+        await assertVisible(this.desktopCountryButton().or(this.mobileCountryButton()), 'Country button', softAssert);
+
+    public validateAgeCheckboxVisible = async (softAssert = false) =>
+        await assertVisible(this.ageCheckbox(), 'Age checkbox', softAssert);
+
+    public clickAgeCheckbox = async () => await clickElement(this.ageCheckbox(), 'Age Checkbox');
+
+    public validateEnterButtonVisible = async (softAssert = false) =>
+        await assertVisible(this.enterButton(), 'Enter button', softAssert);
+
+    public clickEnterButton = async () => await clickElement(this.enterButton(), 'Enter button');
+
+    public validateError = async (fieldWithError: ErrorFieldsLocator) =>
+        await assertVisible(this.fieldError(fieldWithError), `Field error ${fieldWithError}`);
+
+    public validateEnterEnabled = async (expectedStatus: boolean, softAssert= false) =>
+        await assertCondition(this.enterButton(), 'enabled', expectedStatus, 'Enter button', softAssert);
+
+    @stepParam((field: Locator, description: string) =>
+        `I validate visibility of ${description} field`)
+    private async validateField(field: Locator, description: string) {
+        await assertVisible(field, `${description} is visible`);
+        await assertEditable(field, `${description} is editable`);
     }
 
-    @step('I fill the city field')
-    public async fillCity(city: string) {
-        await this.navigation.fillInputField(this.city(), city, false, 'City field');
-    }
-
-    @step('I validate the address field is visible')
-    public async validateAddressVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.address(), softAssert, 'Address field');
-    }
-
-    @step('I fill the address field')
-    public async fillAddress(address: string) {
-        await this.navigation.fillInputField(this.address(), address, false, 'Address field');
-    }
-
-    @step('I validate the post code field is visible')
-    public async validatePostCodeVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.postCode(), softAssert, 'Post code field');
-    }
-
-    @step('I fill the post code field')
-    public async fillPostCode(postCode: string) {
-        await this.navigation.fillInputField(this.postCode(), postCode, false, 'Post code field');
-    }
-
-    @step('I validate the phone field is visible')
-    public async validatePhoneVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.phone(), softAssert, 'Phone field');
-    }
-
-    @step('I fill the phone field')
-    public async fillPhone(phone: string) {
-        await this.navigation.fillInputField(this.phone(), phone, false, 'Phone field');
-    }
-
-    @step('I validate the country button is visible')
-    public async validateCountryButtonVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.desktopCountryButton().or(this.mobileCountryButton()), softAssert, 'Country button');
-    }
-
-    @step('I validate the age checkbox is visible')
-    public async validateAgeCheckboxVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.ageCheckbox(), softAssert, 'Age checkbox');
-    }
-
-    @step('I click the Age Checkbox')
-    public async clickAgeChecbox() {
-        await this.navigation.clickElement(this.ageCheckbox(), false, 'Age Checkbox');
-    }
-
-    @step('I validate the enter button is visible')
-    public async validateEnterButtonVisible(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(this.enterButton(), softAssert, 'Enter button');
-    }
-
-    @step('I click the Enter button')
-    public async clickEnterButton() {
-        await this.navigation.clickElement(this.enterButton(), false, 'Enter button');
-    }
-
-    @step('I validate the enter button is enabled')
-    public async validateEnterEnabled(expectedStatus: boolean) {
-        await expect(await this.enterButton().isEnabled(),
-            'Expect Enter button isEnabled to be: ' + expectedStatus).toBe(expectedStatus);
-    }
-
-    @stepParam((fieldWithError: ErrorFieldsLocator) => `I validate the ${fieldWithError} error is visible`)
-    public async validateError(fieldWithError: ErrorFieldsLocator) {
-        await this.navigation.assertVisible(this.fieldError(fieldWithError), false, `Field error ${fieldWithError}`);
-        //await expect(this.fieldError(fieldWithError), 'I validate that the ' + fieldWithError + ' error is visible').toBeVisible();
+    private async fillFieldIfDefined<T>(
+        fieldValue: T | undefined,
+        fillMethod: (value: T) => Promise<void>,
+        stepDescription: string
+    ) {
+        if (fieldValue !== undefined) {
+            await fillMethod.call(this, fieldValue);
+        } else {
+            await test.step(stepDescription, async () => {});
+        }
     }
 
     @step('I select country')
@@ -132,24 +107,25 @@ export class SignUpThirdStep {
         }
     }
 
-    public async fillPartialThirdStep({ checkbox, country, city, address, postcode, countryCode, phone }: thirdStepFields) {
-        country != undefined ? await this.selectCountry(country) :
-            await test.step('I do not set country', async () => { });
-        city != undefined ? await this.fillCity(city) :
-            await test.step('I do not set city', async () => { });
-        address != undefined ? await this.fillAddress(address) :
-            await test.step('I do not set Address', async () => { });
-        postcode != undefined ? await this.fillPostCode(postcode) :
-            await test.step('I do not set postcode', async () => { });
-        countryCode != undefined ? await this.selectCountryCode(countryCode) :
-            await test.step('I do not set phone country code', async () => { });
-        phone != undefined ? await this.fillPhone(phone) :
-            await test.step('I do not set phone', async () => { });
-        checkbox == true ? await this.clickAgeChecbox() :
-            await test.step('I do not check the Age checkbox', async () => { });
+    @step('I fill the third registration step with available values')
+    public async fillPartialThirdStep(fields: thirdStepFields): Promise<void> {
+        const { checkbox, country, city, address, postcode, countryCode, phone } = fields;
+
+        await this.fillFieldIfDefined(country, this.selectCountry, 'I do not set country');
+        await this.fillFieldIfDefined(city, this.fillCity, 'I do not set city');
+        await this.fillFieldIfDefined(address, this.fillAddress, 'I do not set address');
+        await this.fillFieldIfDefined(postcode, this.fillPostCode, 'I do not set postcode');
+        await this.fillFieldIfDefined(countryCode, this.selectCountryCode, 'I do not set country code');
+        await this.fillFieldIfDefined(phone, this.fillPhone, 'I do not set phone');
+    
+        if (checkbox) {
+            await this.clickAgeCheckbox();
+        } else {
+            await test.step('I do not check the age checkbox', async () => {});
+        }
     }
 
-    @step('I fill the third registration step')
+    @step('I fill all required fields in the third registration step')
     public async fillThirdStep(city: string, address: string, postcode: string, phone: string, country: Country, countryCode: CountryCode) {
         await this.selectCountry(country);
         await this.fillCity(city);
@@ -157,27 +133,18 @@ export class SignUpThirdStep {
         await this.fillPostCode(postcode);
         await this.selectCountryCode(countryCode)
         await this.fillPhone(phone);
-        await this.clickAgeChecbox();
+        await this.clickAgeCheckbox();
     }
 
     public async validateThirdStepElements() {
         await test.step(`I validate third registration step elements`, async () => {
-            await expect(this.mobileCountryButton().or(this.desktopCountryButton())).toBeVisible();
-            await expect(this.mobileCountryButton().or(this.desktopCountryButton())).toBeEnabled();
-            await expect(this.mobileCountryButton().or(this.desktopCountryButton())).toBeEditable();
-            await expect(this.city()).toBeVisible();
-            await expect(this.city()).toBeEditable();
-            await expect(this.address()).toBeVisible();
-            await expect(this.address()).toBeEditable();
-            await expect(this.postCode()).toBeVisible();
-            await expect(this.postCode()).toBeEditable();
-            await expect(this.phone()).toBeVisible();
-            await expect(this.phone()).toBeEditable();
-            await expect(this.ageCheckbox()).toBeVisible();
-            await expect(this.ageCheckbox()).toBeEnabled();
-            await expect(this.ageCheckbox()).toBeEditable();
-            await expect(this.enterButton()).toBeVisible();
-            //TODO: expect messages
+            await this.validateField(this.mobileCountryButton().or(this.desktopCountryButton()), 'Country button');
+            await this.validateField(this.city(), 'City field');
+            await this.validateField(this.address(), 'Address field');
+            await this.validateField(this.postCode(), 'Post code field');
+            await this.validateField(this.phone(), 'Phone field');
+            await this.validateField(this.ageCheckbox(), 'Age checkbox');
+            await assertVisible(this.enterButton(), 'Enter button');
         });
     }
 

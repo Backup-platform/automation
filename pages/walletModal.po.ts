@@ -10,17 +10,11 @@ export class WalletModal {
 	}
     //Locators:
     private readonly walletModal = () => this.page.locator('#wallet-modal');
-
-
-
-    //actions
-
-
+    
+	//Actions
+	//TODO: add navigation methods
     public async validateWalletModalVisible() {
 		await expect.soft(this.walletModal(),
 			`Expect wallet modal to be visible`).toBeVisible();
 	}
-
-
-
 }

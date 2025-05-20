@@ -10,9 +10,6 @@ test.beforeEach(async ({ page, banner }) => {
 });
 
 test.describe("Menu Smoke Tests - Mobile", () => {
-    test.beforeAll(({ }, testInfo) => {
-        if (!testInfo.project.name.includes('mobile')) { test.skip(); }
-    });
 
     test("Validate menu elements for a member", async ({ burgerMenu, bottomMenu }) => {
         await bottomMenu.validateMenuElementsForMember(true);

@@ -1,25 +1,25 @@
 import test, { expect } from "../../../../pages/utils/base.po";
 
-test.beforeEach(async ({ page, banner, bottomMenu }) => {
+test.beforeEach(async ({ page, banner }) => {
 	await page.goto(`${process.env.URL}`, { waitUntil: "load" });
-	await banner.clickEscapeInOptIn();
-	await banner.randomClickSkipSomething();
-	await banner.bannerNewDesign();
-	await banner.bannerHiThere();
+    await banner.clickEscapeInOptIn();
+    await banner.randomClickSkipSomething();
+    await banner.bannerNewDesign();
+    await banner.bannerHiThere();
+    await banner.acceptCookies();
+    await banner.acceptTermsAndConditions();
 });
 
 test.describe("Login Page Smoke Tests - Mobile", () => {
-	test.beforeAll(({ }, testInfo) => {
-		if (!testInfo.project.name.includes('mobile')) { test.skip(); }
-	});
 	test.use({ storageState: "playwright/.auth/noAuthentication.json" });
 
 	test("Validate Login Mobile", async ({ loginPage, bottomMenu, page }) => {
+		await bottomMenu.validateLoggedOutState(false);
 		await bottomMenu.clickLoginButton();
-		await loginPage.validateLoginWindowElementsVisible(true);
+		await loginPage.validateLoginWindowElementsVisible(false);
 		await loginPage.actionLogin(`${process.env.USER}`, `${process.env.PASS}`);
 		await page.waitForURL(`${process.env.URL}`, { waitUntil: 'domcontentloaded' });
-		await loginPage.validateMobileLoginState(true);
+		await bottomMenu.validateLoggedInState(false);
 	});
 
 	test("Test all login page elements are visible", async ({ loginPage, bottomMenu }) => {

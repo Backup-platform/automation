@@ -27,6 +27,8 @@ export class GameProviders {
 	readonly apllyFiltersForProviders = () => this.page.locator('#apply-filters-btn');
 
 	//Actions
+	//TODO: use navigation class
+
 	private async selectSpecificProvider(providers: string[]): Promise<void> {
 		for (let provider of providers) {
 			await this.page.locator(provider).click();
