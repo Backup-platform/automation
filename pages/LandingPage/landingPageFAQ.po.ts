@@ -1,14 +1,12 @@
 import { Locator, Page } from '@playwright/test';
 import test, { expect } from '../utils/base.po';
-import { Navigation, step, stepParam, assertVisible, clickElement } from '../utils/navigation.po';
+import { step, stepParam, assertVisible, clickElement } from '../utils/navigation.po';
 
 export class LandingPageFAQ {
     readonly page: Page;
-    readonly navigation: Navigation;
 
     constructor(page: Page) {
         this.page = page;
-        this.navigation = new Navigation(page)
     }
 
     // Locators
@@ -20,7 +18,6 @@ export class LandingPageFAQ {
     readonly faqReadMoreSectionAt = (index: number) => this.faqReadMoreSections().nth(index);
 
     // Actions
-//TODO: fix the "validate" FAQ method 
     public validateFaqTitleVisible = async (softAssert = false) => 
         await assertVisible(this.faqTitle(), 'FAQ title', softAssert);
 
@@ -38,13 +35,11 @@ export class LandingPageFAQ {
 
     @step('I validate FAQ elements are visible')
     public async validateFaqElements(softAssert = false): Promise<void> {
-        // Validate main containers
         await this.validateFaqTitleVisible(softAssert);
         await this.validateFaqContainerVisible(softAssert);
 
         const totalDropdowns = await this.faqDropdowns().count();
 
-        // Validate each dropdown and its read more section
         for (let i = 0; i < totalDropdowns; i++) {
             await test.step(`I validate dropdown #${i} and read more section`, async () => {
                 await this.validateFaqDropdownVisible(i, softAssert);
@@ -54,8 +49,7 @@ export class LandingPageFAQ {
             });
         }
 
-        // Verify counts match
-        expect(await totalDropdowns, 'Expect the same amount of dropdowns as read more sections')
+        await expect(await totalDropdowns, 'Expect the same amount of dropdowns as read more sections')
             .toEqual(await this.faqReadMoreSections().count());
     }
 }

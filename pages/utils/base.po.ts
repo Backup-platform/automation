@@ -10,7 +10,6 @@ import { PromotionTabs } from '../promotionTabs.po';
 import { SignUpEmail } from '../signUp/SignUpEmail.po';
 import { WalletModal } from '../walletModal.po';
 import { ResetPasswordFrame } from '../resetPasswordFrame.po';
-import { Navigation } from './navigation.po';
 import { LandingPageCarousel } from '../LandingPage/landingPageCarousel.po';
 import { TopCategories } from '../LandingPage/topCategories.po';
 import { GamesCategories } from '../LandingPage/gamesCategories.po';
@@ -40,7 +39,6 @@ type pages = {
 	signUpEmail: SignUpEmail;
 	walletModal: WalletModal;
 	resetPasswordFrame: ResetPasswordFrame;
-	navigation: Navigation;
 	landingPageCarousel: LandingPageCarousel;
 	topCategories: TopCategories;
 	gamesCategories: GamesCategories;
@@ -78,7 +76,6 @@ const test = base.extend<pages>({
 	signUpEmail: createPageFixture(SignUpEmail),
 	walletModal: createPageFixture(WalletModal),
 	resetPasswordFrame: createPageFixture(ResetPasswordFrame),
-	navigation: createPageFixture(Navigation),
 	landingPageCarousel: createPageFixture(LandingPageCarousel),
 	topCategories: createPageFixture(TopCategories),
 	gamesCategories: createPageFixture(GamesCategories),

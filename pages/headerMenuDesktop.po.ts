@@ -1,21 +1,19 @@
 import { Locator, Page, } from '@playwright/test';
 import test, { expect } from '../pages/utils/base.po';
 import { step, performNavigationClick, assertVisible, assertNotVisible, validateAttributes, assertAttribute , clickElement, assertUrl, assertUrlContains } from './utils/navigation.po';
-import { CashierMain } from './openCashier/cashierMain.po';
 
 export type USER = 'Guest' | 'Member';
 
 export class HeaderMenuDesktop {
 	readonly page: Page;
-	readonly cashierMain: CashierMain;
 
 	constructor(page: Page) {
 		this.page = page;
-		this.cashierMain = new CashierMain(page);
 	}
 
 	//Locators
 
+	//TODO: shortcut, balance, login, sign up, deposit, search
 	readonly desktopHeader = () => this.page.locator('#desktop-header');
 	readonly mobileHeader = () => this.page.locator('#header-mobile')
 	readonly header = () => this.desktopHeader().or(this.mobileHeader());
@@ -44,12 +42,11 @@ export class HeaderMenuDesktop {
 	readonly balance = () => this.page.locator('#wallet-modal-open-btn');
 	readonly depositButton = () => this.page.locator('#wallet-modal-open-btn');
 
-	readonly walletBalanceAmount = () => this.page.locator('div[class*="wallet_balanceContainer_"] .items-center span').nth(1).innerText();
+	readonly walletBalanceAmount = () => this.page.locator('div[class*="wallet_balanceContainer_"] .items-center span').nth(1);
 	private readonly myProfileIcon = () => this.page.locator('#desktop-profile-icon');
 
 	//Actions
 
-	//TODO: shortcut, balance, login, sign up, deposit, search
 
 	private navigateToMenuItem = (
 		locator: Locator,
@@ -155,17 +152,15 @@ export class HeaderMenuDesktop {
 
 	public navigateToLoginPage = async () => await this.navigateToMenuItem(this.loginButton(), 'Login', 'login');
 
-	//TODO: ther is no need to validate modal body is visible the other POM will take care of it and it will be used in the test spec. 
 	public async clickDepositButton(softAssert = false): Promise<void> {
 		await clickElement(this.depositButton(), 'Deposit button');
 		await assertUrlContains(this.page, ['?openCashier=true'], softAssert);
-		await this.cashierMain.validateModalBodyVisible();
 	}
 
 	@step(`I get the wallet balance amount`)
 	public async getBalanceAmmount(): Promise<number> {
-		const balanceText = await this.walletBalanceAmount(); // Added missing await
-		return parseFloat(balanceText);
+		await assertVisible(this.walletBalanceAmount(), 'Balance button');
+		return parseFloat(await this.walletBalanceAmount().innerText());
 	}
 
 	public validateLoggedInState = async (softAssert = true): Promise<void> => {

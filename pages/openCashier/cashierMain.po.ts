@@ -1,33 +1,31 @@
 import { Locator, Page } from '@playwright/test';
 import test, { expect } from '../utils/base.po';
-import { Navigation, step, stepParam, assertAttribute, assertElementContainsText, clickElement, assertVisible, assertNotVisible, fillInputField, assertEditable, assertEnabled, assertNotEnabled  } from '../utils/navigation.po';
+import { step, clickElement, assertVisible } from '../utils/navigation.po';
 
 export class CashierMain {
     readonly page: Page;
-    readonly navigation: Navigation;
 
     constructor(page: Page) {
         this.page = page;
-        this.navigation = new Navigation(page); // Initialize navigation
     }
 
+    //TODO: validate what the active heading is
     // Locators
-    readonly modalContainer = () => this.page.locator('div[class*="walletModal_modalContent_"]'); //TODO: add action
+    readonly modalContainer = () => this.page.locator('div[class*="walletModal_modalContent_"]');
     readonly modalBody = () => this.page.locator('div[class*="walletModal_modalBody_"]');
     readonly modalHeading = () => this.page.locator('div[class*="walletModalHeading_userInfo_"]');
     readonly headingTitle = () => this.page.locator('div[class*="walletModalHeading_title_"]');
     readonly headingBalance = () => this.page.locator('div[class*="walletModalHeading_balance_"]');
-    readonly headingRealMoney = () => this.page.locator('div[class*="walletModalHeading_balance_"] span:nth-child(1)'); //TODO: add composit locator
-    readonly headingBonusMoney = () => this.page.locator('div[class*="walletModalHeading_balance_"] span:nth-child(2)'); //TODO: add composit locator
+    readonly headingRealMoney = () => this.page.locator('div[class*="walletModalHeading_balance_"] span:nth-child(1)');
+    readonly headingBonusMoney = () => this.page.locator('div[class*="walletModalHeading_balance_"] span:nth-child(2)');
     readonly walletTabs = () => this.page.locator('div[class*="walletModalHeading_walletTabs_"]');
     readonly walletTab = (tabIndex: number) => this.walletTabs().locator(`div:nth-child(${tabIndex})`);
     readonly depositHeading = () => this.page.locator('#wallet-modal-deposit-heading');
     readonly withdrawHeading = () => this.page.locator('#wallet-modal-withdraw-heading');
-    readonly stepsContainerHeading = () => this.page.locator('div[class*="walletModalHeading_stepsContainer_"]'); //TODO: not ready 
+    readonly stepsContainerHeading = () => this.page.locator('div[class*="walletModalHeading_stepsContainer_"]');
+    readonly closeButton = () => this.page.locator('div[class*="walletModal_closeBtn_"]');
 
     // Actions
-    //TODO: this needs steps from the specs
-
     public validateModalBodyVisible = async (softAssert = false) =>
         await assertVisible(this.modalBody(), `Modal body`, softAssert);
 
@@ -58,6 +56,12 @@ export class CashierMain {
     public validateStepsContainerHeadingVisible = async (softAssert = false) =>
         await assertVisible(this.stepsContainerHeading(), `Steps container heading`, softAssert);
 
+    public validateCloseButtonVisible = async (softAssert = false) =>
+        await assertVisible(this.closeButton(), `Close button`, softAssert);
+
+    public clickCloseButton = async () =>
+        await clickElement(this.closeButton(), `Close button`);
+
     public clickDepositHeading = async () =>
         await clickElement(this.depositHeading(), `Deposit heading`);
 
@@ -70,6 +74,7 @@ export class CashierMain {
     @step('I validate all modal elements are visible')
     public async validateAllModalElementsVisible(softAssert = false): Promise<void> {
         await this.validateModalBodyVisible(softAssert);
+        await this.validateCloseButtonVisible(softAssert);
         await this.validateModalHeadingVisible(softAssert);
         await this.validateHeadingTitleVisible(softAssert);
         await this.validateHeadingBalanceVisible(softAssert);
@@ -82,14 +87,26 @@ export class CashierMain {
     }
 
     @step('I open the deposit modal and validate all elements')
-    public async openDepositModalAndValidate() {
+    public async clickDepositAndValidate() {
         await this.clickDepositHeading();
         await this.validateAllModalElementsVisible();
     }
 
     @step('I open the withdraw modal and validate all elements')
-    public async openWithdrawModalAndValidate() {
+    public async clickWithdrawAndValidate() {
         await this.clickWithdrawHeading();
         await this.validateAllModalElementsVisible();
     }
+
+    @step(`I get the wallet balance amount`)
+	public async getRealMoneyBalance(): Promise<number> {
+        await this.validateRealMoneyBalanceVisible();
+		return parseFloat(await this.headingRealMoney().innerText());
+	}
+
+    @step(`I get the wallet balance amount`)
+	public async getBonusMoneyBalance(): Promise<number> {
+        await this.validateBonusMoneyBalanceVisible();
+		return parseFloat(await this.headingBonusMoney().innerText());
+	}
 }

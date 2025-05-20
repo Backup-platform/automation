@@ -1,15 +1,6 @@
 import { Locator, Page } from '@playwright/test';
 import test, { expect } from './base.po';
 
-//TODO: we are leaving it here for now,
-// but we will remove it if we dont find a need for the class
-export class Navigation {
-	readonly page: Page;
-
-	constructor(page: Page) {
-		this.page = page;
-	}
-}
 
 /**
  * Core assertion engine for visibility, enabled, or editable states.
@@ -41,16 +32,16 @@ export async function assertCondition(
   // Map our three assertion types onto Playwright's expect API
   const assertionMap = {
     visible: {
-      positive: () => assertionExpect(element, message).toBeVisible(),
-      negative: () => assertionExpect(element, message).not.toBeVisible(),
+      positive: async () => await assertionExpect(element, message).toBeVisible(),
+      negative: async () => await assertionExpect(element, message).not.toBeVisible(),
     },
     enabled: {
-      positive: () => assertionExpect(element, message).toBeEnabled(),
-      negative: () => assertionExpect(element, message).not.toBeEnabled(),
+      positive: async () => await assertionExpect(element, message).toBeEnabled(),
+      negative: async () => await assertionExpect(element, message).not.toBeEnabled(),
     },
     editable: {
-      positive: () => assertionExpect(element, message).toBeEditable(),
-      negative: () => assertionExpect(element, message).not.toBeEditable(),
+      positive: async () => await assertionExpect(element, message).toBeEditable(),
+      negative: async () => await assertionExpect(element, message).not.toBeEditable(),
     },
   };
 
@@ -100,7 +91,7 @@ export async function assertAttribute(
     attributeType: string,
     description: string = 'Element',
     softAssert: boolean = false,
-    attributeValue?: string
+    attributeValue?: string | RegExp
 ): Promise<void> {
     await test.step(attributeValue
         ? stepMessage(description, '', `${attributeType}=${attributeValue}`)
@@ -238,92 +229,21 @@ export async function fillInputField(element: Locator, value: string, descriptio
 /**
  * Clicks an element if visible, otherwise executes a fallback action.
  *
- * @param targetElement - Playwright Locator of the target element.
+ * @param element - Playwright Locator of the target element.
  * @param fallbackAction - Fallback action to execute if the element is not visible.
  * @param description - Optional name of the target element for logging and error messages.
  * @returns Promise<void>
  */
 export async function clickIfVisibleOrFallback(
-    targetElement: Locator,
+    element: Locator,
     fallbackAction: () => Promise<void>,
     description: string
 ): Promise<void> {
     await test.step(`I click on ${description}`, async () => {
-        if (await targetElement.isVisible()) {
-            return await clickElement(targetElement, description);
+        if (!(await element.isVisible())) {
+            await fallbackAction();
         }
-        await fallbackAction();
-        await targetElement.waitFor({ state: 'visible' });
-        await clickElement(targetElement, `${description} after fallback`);
-    });
-}
-
-/**
- * Validates that the current page URL matches the expected URL.
- *
- * @param page - Playwright Page object.
- * @param expectedUrl - The expected URL (string or RegExp).
- * @param waitUntilDomContentLoaded - If true, waits for DOM content to be loaded before asserting. Default is false.
- * @param softAssert - If true, logs failures without stopping the test. Default is false.
- * @returns Promise<void>
- */
-export async function assertUrl(
-	page: Page,
-	expectedUrl: string | RegExp,
-	waitUntilDomContentLoaded = false,
-	softAssert = false
-): Promise<void> {
-	await test.step(`Assert page URL is ${expectedUrl}`, async () => {
-		await page.waitForURL(expectedUrl, {
-			timeout: 10000,
-			...(waitUntilDomContentLoaded ? { waitUntil: 'domcontentloaded' } : {}),
-		});
-		const expectation = softAssert ? expect.soft(page) : expect(page);
-		await expectation.toHaveURL(expectedUrl);
-	});
-}
-
-/**
- * Asserts that the current URL contains specific substrings.
- *
- * @param page - Playwright Page object.
- * @param expectedSubstrings - Array of substrings to check for in the URL.
- * @param softAssert - If true, logs failures without stopping the test. Default is false.
- * @returns Promise<void>
- */
-export async function assertUrlContains(
-	page: Page,
-	expectedSubstrings: string[],
-	softAssert = false
-): Promise<void> {
-	await test.step(`Assert URL contains: ${expectedSubstrings.join(', ')}`, async () => {
-		const currentUrl = page.url();
-
-		for (const substring of expectedSubstrings) {
-			const expectation = softAssert ? expect.soft(currentUrl) : expect(currentUrl);
-			await expectation.toContain(substring);
-		}
-	});
-}
-
-/**
- * Performs a navigation click and asserts the URL.
- *
- * @param page - Playwright Page object.
- * @param locator - Playwright Locator of the element to click.
- * @param description - Description of the element for logging and error messages.
- * @param expectedPath - Expected URL path after navigation.
- * @returns Promise<void>
- */
-export async function performNavigationClick(
-    page: Page,
-    locator: Locator,
-    description: string,
-    expectedPath: string
-): Promise<void> {
-    await test.step(`Perform navigation click on ${description} and assert url is ${expectedPath}`, async () => {
-        await clickElement(locator, description);
-        await assertUrl(page, `${expectedPath}`, true);
+        await clickElement(element, `${description} after fallback`);
     });
 }
 
@@ -441,4 +361,83 @@ export function stepParam(stepName?: string | ((...args: any[]) => string)) {
 			});
 		};
 	};
+}
+
+/**
+ * Waits for a URL condition to be met and asserts the URL.
+ *
+ * @param page - Playwright Page object.
+ * @param urlCondition - The expected URL (string or RegExp) or a custom condition function.
+ * @param description - Description for the step.
+ * @param waitUntilDomContentLoaded - If true, waits for DOM content to be loaded before asserting. Default is false.
+ * @param softAssert - If true, logs failures without stopping the test. Default is false.
+ * @returns Promise<void>
+ */
+async function waitForAndAssertUrl(
+	page: Page,
+	urlCondition: string | RegExp | ((url: URL) => boolean),
+	description: string,
+	waitUntilDomContentLoaded: boolean,
+	softAssert: boolean
+): Promise<void> {
+  await test.step(description, async () => {
+    if (waitUntilDomContentLoaded) {
+      await page.waitForLoadState('domcontentloaded', { timeout: 10000 });
+    }
+
+    const msg = `Expected URL to match ${urlCondition}, but got ${page.url()}`;
+    const assertion = softAssert ? expect.soft(page, msg) : expect(page, msg);
+    await assertion.toHaveURL(urlCondition);
+  });
+}
+
+export async function assertUrl(
+	page: Page,
+	expectedUrl: string | RegExp,
+	waitUntilDomContentLoaded = true,
+	softAssert = false
+): Promise<void> {
+	await waitForAndAssertUrl(
+		page,
+		expectedUrl,
+		`Assert page URL is ${expectedUrl}`,
+		waitUntilDomContentLoaded,
+		softAssert
+	);
+}
+
+export async function assertUrlContains(
+	page: Page,
+	expectedSubstrings: string[],
+	waitUntilDomContentLoaded = true,
+	softAssert = false
+): Promise<void> {
+	await waitForAndAssertUrl(
+		page,
+		url => expectedSubstrings.every(substring => url.toString().includes(substring)),
+		`Assert URL contains: ${expectedSubstrings.join(', ')}`,
+		waitUntilDomContentLoaded,
+		softAssert
+	);
+}
+
+/**
+ * Performs a navigation click and asserts the URL.
+ *
+ * @param page - Playwright Page object.
+ * @param locator - Playwright Locator of the element to click.
+ * @param description - Description of the element for logging and error messages.
+ * @param expectedPath - Expected URL path after navigation.
+ * @returns Promise<void>
+ */
+export async function performNavigationClick(
+    page: Page,
+    locator: Locator,
+    description: string,
+    expectedPath: string
+): Promise<void> {
+    await test.step(`Perform navigation click on ${description} and assert url is ${expectedPath}`, async () => {
+        await clickElement(locator, description);
+        await assertUrl(page, `${expectedPath}`, true);
+    });
 }

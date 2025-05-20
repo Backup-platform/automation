@@ -1,15 +1,12 @@
 import { Locator, Page } from '@playwright/test';
 import test, { expect } from '../utils/base.po';
-import { Navigation, step, stepParam, assertAttribute, assertUrl, getIndicesByAttribute, assertElementContainsText, clickElement, assertVisible, assertNotVisible, fillInputField, assertEditable, assertEnabled, assertNotEnabled, clickIfVisibleOrFallback, validateAttributes } from '../utils/navigation.po';
-import { pathToFileURL } from 'url';
+import { step, stepParam, assertAttribute, assertUrl, getIndicesByAttribute, clickElement, assertVisible } from '../utils/navigation.po';
 
 export class LandingPageCarousel {
 	readonly page: Page;
-	readonly navigation: Navigation;
 
 	constructor(page: Page) {
 		this.page = page;
-		this.navigation = new Navigation(page)
 	}
 
 	//Locators
@@ -78,24 +75,18 @@ export class LandingPageCarousel {
 
 	public clickReceiveBonusButton = async () => await clickElement(this.receiveBonusButton(), 'Receive bonus button');
 
-	public async clickDot(index: number): Promise<void> {
-		await clickElement(this.dots().nth(index), `Carousel Dot Number ${index}`);
-		await this.page.waitForTimeout(1000); //TODO: remove this timeout, add wait for animation to finish
-	}
+	public clickDot = async (index: number) => await clickElement(this.dots().nth(index), `Carousel Dot Number ${index}`);
 
-	//TODO: maybe an arrow function but this is fine due to the decorator
 	@stepParam((index) => `I validate the dot at index ${index} has active class`)
 	async validateDotIsActive(index: number, softAssert = false): Promise<void> {
 		await assertAttribute(this.dots().nth(index), "class", 
-		`Carousel dot ${index}`, softAssert, 
-		new RegExp(this.dotsActiveClass).source);
+		`Carousel dot ${index}`, softAssert, new RegExp(this.dotsActiveClass));
 	}
 
-	//TODO: fix the steps methods they look bad and have nth element etc
 	@step('I validate the carousel elements are visible for a guest')
 	public async validateElementsVisibleGuest(): Promise<void> {
 		await this.validateContainerVisible();
-		//TODO: await this.validateDotsContainerVisible(true);
+		await this.validateDotsContainerVisible(true);
 		await this.validateVisibleSectionVisible(true);
 		await this.validateArrowLeftButtonVisible(true);
 		await this.validateArrowRightButtonVisible(true);
@@ -105,14 +96,13 @@ export class LandingPageCarousel {
 	@step('I validate the carousel elements are visible for a member')
 	public async validateElementsVisibleMember(): Promise<void> {
 		await this.validateContainerVisible();
-		//TODO: await this.validateDotsContainerVisible(true);
+		await this.validateDotsContainerVisible(true);
 		await this.validateVisibleSectionVisible(true);
 		await this.validateArrowLeftButtonVisible(true);
 		await this.validateArrowRightButtonVisible(true);
 		await this.validateReceiveBonusButtonVisible(true);
 	}
-
-	//TODO: not used might be reused in navigation
+	@step('I validate only one active dot is present')
 	async getActiveDotIndex(): Promise<number> {
 		const activeIndices = await getIndicesByAttribute(this.dots(), 'class', this.dotsActiveClass);
 		expect(activeIndices.length,
@@ -121,25 +111,24 @@ export class LandingPageCarousel {
 	}
 
 
-	@step('I validate carousel navigation trogh points and arrows')
+	@step('I validate carousel navigation through points and arrows')
 	async validateCarousel(): Promise<void> {
-		//await this.validateDotsInitialState();
 		const entriesCount = await this.promotionEntries().count();
-		await this.dots().nth(0).click();
+		await this.dots().nth(1).click();
 		for (let i = 0; i < entriesCount; i++) {
 			await this.clickDot(i);
 			await this.validateDotIsActive(i);
-			//TODO: expect(await this.getActiveDotIndex()).toEqual(i);
+			await expect(await this.getActiveDotIndex()).toEqual(i);
 			await this.validatePromotionsEntriesVisible(i);
 			await this.validatePromotionsTitlesVisible(i);
-			//await this.validatePromotionsSubtitlesVisible(i);
+			//await this.validatePromotionsSubtitlesVisible(i); //FIXME: it works fine staging is missing the subtitle
 			await this.validatePromotionsTextVisible(i);
 
 			// Navigate forward with the right arrow and validate synchronization
 			if (i < entriesCount - 1) {
 				await this.clickArrowRightButton();
 				await this.validateDotIsActive(i + 1);
-				//expect (await this.getActiveDotIndex()).toEqual(i+1); //TODO: maybe animations cause it to fail
+				await expect (await this.getActiveDotIndex()).toEqual(i+1);
 				await this.validatePromotionsEntriesVisible(i + 1);
 			}
 		}

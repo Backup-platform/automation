@@ -47,11 +47,10 @@ test.describe("Login Page Regression Tests - Desktop", () => {
 		];
 		for (const { scenario, url, navigate } of navigationScenarios) {
 			test(`Test clicking back on login returns to ${scenario}`, async ({ page, loginPage, headerMenuDesktop }) => {
-				await navigate({ headerMenuDesktop }); // Go to page via nav method
-				await headerMenuDesktop.clickLoginButton(); // Open login modal
+				await navigate({ headerMenuDesktop });
+				await headerMenuDesktop.clickLoginButton()
 				await loginPage.validateLoginWindowElementsVisible(true);
-				await loginPage.clickBackButton(); // Click back
-				await expect(page).toHaveURL(`${process.env.URL}${url}`);
+				await loginPage.clickBackButton(`${process.env.URL}${url}`);
 			});
 		}
 	});

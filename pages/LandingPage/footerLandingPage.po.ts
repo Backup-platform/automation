@@ -1,5 +1,5 @@
 import { Locator, Page } from '@playwright/test';
-import { Navigation, step, stepParam, assertAttribute, iterateElements, assertElementContainsText, clickElement, assertVisible, assertNotVisible, fillInputField, assertEditable, assertEnabled, assertNotEnabled, clickIfVisibleOrFallback, validateAttributes } from '../utils/navigation.po';
+import { step, stepParam, assertAttribute, iterateElements, clickElement, assertVisible, validateAttributes } from '../utils/navigation.po';
 import test from '../utils/base.po';
 
 export class FooterLandingPage {
@@ -34,7 +34,6 @@ export class FooterLandingPage {
 
 
     // Actions
-    //TODO: Add visibility and attribute methods if needed
     public validateLinksContainerVisible = async (softAssert = false) =>
         await assertVisible(this.footerLinksContainer(), 'Footer links container', softAssert);
 
@@ -83,8 +82,6 @@ export class FooterLandingPage {
             this.validateProviderVisible(index, softAssert), 'Footer providers'
         );
 
-    //TODO: Fix iteration methods 
-    //TODO: Add more steps
     @stepParam((nthElement: number) => `I validate payment method number ${nthElement}`)
     public async validatePaymentMethodsVisible(nthElement: number, softAssert = false): Promise<void> {
         await this.validateProvidersContainerVisible(softAssert);

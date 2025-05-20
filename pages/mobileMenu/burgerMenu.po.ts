@@ -25,7 +25,6 @@ export class BurgerMenu {
     readonly register = () => this.page.locator('div[class*="burgerMenu_signUp_"]');
     readonly login = () => this.page.locator('div[class*="burgerMenu_login_"]');
     readonly menuWindow = () => this.page.locator('div[class*="burgerMenu_menuClass_"]');
-    //TODO: myAccount  = 
     readonly support = () => this.page.locator('#Burger-menu-nav-link-log-out');
     readonly logout = () => this.page.locator('#Burger-menu-nav-link-log-out\\}');
     readonly deposit = () => this.page.locator('[class*="burgerMenu_deposit_"]');
@@ -167,7 +166,6 @@ export class BurgerMenu {
 
     @step('I validate the menu elements for a guest')
     public async validateMenuElementsForGuest(softAssert :boolean): Promise<void> {
-
             //TODO: add not visible elements 
             await this.validateBurgerMenuVisible(true);
             await this.validateSearchButtonVisible(softAssert);

@@ -1,6 +1,7 @@
 import { Page, Locator } from '@playwright/test';
 import test, { expect } from '../utils/base.po';
 import { step, clickElement, assertVisible, assertNotVisible, performNavigationClick, stepParam } from '../utils/navigation.po';
+import { assert } from 'console';
 
 
 export class BottomMenu {
@@ -98,7 +99,8 @@ export class BottomMenu {
         await this.validateButtonWithImageAndLabel(this.burgerMenuButton(), this.burgerMenuImage(), this.burgerMenuLabel(), 'Burger Menu Button', softAssert);
 
 	@step(`I get the wallet balance amount`)
-	public async getWalletBalance(): Promise<number> {
+	public async getBalanceAmount(): Promise<number> {
+        await assertVisible(this.balance(), 'Wallet balance', false);
 		return parseFloat(await this.balance().innerText());
 	}
 

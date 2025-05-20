@@ -1,20 +1,13 @@
 import { FrameLocator, Locator, Page } from '@playwright/test';
 import test, { expect } from './utils/base.po';
-import { Navigation, step, stepParam, clickElement, fillInputField } from './utils/navigation.po';
+import { step, stepParam, clickElement, fillInputField } from './utils/navigation.po';
 
 
 export class ResetPasswordFrame {
 	readonly page: Page;
-	readonly navigation: Navigation;
-
-	// readonly locators = {
-	// 	iFrameWindow: 'iframe[src*=\'auth?client_id=frontoffice-client&redirect_uri\']',
-	// 	loginButton: '#kc-login',
-	// };
 
 	constructor(page: Page) {
 		this.page = page;
-		this.navigation = new Navigation(page);
 	}
 
 	//Locators
@@ -49,7 +42,7 @@ export class ResetPasswordFrame {
 		await fillInputField(this.password(), password, 'Password field');
 
 	public async validateSendEmail(): Promise<any> {
-		await expect(this.username()).toBeVisible(); //TODO: should be validating the email is sent
+		await expect(this.username()).toBeVisible();
 	}
 
 	public async validateWrongPasswordUsed(): Promise<any> {

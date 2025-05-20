@@ -1,20 +1,20 @@
 import { Locator, Page } from '@playwright/test';
 import test, { expect } from '../utils/base.po';
-import { Navigation, step, stepParam, assertAttribute, assertElementContainsText, clickElement, assertVisible, assertNotVisible, fillInputField, assertEditable, assertEnabled, assertNotEnabled, iterateElements } from '../utils/navigation.po';
+import { step, clickElement, assertVisible, assertNotVisible, assertEnabled, iterateElements } from '../utils/navigation.po';
+import { PaymentIQ } from './paymentIQ.po';
+import { CardDetails } from './cardDetails';
 
 
 export class CashierWithdraw {
     readonly page: Page;
-    readonly navigation: Navigation;
+    readonly paymentIQ: PaymentIQ;
 
     constructor(page: Page) {
         this.page = page;
-        this.navigation = new Navigation(page);
+        this.paymentIQ = new PaymentIQ(page);
     }
 
     // Locators
-    //TODO: this needs steps from the specs
-
 
     readonly stepsContainer = () => this.page.locator('div[class*="walletModalHeading_withdrawalSteps_"]');
     readonly paymentDesktopStep = () => this.page.locator('#wallet-modal-payment-details-step-desktop');
@@ -79,7 +79,7 @@ export class CashierWithdraw {
     public validatePaymentMethodsHeadingVisible = async (softAssert = false) =>
         await assertVisible(this.paymentMethodsHeading(), `Payment methods heading`, softAssert);
 
-    public validatePaymentCardVisible = async (nthCard: number, softAssert = false) => 
+    public validatePaymentCardVisible = async (nthCard: number, softAssert = false) =>
         await assertVisible(this.paymentSingleCard(nthCard), `Payment card with number: ${nthCard}`, softAssert);
 
     public validateDetailsPIQSectionVisible = async (softAssert = false) =>
@@ -98,7 +98,7 @@ export class CashierWithdraw {
     public clickBackButton = async () =>
         await clickElement(this.backButton(), `Back button`);
 
-    public selectPaymentCard = async (nthCard: number) => 
+    public selectPaymentCard = async (nthCard: number) =>
         await clickElement(this.paymentSingleCard(nthCard), `Payment card ${nthCard}`);
 
     @step('I validate payment step elements are visible (mobile)')
@@ -171,49 +171,31 @@ export class CashierWithdraw {
         await assertNotVisible(this.detailsMobileStep(), `Details step (mobile)`, softAssert);
     }
 
-    @step('I perform the withdraw UI flow up to payment details')
-    public async withdrawFlowUpToPayment(options: {
-        isDesktop: boolean
-    }) {
-        const { isDesktop } = options;
-        // Modal elements and step counters
+    @step('I perform full withdraw flow')
+    public async performWithdrawFlow(isDesktop: boolean, paymentTypeIndex: number, card: CardDetails): Promise<void> {
         if (isDesktop) {
-            await this.validateStepsCounterDesktop();
-            await this.validatePaymentStepElementsDesktop();
+            await this.performDesktopWithdrawFlow(card);
         } else {
-            await this.validateStepsCounterMobile();
-            await this.validatePaymentStepElementsMobile();
+            await this.performMobileWithdrawFlow(card);
         }
-        // At this point, the flow is ready for paymentIQ handling
     }
 
-    @step('I perform the withdraw UI flow after payment details')
-    public async withdrawFlowAfterPayment(options: {
-        isDesktop: boolean,
-        getBalance: () => Promise<number>
-    }) {
-        const { isDesktop, getBalance } = options;
-        if (isDesktop) {
-            await this.validateSummaryStepElementsDesktop();
-        } else {
-            await this.validateSummaryStepElementsMobile();
-        }
-        await this.clickHomeButton();
-        const realMoneyAfterWithdrawMenu = await getBalance();
-        return { realMoneyAfterWithdrawMenu };
+    // Private methods for desktop and mobile withdraw flows
+    private async performDesktopWithdrawFlow(card: CardDetails): Promise<void> {
+        await this.validateStepsCounterDesktop();
+        await this.validatePaymentStepElementsDesktop();
+        //await this.selectPaymentCard(paymentTypeIndex);
+        await this.paymentIQ.performWithdrawAndValidate(card.amount);
+        await this.validateSummaryStepElementsDesktop();
     }
 
-    @step('I validate withdraw summary from cashier modal')
-    public async validateWithdrawSummaryFromCashierModal(options: {
-        isDesktop: boolean,
-        clickDeposit: () => Promise<void>,
-        getCashierRealMoney: () => Promise<number>,
-        expectedAmount: number
-    }) {
-        const { clickDeposit, getCashierRealMoney, expectedAmount } = options;
-        await clickDeposit();
-        const realMoneyAfterWithdrawCahier = await getCashierRealMoney();
-        return { realMoneyAfterWithdrawCahier };
+    private async performMobileWithdrawFlow(card: CardDetails): Promise<void> {
+        await this.validateStepsCounterMobile();
+        await this.validatePaymentStepElementsMobile();
+        //await this.selectPaymentCard(paymentTypeIndex);
+        await this.clickContinueButton();
+        await this.validateDetailsStepElementsMobile();
+        await this.paymentIQ.performWithdrawAndValidate(card.amount);
+        await this.validateSummaryStepElementsMobile();
     }
-
 }

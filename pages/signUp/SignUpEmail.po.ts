@@ -19,7 +19,6 @@ export class SignUpEmail {
 
     
     //Actions
-    //TODO: check other validations based on locale
     @step('I validate successful registration email sent instructions')
     public async validateRegistrationEmailSent(deviceUsed: string) {
         if (deviceUsed === 'Desktop Chrome') {

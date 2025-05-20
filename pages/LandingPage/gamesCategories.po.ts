@@ -1,14 +1,12 @@
 import { Locator, Page } from '@playwright/test';
 import test, { expect } from '../utils/base.po';
-import { Navigation, step, assertUrl, assertUrlContains, stepParam, assertAttribute, assertElementContainsText, clickElement, assertVisible, assertNotVisible, fillInputField, assertEditable, assertEnabled, assertNotEnabled, clickIfVisibleOrFallback, validateAttributes } from '../utils/navigation.po';
+import { step, assertUrl, assertUrlContains, clickElement, assertVisible, assertNotVisible, validateAttributes } from '../utils/navigation.po';
 
 export class GamesCategories {
     readonly page: Page;
-    readonly navigation: Navigation;
 
     constructor(page: Page) {
         this.page = page;
-        this.navigation = new Navigation(page);
     }
 
     //Locators
@@ -25,12 +23,18 @@ export class GamesCategories {
     readonly cardSubtitles = (nthCategory: number, nthCard: number) => this.cards(nthCategory).nth(nthCard).locator('div[class*="_gameSubtitle_"]');
     readonly playNow = (nthCategory: number, nthCard: number) => this.cards(nthCategory).nth(nthCard).locator('button[class*="_playNowButton_"]');
     readonly tryForFun = (nthCategory: number, nthCard: number) => this.cards(nthCategory).nth(nthCard).locator('button[class*="_tryForFun_"]');
-
-    //TODO: Check class works fine and add more steps / validators if needed
+    readonly loginModal = () => this.page.locator('#login-modal');
+    readonly loginCloseButton = () => this.page.locator('#login-modal-close-btn');
 
     //Actions
     public validateCategoryTitlesVisible = async (nthElement: number, softAssert = false) =>
         await assertVisible(this.title(nthElement), `Category title ${nthElement}`, softAssert);
+
+    public validateLoginModalVisible = async (softAssert = false) =>
+        await assertVisible(this.loginModal(), 'Login modal', softAssert);
+
+    public validateLoginCloseButtonVisible = async (softAssert = false) =>
+        await assertVisible(this.loginCloseButton(), 'Login modal close button', softAssert);
 
     public validateShowAllButtonsVisible = async (nthElement: number, softAssert = false) =>
         await assertVisible(this.showAll(nthElement), `Show All button ${nthElement}`, softAssert);
@@ -70,33 +74,30 @@ export class GamesCategories {
     public clickPlayNowButton = async (nthCategory: number, nthCard: number) =>
         await clickElement(this.playNow(nthCategory, nthCard),
             `Card ${nthCard} Play Now button in category ${nthCategory}`);
+    
+    public clickLoginCloseButton = async () =>
+        await clickElement(this.loginCloseButton(), 'Login modal close button');
 
     @step('I click on Show All button and validate navigation')
     public async clickShowAll(nthElement: number, newURL: string): Promise<void> {
         await clickElement(this.showAllButtons().nth(nthElement),
             `Show All menu button in category ${nthElement}`);
-        const URL = `${process.env.URL}${newURL}`
-        await this.page.waitForURL(URL, { waitUntil: "domcontentloaded" });
-        await assertUrl(this.page, URL);
+        await assertUrl(this.page, `${process.env.URL}${newURL}`);
     }
 
     @step('I validate the CTA buttons for members')
     public async validateCTAbuttonsForMembers(nthCategory: number, nthCard: number, isMobile: boolean, softAssert = false): Promise<void> {
         await this.validateTryForFunNotVisible(nthCategory, nthCard, softAssert);
         await this.clickPlayNowButton(nthCategory, nthCard);
-        //TODO: need a more specific validation
-        await this.page.waitForURL(`${process.env.URL}/play/**`, { waitUntil: "domcontentloaded" });
         await assertUrlContains(this.page, ['spacefortuna1.com/en/play'], softAssert);
     }
 
     @step('I validate the CTA buttons for guests')
     public async validateCTAbuttonsForGuests(nthCategory: number, nthCard: number, isMobile: boolean, softAssert = false): Promise<void> {
         await this.clickPlayNowButton(nthCategory, nthCard);
-        await assertVisible(this.page.locator('#login-modal'), 'Login modal', softAssert);
-        await clickElement(this.page.locator('#login-modal-close-btn'), 'Close button');
+        await this.validateLoginModalVisible(softAssert);
+        await this.clickLoginCloseButton();
         await this.clickTryForFunButton(nthCategory, nthCard);
-        //TODO: need a more specific validation
-        await this.page.waitForURL(`${process.env.URL}/play/**`, { waitUntil: "domcontentloaded" });
         await assertUrlContains(this.page, ['spacefortuna1.com/en/play'], softAssert);
     }
 

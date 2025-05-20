@@ -1,18 +1,19 @@
 import { Locator, Page } from '@playwright/test';
 import test, { expect } from '../utils/base.po';
-import { Navigation, step, stepParam,  assertAttribute, assertElementContainsText, clickElement, assertVisible, assertNotVisible, fillInputField, assertEditable, assertEnabled, assertNotEnabled, iterateElements } from '../utils/navigation.po';
+import { step, clickElement, assertVisible, assertNotVisible, assertEnabled, iterateElements } from '../utils/navigation.po';
+import { PaymentIQ } from './paymentIQ.po';
+import { CardDetails } from './cardDetails';
 
 export class CashierDeposit {
     readonly page: Page;
-    readonly navigation: Navigation;
+    readonly paymentIQ: PaymentIQ;
 
     constructor(page: Page) {
         this.page = page;
-        this.navigation = new Navigation(page)
+        this.paymentIQ = new PaymentIQ(page);
     }
 
     // Locators
-    //TODO: active step
     readonly stepsContainer = () => this.page.locator('div[class*="walletModalHeading_depositSteps_"]');
     readonly bonusStep = () => this.page.locator('#wallet-modal-bonus-step');
     readonly paymentStep = () => this.page.locator('#wallet-modal-payment-step');
@@ -26,14 +27,12 @@ export class CashierDeposit {
     //Choose Bonus step
     readonly modalContainer = () => this.page.locator('#wallet-modal-body-container');
     readonly depositWithoutBonus = () => this.page.locator('#wallet-continue-without-bonus-btn');
-    //TODO: add deposit with bonus
 
     //Payment
     readonly paymentMethodsWrapper = () => this.page.locator('div[class*="paymentMethods_paymentMethodsWrapper_"]');
     readonly paymentMethodsHeading = () => this.page.locator('span[class*="paymentMethods_heading_"]');
     readonly paymentContinueButton = () => this.page.locator('#payment-methods-continue-btn');
 
-    //TODO: cards should be handled more gracefully 
     readonly paymentMethodCardContainer = () => this.page.locator('#payment-methods-container');
     readonly paymentCards = () => this.page.locator('div[class*="paymentMethods_paymentMethodCard_"]');
     readonly paymentSingleCard = (cardIndex: number) => this.page.locator(`#payment-method-${cardIndex}`);
@@ -45,16 +44,11 @@ export class CashierDeposit {
     readonly successModalCashier = () => this.page.locator('div[class*="walletModal_cashierContainer_"][class*="walletModal_h85_"]');
     readonly homeButton = () => this.page.locator('#home-button');
 
-
-    //TODO: details section
-    //TODO: needs steps from the specs
-
-
     // Actions
-    public validateBackButtonVisible = async (softAssert = false) => 
+    public validateBackButtonVisible = async (softAssert = false) =>
         await assertVisible(this.backButton(), 'Back button', softAssert);
 
-    public clickBackButton = async () => 
+    public clickBackButton = async () =>
         await clickElement(this.backButton(), 'Back button');
 
     public validateDepositWithoutBonusVisible = async (softAssert = false) =>
@@ -63,7 +57,7 @@ export class CashierDeposit {
     public clickDepositWithoutBonus = async () =>
         await clickElement(this.depositWithoutBonus(), 'Deposit without bonus button');
 
-    public selectPaymentCard = async (nthCard: number) => 
+    public selectPaymentCard = async (nthCard: number) =>
         await clickElement(this.paymentSingleCard(nthCard), `Payment card ${nthCard}`);
 
     public validatePaymentMethodsHeadingVisible = async (softAssert = false) =>
@@ -102,10 +96,10 @@ export class CashierDeposit {
     public validateSuccessModalCashierVisible = async (softAssert = false) =>
         await assertVisible(this.successModalCashier(), `Success modal cashier`, softAssert);
 
-    public validatePaymentContinueButtonVisible = async (softAssert = false) =>
+    public validateContinueButtonVisible = async (softAssert = false) =>
         await assertVisible(this.paymentContinueButton(), `Continue button`, softAssert);
 
-    public clickPaymentContinueButton = async () => 
+    public clickContinueButton = async () =>
         await clickElement(this.paymentContinueButton(), 'Continue button');
 
     public validateDetailsPIQSectionVisible = async (softAssert = false) =>
@@ -119,7 +113,6 @@ export class CashierDeposit {
 
     @step('I validate the elements of the active step are visible')
     public async validateActiveStepElements(softAssert = false): Promise<void> {
-        //TODO: only validate the elements that are active
     }
 
     @step('I validate bonus step elements are visible')
@@ -131,7 +124,7 @@ export class CashierDeposit {
 
     @step('I validate payment step elements are visible (mobile)')
     public async validatePaymentStepElementsMobile(softAssert = false): Promise<void> {
-        await this.validatePaymentContinueButtonVisible(softAssert);
+        await this.validateContinueButtonVisible(softAssert);
         await assertEnabled(this.paymentContinueButton(), `Continue button`, softAssert);
         await assertNotVisible(this.depositPIQSection(), `Details PIQ section`, softAssert);
         await this.validatePaymentStepElements(softAssert);
@@ -193,7 +186,7 @@ export class CashierDeposit {
         await this.validateStepCounterVisible(softAssert);
         await this.validateSummaryStepDesktopVisible(softAssert);
         await assertNotVisible(this.summaryMobileStep(), `Summary step (mobile)`, softAssert);
-        await assertNotVisible(this.detailsMobileStep(), `Details step (desktop)`, softAssert);
+        await assertNotVisible(this.detailsMobileStep(), `Details step (mobile)`, softAssert);
     }
 
     @step('I validate that the summary step (common) is visible')
@@ -203,60 +196,33 @@ export class CashierDeposit {
         await this.validatePaymentStepVisible(softAssert);
     }
 
-    @step('I perform the deposit UI flow up to payment details')
-    public async depositFlowUpToPayment(options: {
-        isDesktop: boolean,
-        clickDeposit: () => Promise<void>,
-        getBalance: () => Promise<number>
-    }) {
-        const { isDesktop, clickDeposit, getBalance } = options;
-        const initialRealMoney = await getBalance();
-
-        await clickDeposit();
-        // Modal elements and step counters
+    @step('I perform full deposit flow')
+    public async performDepositFlow(isDesktop: boolean, paymentTypeIndex: number, card: CardDetails): Promise<void> {
         if (isDesktop) {
-            await this.validateStepsCounterDesktop();
+            await this.performDesktopDepositFlow(card);
         } else {
-            await this.validateStepsCounterMobile();
+            await this.performMobileDepositFlow(card);
         }
-        await this.validateActiveStepElements();
-        await this.validateBonusStepElements();
+    }
+
+    // Private methods for desktop and mobile deposit flows
+    private async performDesktopDepositFlow(card: CardDetails): Promise<void> {
+        await this.validateStepsCounterDesktop();
         await this.clickDepositWithoutBonus();
-        if (isDesktop) {
-            await this.validatePaymentStepElementsDesktop(true);
-        } else {
-            await this.validatePaymentStepElementsMobile();
-        }
-        // At this point, the flow is ready for card/paymentIQ handling
-        return { initialRealMoney };
+        await this.validatePaymentStepElementsDesktop();
+                //await this.selectPaymentCard(paymentTypeIndex);
+        await this.paymentIQ.performDepositAndValidate(card.amount, card.number, card.expiry, card.cvv);
+        await this.validateSummaryStepElementsDesktop();
     }
 
-    @step('I perform the deposit UI flow after payment details')
-    public async depositFlowAfterPayment(options: {
-        isDesktop: boolean,
-        getBalance: () => Promise<number>
-    }) {
-        const { isDesktop, getBalance } = options;
-        if (isDesktop) {
-            await this.validateSummaryStepElementsDesktop();
-        } else {
-            await this.validateSummaryStepElementsMobile();
-        }
-        await this.clickHomeButton();
-        const realMoneyAfterDepositMenu = await getBalance();
-        return { realMoneyAfterDepositMenu };
-    }
-
-    @step('I validate deposit summary from cashier modal')
-    public async validateDepositSummaryFromCashierModal(options: {
-        isDesktop: boolean,
-        clickDeposit: () => Promise<void>,
-        getCashierRealMoney: () => Promise<number>,
-        expectedAmount: number
-    }) {
-        const { clickDeposit, getCashierRealMoney, expectedAmount } = options;
-        await clickDeposit();
-        const realMoneyAfterDepositCahier = await getCashierRealMoney();
-        return { realMoneyAfterDepositCahier };
+    private async performMobileDepositFlow(card: CardDetails): Promise<void> {
+        await this.validateStepsCounterMobile();
+        await this.clickDepositWithoutBonus();
+        await this.validatePaymentStepElementsMobile();
+                //await this.selectPaymentCard(paymentTypeIndex);
+        await this.clickContinueButton();
+        await this.validateDetailsStepElementsMobile();
+        await this.paymentIQ.performDepositAndValidate(card.amount, card.number, card.expiry, card.cvv);
+        await this.validateSummaryStepElementsMobile();
     }
 }

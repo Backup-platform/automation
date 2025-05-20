@@ -27,7 +27,7 @@ export class LoginPage {
 
     public clickLoginButton = async () => await clickElement(this.loginButton(), 'Login Button');
 
-    public clickBackButton = async () => await clickElement(this.backButton(), 'Back Button');
+    public clickBackButton = async (url: string) => await this.navigateToMenuItem(this.backButton(), 'Back Button', url);
 
     public clickResetPasswordLink = async () => await clickElement(this.resetPasswordLink(), 'Reset Password link');
     
@@ -37,8 +37,8 @@ export class LoginPage {
     private navigateToMenuItem = (
             locator: Locator,
             label: string,
-            path: string
-        ) => performNavigationClick(this.page, locator, `${label} menu button`, `${process.env.URL}${path}`);
+            url: string
+        ) => performNavigationClick(this.page, locator, `${label} menu button`, url);
 
     @step('I validate the login window elements are visible')
     public async validateLoginWindowElementsVisible(softAssert = false): Promise<void> {

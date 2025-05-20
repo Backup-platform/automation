@@ -1,20 +1,16 @@
 import test, { expect } from '../pages/utils/base.po';
 import { Page } from '@playwright/test';
-import { Navigation, step, clickElement } from '../pages/utils/navigation.po';
+import { step, clickElement } from '../pages/utils/navigation.po';
 
 
 export class Banner {
 	readonly page: Page;
-	readonly navigation: Navigation;
 
 	constructor(page: Page) {
 		this.page = page;
-		this.navigation = new Navigation(page)
 	}
 
-	//Locators //
-
-	//TODO: add the handlers to the locators instead of the actions
+	//Locators
 	readonly skipHiThere = () => this.page.locator('.introjs-customskipbutton');
 	readonly skipNewDesign = () => this.page.locator('.introjs-customskipbutton');
 	readonly bannerNewDesign = () => this.page.locator(".introjs-tooltip-title") //.getByText('A New Universe Of Fun'); //this.page.getByRole('heading', { name: 'A New Universe Of Fun' });

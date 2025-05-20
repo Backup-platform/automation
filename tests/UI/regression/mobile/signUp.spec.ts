@@ -41,9 +41,8 @@ test.describe('Signup Regression Tests - Mobile', () => {
             { scenario: 'Missing Lowercase Characters', password: "PASSWORD1@", passReminder: 'Please input a lowercase character (a-z)' },
             { scenario: 'Missing Uppercase Characters', password: "password1@", passReminder: 'Please input a uppercase character (A-Z)' },
             { scenario: 'Missing Number', password: "Password@", passReminder: 'Please input a number (0-9)' },
-            //TODO: only latin letters
+            //TODO: only latin letters validations
             //TODO: 'Removal of complians reminders when you fulfill them'
-            //TODO: fix the test
         ];
 
         for (const fields of invalidPasswords) {

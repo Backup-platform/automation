@@ -1,4 +1,4 @@
-import test, { expect } from '../../pages/utils/base.po';
+import test, { expect } from '../../../pages/utils/base.po';
 const testdata = JSON.parse(JSON.stringify(require("../../test-data/promotion.cards.json")));
 
 

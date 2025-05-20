@@ -1,5 +1,5 @@
 import { Locator, Page } from '@playwright/test';
-import { Navigation, step, clickElement, assertVisible, fillInputField } from '../utils/navigation.po';
+import { step, clickElement, assertVisible, fillInputField } from '../utils/navigation.po';
 
 export class PaymentIQ {
     readonly page: Page;
@@ -77,8 +77,6 @@ export class PaymentIQ {
 
 
     // Actions for Modal Visibility
-    //TODO: this needs steps from the specs
-
     public clickPredefinedAmount = async (nthAmount: number) =>
         await clickElement(this.singlePredefinedAmount(nthAmount), `Predefined amount button ${nthAmount}`);
 
@@ -150,7 +148,7 @@ export class PaymentIQ {
     }
 
     @step('I validate all deposit iframe locators are visible')
-    public async validateDepositIframeLocatorsVisible(softAssert = false): Promise<void> {
+    public async validateDepositSuccessElements(softAssert = false): Promise<void> {
         await this.validateVisibility(this.accountDepositLabel(), this.accountDepositValue(), 'Account deposit', softAssert);
         await this.validateVisibility(this.amountDepositedToPlayerAccountLabel(), this.amountDepositedToPlayerAccountValue(), 'Amount deposited to player account', softAssert);
         await this.validateVisibility(this.feeDepositLabel(), this.feeDepositValue(), 'Fee deposit', softAssert);
@@ -160,11 +158,25 @@ export class PaymentIQ {
     }
 
     @step('I validate all withdrawal iframe locators are visible')
-    public async validateWithdrawIframeLocatorsVisible(softAssert = false): Promise<void> {
+    public async validateWithdrawSuccessElements(softAssert = false): Promise<void> {
         await this.validateVisibility(this.accountWithdrawLabel(), this.accountWithdrawValue(), 'Account withdraw', softAssert);
         await this.validateVisibility(this.amountWithdrawnLabel(), this.amountWithdrawnValue(), 'Amount withdrawn', softAssert);
         await this.validateVisibility(this.feeWithdrawLabel(), this.feeWithdrawValue(), 'Fee withdraw', softAssert);
         await this.validateVisibility(this.amountDepositedWithdrawLabel(), this.amountDepositedWithdrawValue(), 'Amount deposited withdraw', softAssert);
         await this.validateVisibility(this.transactionIdWithdrawLabel(), this.transactionIdWithdrawValue(), 'Transaction ID withdraw', softAssert);
+    }
+
+    @step(`I perform a deposit and validate paymentIQ elements`)
+    public async performDepositAndValidate(moneyAmount: string, cardNumber: string, expirationDate: string, cvv: string): Promise<void> {
+        await this.fillCardDetails(moneyAmount, cardNumber, expirationDate, cvv);
+        await this.clickSetAmountButton();
+        await this.validateDepositSuccessElements();
+    }
+
+    @step(`I perform a withdraw and validate paymentIQ elements`)
+    public async performWithdrawAndValidate(moneyAmount: string): Promise<void> {
+        await this.fillAmount(moneyAmount);
+        await this.clickSetAmountButton();
+        await this.validateWithdrawSuccessElements();
     }
 }

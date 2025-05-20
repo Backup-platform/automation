@@ -1,6 +1,6 @@
 import { Locator, Page } from '@playwright/test';
 import test from '../utils/base.po';
-import { Navigation, step, clickElement,assertVisible, fillInputField, assertEditable, assertEnabled, assertNotEnabled  } from '../utils/navigation.po';
+import { step, clickElement, assertVisible, fillInputField, assertEditable, assertEnabled, assertNotEnabled } from '../utils/navigation.po';
 
 export type Gender = 'MALE' | 'FEMALE';
 export type secondStepFields = { firstName?: string, lastName?: string, DOB?: string, gender?: Gender };
@@ -8,11 +8,9 @@ export type ErrorFieldsLocator = 'email' | 'password' | 'firstName' | 'lastName'
 
 export class SignUpSecondStep {
     readonly page: Page;
-    readonly navigation: Navigation;
 
     constructor(page: Page) {
         this.page = page;
-        this.navigation = new Navigation(page);
     }
 
     //Locators - should work for both mobile and desktop
@@ -74,9 +72,6 @@ export class SignUpSecondStep {
     public validateError = async (fieldWithError: ErrorFieldsLocator, softAssert = false) =>
         await assertVisible(this.fieldError(fieldWithError), `Field error ${fieldWithError}`, softAssert);
 
-
-    //TODO: step param
-    //TODO: add locators
     @step('I fill the date of birth field')
     public async fillDOB(dateOfBirth: string) {
         await fillInputField(this.dateOfBirthTextArea(), dateOfBirth, 'Date of birth field');
@@ -104,21 +99,9 @@ export class SignUpSecondStep {
         }
     }
 
-    // @step('I fill the second registration step with partial values')
-    // public async fillPartialSecondStep({ firstName, lastName, DOB, gender }: secondStepFields) {
-    //     firstName != undefined ? await this.fillFirstName(firstName) :
-    //         await test.step('I do not set first name', async () => { });
-    //     lastName != undefined ? await this.fillLastName(lastName) :
-    //         await test.step('I do not set last name', async () => { });
-    //     DOB != undefined ? await this.fillDOB(DOB) :
-    //         await test.step('I do not set DOB', async () => { });
-    //     gender != undefined ? await this.selectGender(gender) :
-    //         await test.step('I do not set a gender', async () => { });
-    // }
-
-        public async fillPartialSecondStep(fields: secondStepFields): Promise<void> {
+    public async fillPartialSecondStep(fields: secondStepFields): Promise<void> {
         const { firstName, lastName, DOB, gender } = fields;
-    
+
         if (firstName && lastName && DOB && gender) {
             await this.fillSecondStep(firstName, lastName, DOB, gender);
         } else {
@@ -150,5 +133,4 @@ export class SignUpSecondStep {
             await this.validateAlmostDoneButtonEnabled();
         });
     }
-
 }

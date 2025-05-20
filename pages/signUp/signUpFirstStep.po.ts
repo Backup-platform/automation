@@ -1,16 +1,14 @@
 import { Locator, Page } from '@playwright/test';
 import test, { expect } from '../utils/base.po';
-import { Navigation, step, stepParam, assertAttribute, assertElementContainsText, clickElement,assertVisible, fillInputField, assertEditable, assertEnabled, assertNotEnabled  } from '../utils/navigation.po';
+import { step, stepParam, assertElementContainsText, clickElement,assertVisible, fillInputField, assertEnabled, assertNotEnabled  } from '../utils/navigation.po';
 
 export type ErrorFieldsLocator = 'email' | 'password' | 'firstName' | 'lastName' | 'city' | 'address' | 'zipCode'
 
 export class SignUpFirstStep {
     readonly page: Page;
-    readonly navigation: Navigation;
 
     constructor(page: Page) {
         this.page = page;
-        this.navigation = new Navigation(page);
     }
 
     //Locators - should work for both mobile and desktop

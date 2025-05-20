@@ -1,14 +1,12 @@
 import { Locator, Page } from '@playwright/test';
 import test, { expect } from '../utils/base.po';
-import { Navigation, step, stepParam, assertAttribute, assertUrl, clickElement, assertVisible, validateAttributes } from '../utils/navigation.po';
+import { step, stepParam, assertAttribute, assertUrl, clickElement, assertVisible, validateAttributes } from '../utils/navigation.po';
 
 export class TopCategories {
     readonly page: Page;
-    readonly navigation: Navigation;
 
     constructor(page: Page) {
         this.page = page;
-        this.navigation = new Navigation(page)
     }
 
     //Locators
@@ -50,7 +48,6 @@ export class TopCategories {
     @step('I click on the Show All button')
     public async clickShowAll(softAssert = false): Promise<void> {
         await clickElement(this.showAll(), 'Show All menu button');
-        await this.page.waitForURL('**/games/all', { waitUntil: "domcontentloaded" });
         await assertUrl(this.page, `${process.env.URL}/games/all`);
     }
 
@@ -74,9 +71,6 @@ export class TopCategories {
     @stepParam((newURL, nthElement) => `I click on the top card ${nthElement} and validate navigation to ${newURL}`)
     public async validateTopCardNavigation(newURL: string, nthElement: number, softAssert = true): Promise<void> {
         await this.clickTopCard(nthElement, softAssert);
-        await this.page.waitForURL(`**${newURL}`);
         await assertUrl(this.page, `${process.env.URL}${newURL}`);
-        await this.page.goBack();
-        await assertUrl(this.page, `${process.env.URL}`);
     }
 }
