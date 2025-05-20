@@ -54,4 +54,70 @@ test.describe("Login Page Regression Tests - Desktop", () => {
 			});
 		}
 	});
+/**
+ * e2e tests - fill in the spaces for marina's tests.
+ * 
+ */
+
+/* TODO: Tests Made By Marina - move to reset password page
+test.describe("Reset Password", () => {
+	test("Valid email for Reset password", async ({landingPage, loginPage	}) => {
+		await landingPage.clickLoginButton();
+		await loginPage.clickResetPasswordLink();
+		await loginPage.fillResetEmail(`${process.env.USER}`);
+		await loginPage.clickLoginButton();
+		await loginPage.validateSendEmail();
+	});
+
+	test("Invalid email for Reset password", async ({landingPage, loginPage, resetPasswordFrame }) => {
+		await landingPage.clickLoginButton();
+		await loginPage.clickResetPasswordLink();
+		await loginPage.fillResetEmail(`invalid_username@.com`);
+
+		///////////////////////////////////////Do nbot move them
+		const email = loginPage.loginWindow().locator(loginPage.resetEmail());
+		await email.fill(`invalid_username`);
+		////////////////////////////////////
+
+		await loginPage.clickLoginButton();
+		//await logInIFrame.validateWrongUsernameUsed();
+
+		await resetPasswordFrame.validateBrowserErrorIsShown(email, "@");
+	});
+
+	test("Empty email tab for Reset password", async ({ landingPage, loginPage }) => {
+		await landingPage.clickLoginButton();
+		await loginPage.clickResetPasswordLink();
+		await loginPage.fillResetEmail(``);
+		await loginPage.clickLoginButton();
+		await loginPage.validateNoUsernameUsed();
+	});
+
+	test('Invalid email without "@" for Reset password', async ({landingPage, loginPage, resetPasswordFrame }) => {
+		await landingPage.clickLoginButton();
+		await loginPage.clickResetPasswordLink();
+		//await logInIFrame.fillResetEmail(`invalid_username`);
+		const email = loginPage.loginWindow().locator(loginPage.resetEmail());
+		await email.fill(`invalid_username`);
+		await loginPage.clickLoginButton();
+		//await logInIFrame.validateWrongUsernameUsed();
+
+		await resetPasswordFrame.validateBrowserErrorIsShown(email, "@");
+	});
+
+	test('Invalid email without text after "@" for Reset password', async ({landingPage, loginPage, resetPasswordFrame }) => {
+		await landingPage.clickLoginButton();
+		await loginPage.clickResetPasswordLink();
+		const email = loginPage.loginWindow().locator(loginPage.resetEmail());
+		await email.fill(`invalid_username`);
+		await loginPage.fillResetEmail(`invalid_username@`);
+		await loginPage.clickLoginButton();
+		//await logInIFrame.validateWrongUsernameUsed();
+
+		await resetPasswordFrame.validateBrowserErrorIsShown(email, "@");
+	});
+
+});
+*/
+
 });

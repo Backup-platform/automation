@@ -1,6 +1,7 @@
 import { CardDetails } from "../../../../pages/openCashier/cardDetails";
 import test, { expect } from "../../../../pages/utils/base.po";
 import  { PaymentIQ } from "../../../../pages/openCashier/paymentIQ.po"; 
+import { assertEqualWithMessage } from '../../../../pages/utils/assertions';
 
 test.beforeEach(async ({ page, banner, paymentIQ }) => {
     await page.goto(`${process.env.URL}`, { waitUntil: "load" });
@@ -32,7 +33,11 @@ test.describe("Mobile end to end tests", () => {
             let balanceFromHeader = await bottomMenu.getBalanceAmount();
             await bottomMenu.clickDepositButton();
             let balanceFromCashier = await cashierMain.getRealMoneyBalance();
-            await expect(balanceFromHeader).toEqual(balanceFromCashier);
+            await assertEqualWithMessage(
+                balanceFromHeader,
+                balanceFromCashier,
+                `Menu balance ${balanceFromHeader} = cashier balance ${balanceFromCashier} before deposit`
+            );
 
             //Perform deposit and validate actions
             await cashierMain.validateAllModalElementsVisible();
@@ -41,13 +46,25 @@ test.describe("Mobile end to end tests", () => {
 
             //validate amount after deposit
             await cashierDeposit.clickHomeButton();
-            await expect(await bottomMenu.getBalanceAmount()).toEqual(balanceFromHeader + parseFloat(cardAmount));
+            await assertEqualWithMessage(
+                await bottomMenu.getBalanceAmount(),
+                balanceFromHeader + parseFloat(cardAmount),
+                `Menu balance ${await bottomMenu.getBalanceAmount()} should increase by ${parseFloat(cardAmount)} amount after deposit`
+            );
             balanceFromHeader = await bottomMenu.getBalanceAmount();
 
             await bottomMenu.clickDepositButton();
-            await expect(await cashierMain.getRealMoneyBalance()).toEqual(balanceFromCashier + parseFloat(cardAmount));
+            await assertEqualWithMessage(
+                await cashierMain.getRealMoneyBalance(),
+                balanceFromCashier + parseFloat(cardAmount),
+                `Cashier balance ${await cashierMain.getRealMoneyBalance()} should increase by ${parseFloat(cardAmount)} amount after deposit`
+            );
             balanceFromCashier = await cashierMain.getRealMoneyBalance();
-            await expect(balanceFromCashier).toEqual(balanceFromHeader);
+            await assertEqualWithMessage(
+                balanceFromCashier,
+                balanceFromHeader,
+                `Menu ${balanceFromHeader} = cashier ${balanceFromCashier} should match after deposit`
+            );
             await page.waitForTimeout(1000); //FIXME: wait for the modal to be visible
             //Perform withdraw and validate actions
             await cashierMain.clickWithdrawAndValidate();
@@ -55,13 +72,25 @@ test.describe("Mobile end to end tests", () => {
 
             //validate amount after withdraw
             await cashierDeposit.clickHomeButton();
-            await expect(await bottomMenu.getBalanceAmount()).toEqual(balanceFromHeader - parseFloat(cardAmount));
+            await assertEqualWithMessage(
+                await bottomMenu.getBalanceAmount(),
+                balanceFromHeader - parseFloat(cardAmount),
+                `Menu balance ${await bottomMenu.getBalanceAmount()} should decrease by ${parseFloat(cardAmount)} amount after withdrawal`
+            );
             balanceFromHeader = await bottomMenu.getBalanceAmount();
 
             await bottomMenu.clickDepositButton();
-            await expect(await cashierMain.getRealMoneyBalance()).toEqual(balanceFromCashier - parseFloat(cardAmount));
+            await assertEqualWithMessage(
+                await cashierMain.getRealMoneyBalance(),
+                balanceFromCashier - parseFloat(cardAmount),
+                `Cashier balance ${await cashierMain.getRealMoneyBalance()} should decrease by ${parseFloat(cardAmount)} amount after withdrawal`
+            );
             balanceFromCashier = await cashierMain.getRealMoneyBalance();
-            await expect(balanceFromCashier).toEqual(balanceFromHeader);
+            await assertEqualWithMessage(
+                balanceFromCashier,
+                balanceFromHeader,
+                `Menu ${balanceFromHeader} = cashier ${balanceFromCashier} should match after withdrawal`
+            );
             await cashierMain.clickCloseButton();
         });
     });

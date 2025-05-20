@@ -1,14 +1,12 @@
 import { Locator, Page } from '@playwright/test';
 import test, { expect } from '../utils/base.po';
-import { Navigation, step, stepParam,  assertAttribute, assertElementContainsText, clickElement, assertVisible, assertNotVisible, fillInputField, assertEditable, assertEnabled, assertNotEnabled } from '../utils/navigation.po';
+import { clickElement, assertVisible } from '../utils/navigation.po';
 
 export class AccountModal {
     readonly page: Page;
-    readonly navigation: Navigation;
 
     constructor(page: Page) { 
         this.page = page;
-        this.navigation = new Navigation(page);
     }
 
     // Locators
