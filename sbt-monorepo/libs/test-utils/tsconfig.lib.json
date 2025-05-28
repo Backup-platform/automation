@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "rootDir": "src",
+    "outDir": "../../dist/libs/test-utils",
+    "tsBuildInfoFile": "../../dist/libs/test-utils/tsconfig.lib.tsbuildinfo",
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "forceConsistentCasingInFileNames": true,
+    "composite": true,
+    "types": ["node", "@playwright/test"]
+  },
+  "include": ["src/**/*.ts"]
+}

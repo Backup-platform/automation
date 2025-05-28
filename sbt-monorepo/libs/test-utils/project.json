@@ -1,0 +1,16 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "libs/test-utils/src",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "tsConfig": "libs/test-utils/tsconfig.lib.json",
+        "outputPath": "dist/libs/test-utils",
+        "main": "dist/libs/test-utils/index.js"
+      }
+    }
+  },
+  "tags": ["type:lib", "scope:shared"]
+}
