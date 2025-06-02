@@ -1,6 +1,7 @@
 import { test, expect, APIRequestContext } from '@playwright/test';
 import { BASE_GET_PARAMS, BASE_PLAYER_ID, SECRET } from './constants';
 import { computeGetSignature, computeHash } from './utils/crypto';
+import { BalanceParams, TransactionPayload } from './types';
 
 test.describe.configure({ mode: 'serial' });
 
@@ -13,13 +14,11 @@ class TransactionService {
 			'Content-Type': 'application/json',
 			'Digest': `SHA-512=${digest}`
 		};
-	}
-
-	async getBalance(params: any, signature?: string) {
+	}	async getBalance(params: BalanceParams, signature?: string) {
 		// Use the provided signature if available (for negative tests); otherwise compute one.
 		const sig = signature ? signature : computeGetSignature(params, SECRET);
 		const response = await this.request.get(`brandId/1/players/${params.playerId}/balance`, {
-			params,
+			params: params as Record<string, string | number | boolean>,
 			headers: this.buildHeaders(sig)
 		});
 		const body = await response.json();
@@ -27,9 +26,10 @@ class TransactionService {
 	}
 
 
-	async executeTransaction(payload: any) {
+	async executeTransaction(payload: TransactionPayload) {
 		const hash = computeHash(payload);
 		// Remove secret from payload before sending
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const { secret, ...requestPayload } = payload;
 		return this.request.post('transactions', {
 			data: requestPayload,

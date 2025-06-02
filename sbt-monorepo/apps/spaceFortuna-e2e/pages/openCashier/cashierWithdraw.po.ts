@@ -121,8 +121,7 @@ export class CashierWithdraw {
         await this.validatePaymentMethodsHeadingVisible(softAssert);
         await assertNotVisible(this.backButton(), `Back button`, softAssert);
         await iterateElements(this.paymentCards(), async (index) => {
-            await this.validatePaymentCardVisible(index, softAssert), 'Payment card'
-        });
+            await this.validatePaymentCardVisible(index, softAssert)}, 'Payment card')
     }
 
     @step('I validate details step elements are visible (mobile)')

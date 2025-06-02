@@ -38,12 +38,12 @@ test.describe('Testing Promotions page as a guest', async () => {
 test.describe('Testing Promotion Tabs as a member', async () => {
 	test('Validate Home Page', async ({ promotionTabs }) => {
 		//await headerMenuDesktop.clickHome();
-		await promotionTabs.validateCardElements(promotionTabs.homePageLocator());
+		await promotionTabs.validateCardElements('home');
 	});
 
 	test('Validate loyalty page', async ({ promotionTabs, headerMenuDesktop }) => {
 		await headerMenuDesktop.clickLoyaltyButton();
-		await promotionTabs.validateCardElements(promotionTabs.loyaltyPageLocator());
+		await promotionTabs.validateCardElements('loyalty');
 	});
 });
 
@@ -51,13 +51,13 @@ test.describe('Testing Promotion Tabs as a member', async () => {
 test.describe('Testing Promotion Tabs as a guest', async () => {
 	test.use({ storageState: path.resolve(__dirname, '../../../playwright/.auth/noAuthentication.json') });
 	test('Validate Home Page', async ({ promotionTabs }) => {
-		await promotionTabs.validateCardElements(promotionTabs.homePageLocator());
+		await promotionTabs.validateCardElements('home');
 	});
 
 	test.use({ storageState: path.resolve(__dirname, '../../../playwright/.auth/noAuthentication.json') });
 	test('Validate loyalty page', async ({ promotionTabs, headerMenuDesktop }) => {
 		await headerMenuDesktop.clickLoyaltyButton();
-		await promotionTabs.validateCardElements(promotionTabs.loyaltyPageLocator());
+		await promotionTabs.validateCardElements('loyalty');
 	});
 });
 

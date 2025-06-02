@@ -46,5 +46,14 @@
       }
     }
   },
+  "lint": {
+    "executor": "@nx/eslint:eslint",
+    "options": {
+      "lintFilePatterns": [
+        "apps/spaceFortuna-e2e/**/*.ts",
+        "apps/spaceFortuna-e2e/**/*.js"
+      ]
+    }
+  },
   "tags": ["type:e2e", "scope:ui"]
 }

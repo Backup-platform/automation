@@ -1,8 +1,8 @@
 import test, { expect } from './base.po';
 
 
-export async function assertEqualWithMessage(actual: any, expected: any, message: string) {
+export async function assertEqualWithMessage<T>(actual: T, expected: T, message: string) {
   await test.step(message, async () => {
-        await expect(actual, message).toEqual(expected);
+        await expect(actual, message).toBe(expected);
   });
 }

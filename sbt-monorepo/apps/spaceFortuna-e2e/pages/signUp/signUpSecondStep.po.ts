@@ -95,7 +95,9 @@ export class SignUpSecondStep {
         if (fieldValue !== undefined) {
             await fillMethod.call(this, fieldValue);
         } else {
-            await test.step(stepDescription, async () => { });
+            await test.step(stepDescription, async () => {
+                // intentionally left blank
+            });
         }
     }
 

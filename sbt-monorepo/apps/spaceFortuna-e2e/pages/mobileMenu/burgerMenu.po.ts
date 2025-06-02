@@ -34,7 +34,7 @@ export class BurgerMenu {
 
  
     //Actions
-    @stepParam((locator: Locator, description: string, url?: string) => `I click on the ${description} button`)
+    @stepParam((...args) => `I click on the ${args[1]} button`)
     private async clickNavigation(locator: Locator, description: string, url?: string): Promise<void> {
         await clickIfVisibleOrFallback(locator, async () => await this.openBurgerMenu(), description);
         if (url) {

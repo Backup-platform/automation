@@ -18,6 +18,15 @@
         "command": "npx playwright show-report",
         "cwd": "apps/aleaAPI"
       }
+    },    
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {
+        "lintFilePatterns": [
+          "apps/aleaAPI/**/*.ts",
+          "apps/aleaAPI/**/*.js"
+        ]
+      }
     }
   },
   "tags": ["type:e2e", "scope:api"]

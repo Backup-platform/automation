@@ -1,6 +1,7 @@
 import { APIRequestContext } from "@playwright/test";
 import { computeHash, computeGetSignature } from "../utils/crypto";
 import { BASE_GET_PARAMS, SECRET } from "../constants";
+import { TransactionPayload } from "../types";
 
 export class TransactionService {
   constructor(private request: APIRequestContext) {}
@@ -24,10 +25,10 @@ export class TransactionService {
     );
     return response.json();
   }
-
-  async executeTransaction(payload: any) {
+  async executeTransaction(payload: TransactionPayload) {
     const hash = computeHash(payload);
     // Remove secret before sending payload
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { secret, ...requestPayload } = payload;
     return this.request.post("transactions", {
       data: requestPayload,

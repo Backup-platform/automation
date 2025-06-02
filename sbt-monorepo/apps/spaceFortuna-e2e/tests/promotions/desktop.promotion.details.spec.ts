@@ -23,7 +23,7 @@ test.describe.skip('Skip', async () => {
 				await promotionDetails.validateURL(promotion.title, promotion.readMoreURL);
 				await promotionDetails.validatePageElements();
 				await promotionDetails.validateCardElementsVisible();
-				await promotionTabs.validateCardElements(promotionTabs.promoDetailsPageLocator());
+				await promotionTabs.validateCardElements('details');
 				await promotionDetails.validateTermsAndConditionsDropdown();
 				await promotionDetails.clickShowAllButton();
 				await promotions.validateURL();
@@ -55,7 +55,7 @@ test.describe.skip('Skip', async () => {
 				await promotions.clickReadMoreButton(promotion.cardNumber, promotion.readMoreURL);
 				await promotionDetails.validatePageElements();
 				await promotionDetails.validateCardElementsVisible();
-				await promotionTabs.validateCardElements(promotionTabs.promoDetailsPageLocator());
+				await promotionTabs.validateCardElements('details');
 				await promotionDetails.validateTermsAndConditionsDropdown();
 				await promotionDetails.clickShowAllButton();
 				await promotions.validateURL();

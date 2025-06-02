@@ -23,7 +23,7 @@ test.describe(`Testing promotion details as a member`, async () => {
 			await promotionDetails.validateURL(promotion.title, promotion.readMoreURL);
 			await promotionDetails.validatePageElementsMobile();
 			await promotionDetails.validateCardElementsMobileVisible();
-			await promotionTabs.validateCardElements(promotionTabs.promoDetailsPageLocator());
+			await promotionTabs.validateCardElements('details');
 			await promotionDetails.validateTermsAndConditionsDropdown();
 			await promotionDetails.clickShowAllButton();
 			await promotions.validateURL();
@@ -49,7 +49,7 @@ test.describe(`Testing promotion details as a guest`, async () => {
 			await promotions.clickReadMoreButton(promotion.cardNumber, promotion.readMoreURL);
 			await promotionDetails.validatePageElementsMobile();
 			await promotionDetails.validateCardElementsMobileVisible();
-			await promotionTabs.validateCardElements(promotionTabs.promoDetailsPageLocator());
+			await promotionTabs.validateCardElements('details');
 			await promotionDetails.validateTermsAndConditionsDropdown();
 			await promotionDetails.clickShowAllButton();
 			await promotions.validateURL();

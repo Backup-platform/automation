@@ -142,8 +142,7 @@ export class CashierDeposit {
         await this.validatePaymentMethodsHeadingVisible(softAssert);
         await this.validateBackButtonVisible(softAssert);
         await iterateElements(this.paymentCards(), async (index) => {
-            await this.validatePaymentCardVisible(index, softAssert), `Payment cards`;
-        });
+            await this.validatePaymentCardVisible(index, softAssert)}, `Payment cards`);
     }
 
     @step('I validate details step elements are visible (mobile)')

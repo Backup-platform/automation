@@ -1,4 +1,5 @@
 import test from "../../../pages/utils/base.po";
+import { HeaderMenuDesktop } from "../../../pages/headerMenuDesktop.po";
 import path from 'path';
 
 test.beforeEach(async ({ page, banner }) => {
@@ -33,9 +34,11 @@ test.describe("Login Page Regression Tests - Desktop", () => {
 		await loginPage.clickLoginButton();
 		await loginPage.validateInputErrorVisible();
 	});
-
-	test.describe("Test Navigating to login from another page then going back via the back button", () => {
-		const navigationScenarios = [
+	test.describe("Test Navigating to login from another page then going back via the back button", () => {		const navigationScenarios: Array<{
+			scenario: string;
+			url: string;
+			navigate: (params: { headerMenuDesktop: HeaderMenuDesktop }) => Promise<void>;
+		}> = [
 			{ scenario: 'LandingPage', url: '', navigate: async ({ headerMenuDesktop }) => await headerMenuDesktop.clickSFLogo() },
 			{ scenario: 'CrashGames', url: '/crash-games/all', navigate: async ({ headerMenuDesktop }) => await headerMenuDesktop.clickCrashButton() },
 			{ scenario: 'LiveCasino', url: '/live-casino/all', navigate: async ({ headerMenuDesktop }) => await headerMenuDesktop.clickLiveButton() },
@@ -46,7 +49,7 @@ test.describe("Login Page Regression Tests - Desktop", () => {
 			{ scenario: 'Loyalty', url: '/loyalty', navigate: async ({ headerMenuDesktop }) => await headerMenuDesktop.clickLoyaltyButton() },
 		];
 		for (const { scenario, url, navigate } of navigationScenarios) {
-			test(`Test clicking back on login returns to ${scenario}`, async ({ page, loginPage, headerMenuDesktop }) => {
+			test(`Test clicking back on login returns to ${scenario}`, async ({ loginPage, headerMenuDesktop }) => {
 				await navigate({ headerMenuDesktop });
 				await headerMenuDesktop.clickLoginButton()
 				await loginPage.validateLoginWindowElementsVisible(true);

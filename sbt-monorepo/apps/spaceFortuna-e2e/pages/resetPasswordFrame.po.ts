@@ -1,6 +1,6 @@
 import { Locator, Page } from '@playwright/test';
 import { expect } from './utils/base.po';
-import { step, stepParam, clickElement, fillInputField } from '@test-utils/navigation.po';
+import { step, stepParam, clickElement, fillInputField, assertVisible } from '@test-utils/navigation.po';
 
 
 export class ResetPasswordFrame {
@@ -41,12 +41,12 @@ export class ResetPasswordFrame {
 	public fillPassword = async (password: string) =>
 		await fillInputField(this.password(), password, 'Password field');
 
-	public async validateSendEmail(): Promise<any> {
-		await expect(this.username()).toBeVisible();
+	public validateSendEmail = async () => {
+		await assertVisible(this.username(), 'Username field');
 	}
 
-	public async validateWrongPasswordUsed(): Promise<any> {
-		await expect(this.wrongUsername()).toBeVisible();
+	public async validateWrongPasswordUsed(): Promise<void> {
+		await assertVisible(this.wrongUsername(), 'Wrong username field');
 		//TODO: enable assertion when localisation is stable
 		await expect(this.wrongUsername()).
 			toHaveText(' Invalid username or password. ', { ignoreCase: true })
@@ -61,28 +61,28 @@ export class ResetPasswordFrame {
 	}
 
 	@step('I validate the error message for no username used')
-	public async validateNoUsernameUsed(): Promise<any> {
-		await expect(this.noUsername()).toBeVisible();
+	public async validateNoUsernameUsed(): Promise<void> {
+		await assertVisible(this.noUsername(), 'No username field');
 		await expect(this.noUsername()).
 			toHaveText('Invalid username.', { ignoreCase: true })
 	}
 
 	@step('I validate the error message for no password used')
-	public async validateErrorMessage(expectedErrorTest: string): Promise<any> {
-		await expect(this.noUsername()).toBeVisible();
+	public async validateErrorMessage(expectedErrorTest: string): Promise<void> {
+		await assertVisible(this.noUsername(), 'No username field');
 		await expect(this.noUsername()).
 			toHaveText(expectedErrorTest, { ignoreCase: true })
 	}
 
 	@step('I validate the error message for no password used')
-	public async validateNoPasswordUsed(): Promise<any> {
-		await expect(this.noPassword()).toBeVisible();
+	public async validateNoPasswordUsed(): Promise<void> {
+		await assertVisible(this.noPassword(), 'No password field');
 		await expect(this.noPassword()).
 			toHaveText('Invalid username or password.', { ignoreCase: true })
 	}
 
-	public async validateWrongUsernameUsed(): Promise<any> {
-		await expect(this.wrongUsername()).toBeVisible();
+	public async validateWrongUsernameUsed(): Promise<void> {
+		await assertVisible(this.wrongUsername(), 'Wrong username field');
 		await expect(this.wrongUsername()).
 			toHaveText('Invalid username or password.', { ignoreCase: true })
 	}

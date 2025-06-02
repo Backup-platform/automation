@@ -1,20 +1,9 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "../../dist/apps/spaceFortuna-e2e",
-    "rootDir": ".",
     "types": ["node", "@playwright/test"],
     "resolveJsonModule": true
   },
-  "include": [
-    "tests/**/*.ts",
-    "pages/**/*.ts",
-    "src/**/*.ts",
-    "playwright.config.ts",
-    "test-data/**/*",
-    "playwright/**/*"
-  ],
-  "references": [
-    { "path": "../../libs/test-utils" }
-  ]
+  "files": [],
+  "include": ["**/*.ts"]
 }

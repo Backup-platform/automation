@@ -81,7 +81,9 @@ export class SignUpThirdStep {
         if (fieldValue !== undefined) {
             await fillMethod.call(this, fieldValue);
         } else {
-            await test.step(stepDescription, async () => {});
+            await test.step(stepDescription, async () => {
+                // intentionally left blank
+            });
         }
     }
 
@@ -121,7 +123,9 @@ export class SignUpThirdStep {
         if (checkbox) {
             await this.clickAgeCheckbox();
         } else {
-            await test.step('I do not check the age checkbox', async () => {});
+            await test.step('I do not check the age checkbox', async () => {
+                // intentionally left blank
+            });
         }
     }
 

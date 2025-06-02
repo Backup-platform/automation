@@ -118,11 +118,13 @@ export class Promotions {
 		await expect.soft(this.cardForeground(cardNumber),
 			'Foreground image has src attribute').toHaveAttribute('src');
 	}
-
 	public async validateCardCount(numberOfCards: number) {
-		//TODO: remove comments whnen you fix the test data file
+		//TODO: remove comments when you fix the test data file
 		//await expect((await (this.cardCount().all())).length, 
 		//	`Expect promotion card number to be ${numberOfCards}`).toEqual(numberOfCards);
+		
+		// Temporary placeholder to avoid unused parameter warning
+		console.log(`Expected number of cards: ${numberOfCards}`);
 	}
 
 	public async validatePromoContainer(): Promise<void> {

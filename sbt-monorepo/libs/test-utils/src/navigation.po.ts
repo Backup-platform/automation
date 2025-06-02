@@ -336,14 +336,14 @@ export async function iterateElements(
  * @returns Method decorator function.
  */
 export function step(stepName?: string) {
-    return function decorator<T extends (...args: unknown[]) => unknown>(target: T, context: ClassMethodDecoratorContext) {
-        return async function replacementMethod(this: object, ...args: Parameters<T>): Promise<ReturnType<T>> {
-            const name = stepName || `${this.constructor.name}.${(context.name as string)}`;
-            return (await test.step(name, async () => {
-                return await target.call(this, ...args);
-            })) as ReturnType<T>;
-        };
-    }
+	return function decorator(target: Function, context: ClassMethodDecoratorContext) {
+		return async function replacementMethod(...args: any[]) {
+			const name = stepName || `${this.constructor.name}.${(context.name as string)}`;
+			return test.step(name, async () => {
+				return await target.call(this, ...args);
+			});
+		};
+	}
 }
 
 /**
@@ -352,18 +352,18 @@ export function step(stepName?: string) {
  * @param stepName - Function or string for custom step name, or undefined for default.
  * @returns Method decorator function.
  */
-type StepNameFn = (...args: unknown[]) => string;
-export function stepParam(stepName?: string | StepNameFn) {
-    return function decorator<T extends (...args: unknown[]) => unknown>(target: T, context: ClassMethodDecoratorContext) {
-        return async function replacementMethod(this: object, ...args: Parameters<T>): Promise<ReturnType<T>> {
-            const name = typeof stepName === 'function'
-                ? stepName(...args)
-                : stepName || `${this.constructor.name}.${context.name as string}`;
-            return test.step(name, async () => {
-                return await target.apply(this, args);
-            }) as ReturnType<T>;
-        };
-    };
+export function stepParam(stepName?: string | ((...args: any[]) => string)) {
+	return function decorator(target: Function, context: ClassMethodDecoratorContext) {
+		return async function replacementMethod(this: any, ...args: any[]) {
+			const name = typeof stepName === 'function'
+				? stepName(...args) // Use the args to compute the step name
+				: stepName || `${this.constructor.name}.${context.name as string}`;
+
+			return test.step(name, async () => {
+				return await target.apply(this, args); // Ensure the original method runs in the correct context
+			});
+		};
+	};
 }
 
 /**

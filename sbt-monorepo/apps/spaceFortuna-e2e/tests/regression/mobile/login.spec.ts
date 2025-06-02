@@ -1,4 +1,5 @@
 import test from "../../../pages/utils/base.po";
+import { BurgerMenu } from "../../../pages/mobileMenu/burgerMenu.po";
 import path from 'path';
 
 test.beforeEach(async ({ page, banner }) => {
@@ -33,9 +34,12 @@ test.describe("Login Page Regression Tests - Mobile", () => {
 		await loginPage.clickLoginButton();
 		await loginPage.validateInputErrorVisible();
 	});
-
 	test.describe("Test Navigating to login from another page then going back via the back button", () => {
-		const navigationScenarios = [
+		const navigationScenarios: Array<{
+			scenario: string;
+			url: string;
+			navigate: (params: { burgerMenu: BurgerMenu }) => Promise<void>;
+		}> = [
 			{
 				scenario: 'Loyalty',
 				url: '/loyalty',

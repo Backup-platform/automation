@@ -1,14 +1,14 @@
-import { Page } from '@playwright/test';
+// import { Page } from '@playwright/test';
 
-export class BasePage {
+// export class BasePage {
 
-	readonly page: Page;
-	readonly isMobile: boolean;
+// 	readonly page: Page;
+// 	readonly isMobile: boolean;
 
-	constructor(page: Page, projectName: string) {
-		this.page = page;
-		this.isMobile = ['desktop', 'mobile'].some(name =>
-			projectName.toLowerCase().includes(name)
-		);
-	}
-}
+// 	constructor(page: Page, projectName: string) {
+// 		this.page = page;
+// 		this.isMobile = ['desktop', 'mobile'].some(name =>
+// 			projectName.toLowerCase().includes(name)
+// 		);
+// 	}
+// }

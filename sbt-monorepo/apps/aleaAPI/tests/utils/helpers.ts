@@ -1,4 +1,6 @@
-export function generateDynamicValues(body: any): any {
+import { TransactionPayload } from '../types';
+
+export function generateDynamicValues(body: TransactionPayload): TransactionPayload {
     const timestamp = Date.now();
     const random = Math.floor(Math.random() * 1000);
     const id = `${timestamp}-${random}`;
@@ -13,6 +15,7 @@ export function generateDynamicValues(body: any): any {
             ...body.round,
             id: roundId,
             integratorRoundId: roundId,
+            status: body.round?.status || 'IN_PROGRESS',
         },
     };
 }

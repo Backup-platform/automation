@@ -1,4 +1,6 @@
-export function calculateExpectedBalance(balance: number, body: any, isProcessed: boolean): number {
+import { TransactionPayload } from '../types';
+
+export function calculateExpectedBalance(balance: number, body: TransactionPayload, isProcessed: boolean): number {
     if (isProcessed) return balance;
     
     const amount = body.amount || 0;

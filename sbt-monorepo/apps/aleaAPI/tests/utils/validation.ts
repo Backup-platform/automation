@@ -1,19 +1,25 @@
-import { expect } from "@playwright/test";
-import { ExpectedValues, StepData } from "../types";
+import { expect } from '@playwright/test';
+import { ExpectedValues, StepData } from '../types';
+
+// Type definitions for validation
+type ValidationValue = string | number | boolean | null | Record<string, unknown>;
 
 // Helper: recursively assert that actual equals expected.
 function assertDeepEqual(
-  actual: any,
-  expected: any,
+  actual: ValidationValue,
+  expected: ValidationValue,
   path: string,
   scenarioName: string,
   stepIndex: number
 ) {
-  if (expected && typeof expected === "object" && !Array.isArray(expected)) {
-    for (const key in expected) {
+  if (expected && typeof expected === 'object' && !Array.isArray(expected) && expected !== null) {
+    const expectedObj = expected as Record<string, unknown>;
+    const actualObj = actual as Record<string, unknown>;
+    
+    for (const key in expectedObj) {
       assertDeepEqual(
-        actual[key],
-        expected[key],
+        actualObj?.[key] as ValidationValue,
+        expectedObj[key] as ValidationValue,
         `${path}.${key}`,
         scenarioName,
         stepIndex
@@ -33,12 +39,12 @@ export function validateExpectedValues(
   index: number
 ): void {
   const requiredKeys: (keyof ExpectedValues)[] = [
-    "statusCode",
-    "id",
-    "realAmount",
-    "bet",
-    "win",
-    "isAlreadyProcessed",
+    'statusCode',
+    'id',
+    'realAmount',
+    'bet',
+    'win',
+    'isAlreadyProcessed',
   ];
 
   if (!step.expectedValues) {
@@ -49,7 +55,7 @@ export function validateExpectedValues(
     );
   }
 
-  if (step.expectedValues.statusCode === 200 && step.type !== "ROLLBACK") {
+  if (step.expectedValues.statusCode === 200 && step.type !== 'ROLLBACK') {
     for (const key of requiredKeys) {
       if (step.expectedValues[key] === undefined) {
         throw new Error(
@@ -63,14 +69,20 @@ export function validateExpectedValues(
 }
 
 export function validateResponse(
-  response: any,
+  response: Record<string, unknown>,
   expected: ExpectedValues,
   scenarioName: string,
   stepIndex: number
 ) {
   for (const key in expected) {
-    if (key === "statusCode") continue;
-    assertDeepEqual(response[key], expected[key], key, scenarioName, stepIndex);
+    if (key === 'statusCode') continue;
+    assertDeepEqual(
+      response[key] as ValidationValue,
+      expected[key as keyof ExpectedValues] as ValidationValue,
+      key,
+      scenarioName,
+      stepIndex
+    );
   }
 }
 
