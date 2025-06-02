@@ -1,0 +1,33 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "root": "apps/aleaAPI",
+  "sourceRoot": "apps/aleaAPI/tests",
+  "targets": {
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx playwright test",
+        "cwd": "apps/aleaAPI"
+      },
+      "parallelism": false
+    },
+    "show-report": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx playwright show-report",
+        "cwd": "apps/aleaAPI"
+      }
+    },    
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {
+        "lintFilePatterns": [
+          "apps/aleaAPI/**/*.ts",
+          "apps/aleaAPI/**/*.js"
+        ]
+      }
+    }
+  },
+  "tags": ["type:e2e", "scope:api"]
+}

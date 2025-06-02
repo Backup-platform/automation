@@ -1,37 +1,36 @@
 {
-  "name": "playwright",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "npx playwright test",
-    "test:e2e": "npx playwright test --grep \"e2e\"",
-    "test:api": "npx playwright test --grep \"API\"",
-    "test:smoke": "npx playwright test --grep \"smoke\"",
-    "test:regression": "npx playwright test --grep \"regression\""
-    
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "name": "@sbt-monorepo/source",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {},
+  "private": true,
   "devDependencies": {
-    "@playwright/test": "^1.49.0",
+    "@eslint/js": "^9.8.0",
+    "@nx/esbuild": "21.1.2",
+    "@nx/eslint": "21.1.1",
+    "@nx/eslint-plugin": "21.1.1",
+    "@nx/js": "21.1.2",
+    "@nx/node": "^21.1.2",
+    "@nx/playwright": "^21.1.1",
+    "@playwright/test": "^1.52.0",
+    "@swc-node/register": "~1.9.1",
+    "@swc/core": "~1.5.7",
+    "@swc/helpers": "~0.5.11",
     "@types/lodash.merge": "^4.6.9",
-    "@types/node": "^20.11.16",
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "allure-commandline": "^2.29.0",
-    "allure-playwright": "^2.13.0",
-    "cross-env": "^7.0.3",
-    "eslint": "^8.57.0",
-    "eslint-config-standard-with-typescript": "^43.0.1",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-n": "^16.6.2",
-    "eslint-plugin-playwright": "^1.5.2",
-    "eslint-plugin-promise": "^6.1.1",
-    "typescript": "^5.3.3"
+    "@types/node": "^18.16.9",
+    "esbuild": "^0.19.2",
+    "eslint": "^9.8.0",
+    "eslint-config-prettier": "^10.0.0",
+    "mkdirp": "^3.0.1",
+    "nx": "21.1.1",
+    "playwright": "^1.52.0",
+    "prettier": "^2.6.2",
+    "tslib": "^2.3.0",
+    "typescript": "~5.7.2",
+    "typescript-eslint": "^8.19.0"
   },
-  "dependencies": {
-    "dotenv": "^16.4.5",
-    "lodash.merge": "^4.6.2"
-  }
+  "workspaces": [
+    "libs/*",
+    "apps"
+  ]
 }

@@ -1,0 +1,26 @@
+{
+  // Validate these languages with ESLint
+  "eslint.validate": [
+    "typescript",
+    "typescriptreact",
+    "javascript",
+    "javascriptreact"
+  ],
+
+  // Make ESLint run as you type (or on save)
+  "eslint.run": "onType",
+  // or "onSave"
+
+  // Tell ESLint which subfolders are root workspaces
+  "eslint.workingDirectories": [
+    "apps/aleaAPI",
+    "apps/spaceFortuna-e2e",
+    "libs/page-objects",
+    "libs/test-utils"
+  ],
+
+  // Automatically fix fixable problems on save
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  }
+}
