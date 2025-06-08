@@ -22,5 +22,6 @@
   // Automatically fix fixable problems on save
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
-  }
+  },
+  "github.copilot.nextEditSuggestions.enabled": true
 }
