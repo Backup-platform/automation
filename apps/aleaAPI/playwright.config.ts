@@ -1,22 +1,23 @@
-import { defineConfig } from '@playwright/test';
+import { createAPIConfig, extendConfig } from '@test-utils';
 
-export default defineConfig({
-  testDir: './tests',
-  timeout: 30000,
-  retries: 0,
-  reporter: 'html',
-  use: {
-    baseURL: 'http://localhost:3000', // Change as needed
-    trace: 'on-first-retry',
-    // Add API-specific Playwright config here
-  },
-  projects: [
-    {
-      name: 'API tests',
-      testMatch: ['aleaTransactions.spec.ts', 'balance.spec.ts'],
-      use: {
-        baseURL: 'https://games.dev.inovadatabv.com/alea/',
-      },
-    },
-  ],
+/**
+ * Alea API Test Suite Configuration
+ * Uses the base API configuration optimized for API testing
+ */
+const baseConfig = createAPIConfig();
+
+export default extendConfig(baseConfig, {
+	// Alea-specific overrides
+	use: {
+		baseURL: 'https://games.dev.inovadatabv.com/alea/',
+	},
+	projects: [
+		{
+			name: 'alea-api-tests',
+			testMatch: ['aleaTransactions.spec.ts', 'balance.spec.ts'],
+			use: {
+				baseURL: 'https://games.dev.inovadatabv.com/alea/',
+			},
+		},
+	],
 });

@@ -1,0 +1,59 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "root": "apps/grandzbet-e2e",
+  "sourceRoot": "apps/grandzbet-e2e",
+  "targets": {
+    "test": {
+      "executor": "@nx/playwright:playwright",
+      "options": {
+        "config": "apps/grandzbet-e2e/playwright.config.ts"
+      }
+    },
+    "test:ui": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx playwright test --ui",
+        "cwd": "apps/grandzbet-e2e"
+      }
+    },
+    "test:e2e": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx playwright test --grep \"e2e\"",
+        "cwd": "apps/grandzbet-e2e"
+      }
+    },
+    "test:smoke": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx playwright test --grep \"smoke\"",
+        "cwd": "apps/grandzbet-e2e"
+      }
+    },
+    "test:regression": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx playwright test --grep \"regression\"",
+        "cwd": "apps/grandzbet-e2e"
+      }
+    },
+    "show-report": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx playwright show-report",
+        "cwd": "apps/grandzbet-e2e"
+      }
+    }
+  },
+  "lint": {
+    "executor": "@nx/eslint:eslint",
+    "options": {
+      "lintFilePatterns": [
+        "apps/grandzbet-e2e/**/*.ts",
+        "apps/grandzbet-e2e/**/*.js"
+      ]
+    }
+  },
+  "tags": ["type:e2e", "scope:ui"]
+}

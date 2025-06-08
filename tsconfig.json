@@ -1,11 +1,6 @@
 {
   "extends": "./tsconfig.base.json",
   "compileOnSave": false,
-  "files": [],
-  "references": [
-    { "path": "libs/page-objects" },
-    { "path": "libs/test-utils" },
-    { "path": "apps/spaceFortuna-e2e" },
-    { "path": "apps/aleaAPI" }
-  ]
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules", "dist"]
 }

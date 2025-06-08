@@ -1,0 +1,462 @@
+{
+  "cookies": [
+    {
+      "name": "CR-Country-Code",
+      "value": "BG",
+      "domain": "stage.grandzbet1.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "CR-Device-Type",
+      "value": "desktop",
+      "domain": "stage.grandzbet1.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "CR-Referer",
+      "value": "Direct-Access",
+      "domain": "stage.grandzbet1.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "CR-Accept-Language",
+      "value": "en-US",
+      "domain": "stage.grandzbet1.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "__cf_bm",
+      "value": "LBAXqN.3vq0Pmjm5zQWadBKNSR3LwyXVw_Tsxzl1KK0-1749192785-1.0.1.1-6sEuUxN1i.kILCSBIauVtP4JzZDCdVedsOsWayPB.4Wz22uYjik7Nw4gDllsgcbIq3AFixjN.tnXs5SPYtR7lzDmH2QmjRlEqEGMJCvk6JQ",
+      "domain": ".grandzbet1.com",
+      "path": "/",
+      "expires": 1749194584.814158,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "__Secure-next-auth.csrf-token",
+      "value": "c5cb2e2f6798dae53b8eed4b383b06a8e3f0ad1566f6b793d94e62aa68d5d2d3%7C7ed47a9c528715c39bd287d3d961b98d8527aa425ab39c623b8cdf17fadb5f6e",
+      "domain": "stage.grandzbet1.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "io_token_7c6a6574-f011-4c9a-abdd-9894a102ccef",
+      "value": "0hER52bcWIaqZCSZNIOHn6hBFoaazD1q2gC9uASR4Qw=",
+      "domain": "mpsnare.iesnare.com",
+      "path": "/",
+      "expires": 1780728791.29593,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "_ga",
+      "value": "GA1.1.128652604.1749192787",
+      "domain": ".grandzbet1.com",
+      "path": "/",
+      "expires": 1783752791.726406,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "slfp",
+      "value": "eyJ1dWlkIjoiMDAxMzJmNDgtZjEzOC00OWMyLWIyMTEtOGY2NzdlMThkNDJj%0AIiwibmFtZSI6InZfZ3JhbmR6YmV0IiwidHMiOiIyMDI1LTA2LTA2IDAzOjUz%0AOjA2IC0wMzAwIn0%3D%0A",
+      "domain": ".mediamathrdrt.com",
+      "path": "/",
+      "expires": 1751784791.652209,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "slfp",
+      "value": "eyJ1dWlkIjoiYzM4OTE0YmMtN2NmNC00MWNiLTkxYTAtOTkxZmI4NzVkZTIw%0AIiwibmFtZSI6InBpeF9ncmFuZHpiZXQiLCJ0cyI6IjIwMjUtMDYtMDYgMDM6%0ANTM6MDYgLTAzMDAifQ%3D%3D%0A",
+      "domain": ".prdredir.com",
+      "path": "/",
+      "expires": 1751784791.657023,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "CLID",
+      "value": "b9a9e04ffbff46feb3e032c76bba0304.20250606.20260606",
+      "domain": "www.clarity.ms",
+      "path": "/",
+      "expires": 1780728785.77093,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "optiMonkClientId",
+      "value": "7e2e1b61-535f-6831-d7ec-c22235920678",
+      "domain": "stage.grandzbet1.com",
+      "path": "/",
+      "expires": 1780728787,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "slfp",
+      "value": "eyJ1dWlkIjoiYmE2NTIxM2EtMjE2NC00OWE0LTkzOGUtZWJjMTUzY2FjZDFm%0AIiwibmFtZSI6InBpeF9ncmFuZHpiZXRfRlIiLCJ0cyI6IjIwMjUtMDYtMDYg%0AMDM6NTM6MDcgLTAzMDAifQ%3D%3D%0A",
+      "domain": ".coolretargeting.com",
+      "path": "/",
+      "expires": 1751784791.662695,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "_clck",
+      "value": "t4qlhk%7C2%7Cfwj%7C1%7C1983",
+      "domain": ".grandzbet1.com",
+      "path": "/",
+      "expires": 1780728787,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "blueID",
+      "value": "ce396630-5c46-495d-a57d-b98d59fe939f",
+      "domain": ".stage.grandzbet1.com",
+      "path": "/",
+      "expires": 1780728787,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "optiMonkSession",
+      "value": "1749192787",
+      "domain": "stage.grandzbet1.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "ckid",
+      "value": "F5DAA92F-8A34-4072-A060DFE8F8FF54FA",
+      "domain": ".getblue.io",
+      "path": "/",
+      "expires": 1780728792.087273,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "_fbp",
+      "value": "fb.1.1749192787583.790131967121045840",
+      "domain": ".grandzbet1.com",
+      "path": "/",
+      "expires": 1756968792,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "IDE",
+      "value": "AHWqTUkRijDWBS_VnpbalgUG0QfBBDY0w0288iJKZ_owcyLV2kI7ekOr3gW4tU-jeB0",
+      "domain": ".doubleclick.net",
+      "path": "/",
+      "expires": 1782888787.871351,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "__zlcmid",
+      "value": "1S1nfYDs1NHCmzv",
+      "domain": ".grandzbet1.com",
+      "path": "/",
+      "expires": 1780728792,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "MUID",
+      "value": "2F87561DE69D697B343D401EE7E8688E",
+      "domain": ".bing.com",
+      "path": "/",
+      "expires": 1782888790.310185,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "MR",
+      "value": "0",
+      "domain": ".c.bing.com",
+      "path": "/",
+      "expires": 1749797590.31022,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "SRM_B",
+      "value": "2F87561DE69D697B343D401EE7E8688E",
+      "domain": ".c.bing.com",
+      "path": "/",
+      "expires": 1782888790.310232,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "SM",
+      "value": "C",
+      "domain": ".c.clarity.ms",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "MUID",
+      "value": "2F87561DE69D697B343D401EE7E8688E",
+      "domain": ".clarity.ms",
+      "path": "/",
+      "expires": 1782888789.374261,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "MR",
+      "value": "0",
+      "domain": ".c.clarity.ms",
+      "path": "/",
+      "expires": 1749797589.374282,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "ANONCHK",
+      "value": "0",
+      "domain": ".c.clarity.ms",
+      "path": "/",
+      "expires": 1749193389.374299,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "kcIdToken",
+      "value": "true",
+      "domain": "stage.grandzbet1.com",
+      "path": "/",
+      "expires": 1751784789.90626,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "__Secure-next-auth.callback-url",
+      "value": "https%3A%2F%2Fstage.grandzbet1.com%2Flogin%3FbackUrl%3D%2F",
+      "domain": "stage.grandzbet1.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_ga_TY5DN3T53H",
+      "value": "GS2.1.s1749192786$o1$g1$t1749192791$j55$l0$h0",
+      "domain": ".grandzbet1.com",
+      "path": "/",
+      "expires": 1783752791.725759,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "optiMonkClient",
+      "value": "N4IgjAnATArGAsIBcoDGBDZwC+AaEAZgG7JgDs8EkUZAHGfgDYlLmXVlUB0n+AdgHsADiyjZsQA=",
+      "domain": "stage.grandzbet1.com",
+      "path": "/",
+      "expires": 1780728791,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_ga_GVPVFH6MRZ",
+      "value": "GS2.1.s1749192786$o1$g1$t1749192791$j55$l0$h0",
+      "domain": ".grandzbet1.com",
+      "path": "/",
+      "expires": 1783752791.984998,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_clsk",
+      "value": "8plirz%7C1749192792120%7C3%7C1%7Ck.clarity.ms%2Fcollect",
+      "domain": ".grandzbet1.com",
+      "path": "/",
+      "expires": 1749279192,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "AWSALBCORS",
+      "value": "s487/FmRScsJvF2IFMdYudAV5KUgLlY0tiT1clsNeUtKn5ze5D4+76J2QQGUO+hkjUWvvu3hyitEczLd/LASXYbCuqvu2I2RoYGQsobzRvoc15yREC80XDmHK0+B",
+      "domain": "widget-mediator.zopim.com",
+      "path": "/",
+      "expires": 1749797592.180849,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "__Secure-next-auth.session-token",
+      "value": "eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..FZMUzote6LEWhg7t.-acYRFJy-uFUY0UV7uEx6ZkuAupsuKgxgfooZW9F80VftBrh3c_sxCJVVRBiwbQtZhPkj8uS1FC_mf2HyaF4tdNsH0D3Mmal1SF4hj-WCu5fC-sTlbPx2F9l6hr-gnwDoxNC06dNz62IHztpxgESBQv6YKAcBdITPAM2O9eW52WTVcY_ryO98rJZszOPnavfEmlSxtR28f0Bszi9dGK9mbFY5XnWaAarGQCI1MmlKzvM0O0wrEZiFK0AO1uaK0NgGv2qGxqdx3zMyQ_qaG_0i-PgB17Au4JWCQVtKMzt869bSLCtIWrt4Wev6zHgWDCC7Hg37ZS8BryvYcXQ0zecQhOMmeXG_jV8yriT3sxXfkccLYBHW1TU55wy-eY2BYw_TMh_V4MKL3YDgv3sg12lJEbHmgXvo7UFlkeve7WDusLRRlN_tNeHARJeUOdVjX9zGkJiFQHPTGlc7kVir5o61P9EyJy8LcE78g3tpiwZZj3dkH41R5m7KWP5-iPvgVxU7_NaygL--65VqCRS5SFf7QCwZgsx4eesEQqw2JuDFj59Uf-mrvFZqgAb5sBXGQNQNG4C6s_SRq-72ujd6jrgfZ-qXS8oR3AuU9FfE-fPK3UzXdzNuy8i-mxjMPZxIIMX-PeTCYwCnHQxDtHoeKz-opyxsL40pnf8cMT3lUSoBcLktLTbiEumKyxHg7Q1atQqL3cGD93vScVD27oc9qNT9Cz_pjsLF7IAzOLgOalQxCIBMdO53M-mHkjIZMGUSlk_WMjdVs4To_DmTwM67zA9XGBU2BZTpFh6Axxk1thXbeQKVlr_f7aTwejCcrvhHVPNXAxYFbDxhnU0uy_Y4mYLHBJOeAQdnm1TIB0xmP2aQJT9NrxNvbyWCznjQr-u3MGJHCtEi0hSIVj2JQnhV14jdlYZJKpu06gJqQlx0LUc-lp4pllNmNytCA6SfFuTiES4E7LYYuMbddUcKnogjd6oShF5viBEWDjZ2PRGE8A-w15Q40sG9II98ER9sMUnrqmMtPPlwgC5aK4ySPmHvwqY-nOb_n6XlGoRJxOkoHJ_WtxFo9T6IyfhCzl6Rh_X_h9aJt7K97wp7ZNgp3eJ8PTjz61o6yErYJ2mf0MtgKvfOuEV1dSnXK6H2865Oh-hMgMG-T3bN5fEFqk_F04ewz-eiBy3NHe_Skh6tTDu2xAdltK2yJQnkxsjXkQRDeqvzrkk77TtZvsjPpQ001OWjyRJFMLqPfTydTyQ-fpXb0b-oWHHHlbI_kbsVNfdp-BFCZ4PSuIhTMIi7ia8VGcpV9vRf_BdQbyRJLxlBOMSLKQ1SPpUUXRg1jRTP7ADLAhOIkpS-hq3_6a_0hGPwjn5X7Tn8pgcfiibwbY0DgzQrqw7IclsuZtvrHxDGO0WDJfoE0IjWbv0FBtXoxJIFYBC-zAOHZ8Hg-bDm5KO_RgQbOsN42EmZdfC_MkTnfnouKpAgti6SYtJ5AedJPxLPPYG-Y0qMDqt9lUGXo-W7PoKmLBGh-kHRMV3E8C1tpYS20A0bUYun-G0juACNI9cWtc14NT8x4blKYn9_4Q0WrbD2rLEJkaR-5rJ7Ks29L_MEtgXknjEBg39jG3v6ntjgBmz6MgfTxW7NFLquuqKb_oNNWHsOwDxhLp5siVUGdkWaKMz_4JodwTPqJH0hqdHhyGbk1SZG-BfMmgRorZTUw8Pvu1MP_PqCpc1z-Tqn7p0Mri3TvUjStI2aPRDfClSFLPwUgxjyOE7SsseTg4E3X4NBVDqqV4Z7dXqlKlEcpchPE_kV_fX5a-rQGt1I2AI7YDUTlJtx1KQl5QPnrxj29SbvvOA-aSLcq0TBjyqUhDGIIXwHSF9JCqPI2MYYTKnYC0MWevOXSP5DwICBs2cLwslXV3loiCT93-GIapQY1c71U58GHL2ISNi7GVxazYa6o7HKsJkvKt_XbP95qzAS59ccqJ1Z7bSKhnEKhay97NoSvXKPQgbJBdGlXHWoQqGD9pKXSfTHbUUAAYppyz_1ECJ-Eqx50uCTWCom5-7eCzBOdOOTec4y3CjzT3hlvMrdJZPmDbbD_kAmkXCik3MwYT0htf4df8Sz2u3WuPAh2ViOXIJRoaXm_pn6FfQma1WBveZc5ND8t5VpgRfN9ElTg5wTqxw6Zt9LKhj6m6nLwvaCNpzsBCclgXPfnBphuwTtrSMbswi_VSeOPBcytLmlWfC3eNsKqP6WMwZbmQJPkXl-OtR3ap7jl2Fel5uYsLx0giBh8OYgSWR-b-MYWk-BB4AQG0BCz80Nux78MrCM08jd42nvnLB1seHsAX3OSTUaA-UiPeWBzWQSEh6lzroxtaN7yd7VecXnrsNiaJiLPzA-4xJdvweKfIPOrryoTS1fC87t1NmbUCUb2Kzjm9z3hrVvKTVWafPbGkfZ_eu-w9JpK4iJlP6UpDBb5j2ZcdzscYkVc3_QoIuHLijU8IBUsXcLAE4uuh1Hl844PRGt-1YOQ1c_v3LaHzu3ablVeAE3Zd57QUNqml3dLCiKbcrVB_SbXAWKrAVmQTRFVtxT25xbbAs1qBnzxsFTF-_fiTGoIDUP2rxtBZQX6D2cGCyKP9EsVx2eIG4YgPy_Uta5YrVjBcuOnaeHzURka8SEKcuarD5lmL-d0pOKhSr9P3-RcVkKM8-ZQz7Rx3cXO0cMnObTESjf74qnfw5kDLf_iPJfQYOvxsiGqhewC_q3f9DPU5qNL0cwqOmUgDWBx8ImDEi-fFspBQ7vhyXnnl6pgzz7jnMEqtAiE7tYAVUlMrv2f1IpbjDy3C9Ssv73cjsse4dwE4afTju5JOuJH-amnlkPZZkdT1TzSX9khapVEMidCdrbXvJ5rwKmn2j4It6flSWyzHmitW1MfHIApyv6wwBGgo0G11tAYhcauk36-4IClipaMjPzZMlVzEDjLlq_XU8iT-m6CIQCULkJMLtQVgdH7r5m_p4FLRvTahhqfyoTkJUpOqoacriKT7VJmzMOJ16eCJQ7o_LyJ6C6hHsX8pps6J0d9OpZoh8EPVanIrzYuCnZdz_0q0aiF3rBF8ze8ZKKxzDEGlZ5uoNvbWuw1QBDwEwZUnSbD7GWYClxTP9BG156xw_MqUm6U98AUQvEvyRRZz0vLMtZ82HnZzCFCkPSBPoK2TyYAVYcg-swhdNevGElP8wzWEGM_zXjfXeMPQjUzG9TWyw0hiRvsKWOnPlzhTLGJTceCC8HO5ria5tTT3MVqFSMlYgtkoGC7iUtHxTkN74lZBCSafRIR6ioeWoKnTiZbxlxAiHGeMUAoEl1mhn7rLvBaf0rtkaQKNtNVR-rd0oqBpKx-EbFryMPCuLoGSrHPrB60FKK-QgV2qHEbSQqgxtOHyfTC-1Yta9F-J4lFujz2a4mjMqLsK841UjTdc1DJo_eMx2mmlor5YnnISWSIWDGb9DSPwAbCa-LjjPpF7abhVFroGzpi4uhPutUJbOGaK7UgizYLvTkHlmqJ1NczoalT6-QaLpyiLMn7aq3vxdFfcJN7SgWgAGa6qcau_w_uVXunVxwAI4tY5UYHAapfct--SWdxhE1yZqY9aKuCusgbpYNMrEnPOS26b1RD_qk0nxKZ7HIxigkkQ0bjXVK5ihUjVS5Ujx8XV-rmk4PHYCouIEyJU2dL0Gv3dYSJy4hf6Qn-_TBpTqPTlsrg-gdiw01462eTI3Hrd8axs2SKnDGGFXEmrMG_3Wm5cuGDwSJEv8aNoSd9DAMHTufEs-Q0dbEnCH2G9KvAi3Ud4AQJ54tXVlf-An6-XiGF6nQMBcP2o7.YatA5bKD-EM9t_EZZT_3vA",
+      "domain": "stage.grandzbet1.com",
+      "path": "/",
+      "expires": 1751784792.193546,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "https://stage.grandzbet1.com",
+      "localStorage": [
+        {
+          "name": "io_f604be51-ccf5-4d26-9cc2-3c44e1fdceb9",
+          "value": "0hER52bcWIaqZCSZNIOHn6hBFoaazD1q2gC9uASR4Qw="
+        },
+        {
+          "name": "eng_mt",
+          "value": "{\"ver\":36,\"sessionStartTime\":1749192786947,\"scrollDepth\":0,\"sessionDepth\":[\"-2092656977\"],\"timeOnSite\":3740,\"crossSessionsData\":{\"sessionsHistory\":[1749192786947]}}"
+        },
+        {
+          "name": "WSDK_american_betSlipOptions",
+          "value": "{\"state\":{},\"version\":0}"
+        },
+        {
+          "name": "WSDK_american_betStakes",
+          "value": "{\"state\":{\"hrSelectionsExist\":false,\"campaignBonus\":{\"activeBonusStatus\":2,\"useBonusBalance\":true},\"selectionCount\":0,\"uniqueEventCount\":0,\"uniqueSystemEventCount\":0,\"defaultStake\":7,\"singleStakes\":[],\"multipleStake\":{\"value\":10,\"type\":3,\"isEnabled\":true,\"preciseValue\":10,\"isHighlighted\":false},\"systemStakes\":[],\"foldsLinesCount\":[],\"teaserStake\":{\"value\":10,\"type\":3,\"isEnabled\":true,\"preciseValue\":10,\"isHighlighted\":false},\"showAdjustment\":false,\"adjustment\":{\"showBetOnEveryone\":false,\"showSplitStake\":false,\"selectAllFoldsOnAdjustment\":true,\"value\":null,\"type\":0}},\"version\":0}"
+        },
+        {
+          "name": "OptiMonkVisitorAttributes",
+          "value": "{\"is_mobile\":\"false\",\"is_mobile_text\":\"false\",\"browser_language\":\"en-US\",\"os_name\":\"Windows\",\"os_version\":\"10.0\",\"browser_name\":\"Chrome\",\"browser_version\":\"136.0\",\"utm_medium\":\"\",\"utm_source\":\"\",\"utm_campaign\":\"\",\"utm_content\":\"\",\"current_month_text_en\":\"June\",\"current_month_text_hu\":\"j%C3%BAnius\",\"tz\":\"Europe%2FSofia\",\"tz_offset\":\"UTC-3\",\"first_landing_page\":\"https%3A%2F%2Fstage.grandzbet1.com%2F\",\"first_visit_date\":\"2025-06-06T06%3A53%3A07.041Z\",\"_source_referrer\":\"direct\",\"_source_url\":\"https%3A%2F%2Fstage.grandzbet1.com%2F\",\"_country_code\":\"BG\",\"_country_en\":\"Bulgaria\",\"_country_hu\":\"Bulg%C3%A1ria\",\"_country_de\":\"Bulgarien\"}"
+        },
+        {
+          "name": "blueID",
+          "value": "ce396630-5c46-495d-a57d-b98d59fe939f"
+        },
+        {
+          "name": "OptiMonkShopAttributes",
+          "value": "{}"
+        },
+        {
+          "name": "nextauth.message",
+          "value": "{\"event\":\"session\",\"data\":{\"trigger\":\"getSession\"},\"timestamp\":1749192792}"
+        },
+        {
+          "name": "om-country",
+          "value": "{\"value\":\"BG\",\"timestamp\":1749192791808}"
+        },
+        {
+          "name": "ZD-suid",
+          "value": "{\"id\":\"6f6c914a1b0349baad3e4ec4b93d3315\",\"expiry\":1749193691938,\"tabs\":{\"count\":1,\"expiry\":0}}"
+        },
+        {
+          "name": "WSDK_american_betSlip",
+          "value": "{\"state\":{\"betType\":0,\"enabledBetTypes\":[0,1,2],\"showEmpty\":false},\"version\":0}"
+        },
+        {
+          "name": "lastExternalReferrerTime",
+          "value": "1749192787264"
+        },
+        {
+          "name": "ZD-store",
+          "value": "{\"activeEmbed\":\"chat\",\"widgetShown\":false,\"is_chatting\":false}"
+        },
+        {
+          "name": "ZD-settings",
+          "value": "[[\"0a8190c33690df5a168dd41d83a138fdfcafbc31\",1749192787]]"
+        },
+        {
+          "name": "om-ip_block",
+          "value": "{\"value\":\"94.156.220.116\",\"timestamp\":1749192791809}"
+        },
+        {
+          "name": "WSDK_american_betSelections",
+          "value": "{\"state\":{\"selections\":[],\"totoCampaigns\":[],\"selectionView\":\"sport\",\"oddIds\":[],\"boostedOddIds\":[],\"lastUpdated\":\"2025-06-06T06:53:11.600Z\",\"isCast\":false,\"showEachWay\":false},\"version\":0}"
+        },
+        {
+          "name": "ZD-buid",
+          "value": "6b0141ec6b0a447194f13bb7ac78cdf7"
+        },
+        {
+          "name": "lastExternalReferrer",
+          "value": "empty"
+        },
+        {
+          "name": "fp_f604be51-ccf5-4d26-9cc2-3c44e1fdceb9",
+          "value": "3qgjONiOqllDSCwi8NVGyHDS438j83+C52MSxxi4p48="
+        },
+        {
+          "name": "trace-id",
+          "value": "96961300-3b9b-4799-9467-c6aecdf2fc49"
+        },
+        {
+          "name": "WSDK_american_campaignBonus",
+          "value": "{\"state\":{\"hasRacingSP\":false},\"version\":0}"
+        },
+        {
+          "name": "__zlcstore",
+          "value": "{\"fmWjQloy1jaiGLQNWSul5EB1KBrLq9G9\":{\"web_sdk_last_host\":\"widget-mediator.zopim.com\",\"timestamp\":1749192792278,\"account_status\":\"online\"}}"
+        }
+      ]
+    },
+    {
+      "origin": "https://scripts.coolretargeting.com",
+      "localStorage": [
+        {
+          "name": "site:stage.grandzbet1.com",
+          "value": "{\"lastVisit\":1749192791970,\"lastPath\":\"/\",\"keywords\":[],\"visits\":2}"
+        },
+        {
+          "name": "sites",
+          "value": "[\"stage.grandzbet1.com\"]"
+        }
+      ]
+    }
+  ]
+}
