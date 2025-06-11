@@ -86,7 +86,7 @@ test.describe('Login with no credentials', () => {
 			test(`Test return back to ${scenario}`, async ({ loginPage, navigationItems, menuItems }) => {
 				await navigate({ navigationItems, menuItems });
 				await menuItems.clickLogin();
-				await loginPage.validateLoginWindowElementsVisible(true);
+				await loginPage.validatePageElementsVisible(true);
 				await loginPage.validateNavigationBack(scenario, `${process.env.URL}${url}`);
 			});
 		}

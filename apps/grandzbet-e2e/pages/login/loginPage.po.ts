@@ -60,8 +60,15 @@ export class LoginPage {
         }[inputField](softAssert);
     };
 
+    @step('Validate Login page elements are visible, enabled and editable')
+    public async validatePageElements(softAssert= false): Promise<void> {
+        await this.validatePageElementsVisible(softAssert);
+        await this.validatePageElementsEnabled(softAssert);
+        await this.validatePageElementsEditable(softAssert);
+    }
+
     @step('I validate the login window elements are visible')
-    public async validateLoginWindowElementsVisible(softAssert = false): Promise<void> {
+    public async validatePageElementsVisible(softAssert = false): Promise<void> {
         await assertVisible(this.email(), 'email field', softAssert);
         await assertVisible(this.password(), 'Password field', softAssert);
         await assertVisible(this.loginButton(), 'Login button', softAssert);
@@ -73,7 +80,7 @@ export class LoginPage {
     }
 
     @step('I validate the login window elements are enabled')
-    public async validateLoginWindowElementsEnabled(softAssert = false): Promise<void> {
+    public async validatePageElementsEnabled(softAssert = false): Promise<void> {
         await assertEnabled(this.email(), 'email field', softAssert);
         await assertEnabled(this.password(), 'Password field', softAssert);
         await assertEnabled(this.loginButton(), 'Login button', softAssert);
@@ -83,7 +90,7 @@ export class LoginPage {
     }
 
     @step('I validate the email and password window elements are editable')
-    public async validateLoginWindowElementsEditable(softAssert = false): Promise<void> {
+    public async validatePageElementsEditable(softAssert = false): Promise<void> {
         await assertEditable(this.email(), 'email field', softAssert);
         await assertEditable(this.password(), 'Password field', softAssert);
     }

@@ -62,12 +62,12 @@ export class NavigationItems {
     };
 
 
-    public clickCasinoButton = async () => clickElement(await this.casino(), 'Casino button');
-    public clickLiveCasinoButton = async () => clickElement(await this.liveCasino(), 'Live Casino button');
-    public clickSportsBettingButton = async () => clickElement(await this.sportsBetting(), 'Sports Betting button');
-    public clickSportsBettingOverviewButton = async () => clickElement(await this.sportsBettingOverview(), 'Sports Betting Overview button');
-    public clickPromotionsButton = async () => clickElement(await this.promotions(), 'Promotions button');
-    public clickVipButton = async () => clickElement(await this.vip(), 'VIP button');
+    public clickCasinoButton = async () => await clickElement(await this.casino(), 'Casino button');
+    public clickLiveCasinoButton = async () => await clickElement(await this.liveCasino(), 'Live Casino button');
+    public clickSportsBettingButton = async () => await clickElement(await this.sportsBetting(), 'Sports Betting button');
+    public clickSportsBettingOverviewButton = async () => await clickElement(await this.sportsBettingOverview(), 'Sports Betting Overview button');
+    public clickPromotionsButton = async () => await clickElement(await this.promotions(), 'Promotions button');
+    public clickVipButton = async () => await clickElement(await this.vip(), 'VIP button');
 
     // Actions
     @step('I validate the header navigation items are visible')
