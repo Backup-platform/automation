@@ -15,7 +15,10 @@ test.beforeEach(async ({ page }) => {
 
 test.describe('Login Page Regression Tests - Desktop', () => {
   test.use({
-    storageState: path.resolve(__dirname, '../../../playwright/.auth/noAuthentication.json')
+    storageState: path.resolve(
+      __dirname,
+      '../../../playwright/.auth/noAuthentication.json'
+    ),
   });
 
   test.describe('Login with no credentials', () => {
@@ -37,9 +40,24 @@ test.describe('Login Page Regression Tests - Desktop', () => {
         password: `${process.env.PASS}`,
         error: 'email',
       },
-      			{ scenario: `Wrong password`, username: `${process.env.USER}`, password: "wrong_password", error: 'credentials' },
-			{ scenario: `Wrong email`, username: `wrong_username@mail.com`, password: `${process.env.PASS}`, error: 'credentials' },
-			{ scenario: `Invalid email`, username: `wrong_username`, password: `${process.env.PASS}`, error: 'email' },
+      {
+        scenario: `Wrong password`,
+        username: `${process.env.USER}`,
+        password: 'wrong_password',
+        error: 'credentials',
+      },
+      {
+        scenario: `Wrong email`,
+        username: `wrong_username@mail.com`,
+        password: `${process.env.PASS}`,
+        error: 'credentials',
+      },
+      {
+        scenario: `Invalid email`,
+        username: `wrong_username`,
+        password: `${process.env.PASS}`,
+        error: 'email',
+      },
       //   { TODO: figure out how to handle this case
       //     scenario: `Empty both`,
       //     username: '',
@@ -94,7 +112,7 @@ test.describe('Login Page Regression Tests - Desktop', () => {
       }) => {
         await navigate({ navigationItems, menuItems });
         await menuItems.clickLogin();
-        await loginPage.validateLoginWindowElementsVisible(true);
+        await loginPage.validatePageElementsVisible(true);
         await loginPage.validateNavigationBack(
           scenario,
           `${process.env.URL}${url}`

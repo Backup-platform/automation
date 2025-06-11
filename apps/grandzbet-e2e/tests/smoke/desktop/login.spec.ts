@@ -17,7 +17,7 @@ test.describe("Login Page Smoke Tests - Desktop", () => {
 	test("Validate Login", async ({ loginPage, menuItems, page, navigationItems }) => {
 		await menuItems.validateGuestItems();
 		await menuItems.clickLogin();
-		await loginPage.validateLoginWindowElementsVisible();
+		await loginPage.validatePageElementsVisible();
 		await loginPage.actionLogin(`${process.env.USER}`, `${process.env.PASS}`);
 		await page.waitForURL(`${process.env.URL}`, { waitUntil: 'domcontentloaded' });
 		await menuItems.validateUserItems();
@@ -26,16 +26,17 @@ test.describe("Login Page Smoke Tests - Desktop", () => {
 
 	test("Test all login page elements are visible and enabled", async ({ loginPage, menuItems }) => {
 		await menuItems.clickLogin();
-		await loginPage.validateLoginWindowElementsVisible(true);
-		await loginPage.validateLoginWindowElementsEnabled(true);
-		await loginPage.validateLoginWindowElementsEditable(true);
+		await loginPage.validatePageElementsVisible(true);
+		await loginPage.validatePageElementsEnabled(true);
+		await loginPage.validatePageElementsEditable(true);
 	});
 
 	test ("Test login with empty email and password fields", async ({ loginPage, menuItems }) => {
 		await menuItems.clickLogin();
-		await loginPage.validateLoginWindowElementsVisible(false);
+		await loginPage.validatePageElementsVisible(false);
 		await loginPage.fillUsername('');
 		await loginPage.fillPassword('');
+		await loginPage.clickLoginButton();
 		await loginPage.validateEmailError(true);
 		await loginPage.validatePasswordError(true);
 	});
@@ -43,7 +44,7 @@ test.describe("Login Page Smoke Tests - Desktop", () => {
 	test("Test wrong username and password", async ({ loginPage, menuItems }) => {
 		await menuItems.validateGuestItems();
 		await menuItems.clickLogin();
-		await loginPage.validateLoginWindowElementsVisible();
+		await loginPage.validatePageElementsVisible();
 		await loginPage.actionLogin(`wrong_username@mail.com`, `wrong_password`);
 		await loginPage.validateInvalidCredentialsError();
 	});

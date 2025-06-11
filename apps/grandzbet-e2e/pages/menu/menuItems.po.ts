@@ -62,7 +62,7 @@ export class MenuItems {
     // Actions
     public clickLogin = async () => await clickElement(this.login(), 'Login button');
     public clickRegister = async () => await clickElement(this.register(), 'Register button');
-    public clickLogo = async () => clickElement(await this.logoElement(), 'Website logo');
+    public clickLogo = async () => await clickElement(await this.logoElement(), 'Website logo');
 
     @step('I validate the menu items for a logged-in user')
     public async validateUserItems(softAssert = false): Promise<void> {
