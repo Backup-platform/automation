@@ -3,14 +3,9 @@ import path from 'path';
 import { MenuItems } from '../../../pages/menu/menuItems.po';
 import { NavigationItems } from '../../../pages/menu/navigationItems.po';
 
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({ page, popupHandlers }) => {
 	await page.goto(`${process.env.URL}`, { waitUntil: "load" });
-	// await banner.clickEscapeInOptIn();
-	// await banner.randomClickSkipSomething();
-	// await banner.bannerNewDesign();
-	// await banner.bannerHiThere();
-    // await banner.acceptCookies();
-    // await banner.acceptTermsAndConditions();
+  	await popupHandlers.handleAllPopups();
 });
 
 test.describe("Login Page Regression Tests - Mobile", () => {

@@ -1,11 +1,8 @@
-import { Locator, Page } from '@playwright/test';
+import { Page } from '@playwright/test';
 import {
     step,
-    stepParam,
-    fillInputField,
     assertVisible,
     clickElement,
-    performNavigationClick,
     assertNotVisible,
 } from '@test-utils/navigation.po';
 
@@ -63,6 +60,15 @@ export class MenuItems {
     public clickLogin = async () => await clickElement(this.login(), 'Login button');
     public clickRegister = async () => await clickElement(this.register(), 'Register button');
     public clickLogo = async () => await clickElement(await this.logoElement(), 'Website logo');
+
+    // Add navigation method that accepts target
+    public async navigateToPage(target: 'logo'): Promise<void> {
+        const navigationMap = {
+            'logo': () => this.clickLogo()
+        } as const;
+        
+        await navigationMap[target]();
+    }
 
     @step('I validate the menu items for a logged-in user')
     public async validateUserItems(softAssert = false): Promise<void> {

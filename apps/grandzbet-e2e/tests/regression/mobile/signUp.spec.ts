@@ -64,6 +64,7 @@ test.describe('Signup Regression Tests', () => {
         }
     });
 
+	//FIXME:
     test.describe('Test going back from sign up page via the back button', () => {
         const navigationScenarios = [
             { scenario: 'LandingPage', url: '', action: (deps: any) => deps.menuItems.clickLogo() },
@@ -74,6 +75,7 @@ test.describe('Signup Regression Tests', () => {
         for (const { scenario, url, action } of navigationScenarios) {
             test(`Test return back to ${scenario}`, async ({ signUpStep1, navigationItems, menuItems, signUpCommon, page }) => {
                 await action({ menuItems, navigationItems });
+                await page.waitForLoadState('domcontentloaded');
                 await menuItems.clickRegister();
                 await signUpStep1.validatePageElements(true);
                 await signUpCommon.validateNavigationBack(`${process.env.URL}${url}`);

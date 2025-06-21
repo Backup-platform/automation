@@ -3,14 +3,9 @@ import path from 'path';
 import { MenuItems } from '../../../pages/menu/menuItems.po';
 import { NavigationItems } from '../../../pages/menu/navigationItems.po';
 
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({ page, popupHandlers }) => {
   await page.goto(`${process.env.URL}`, { waitUntil: 'load' });
-  // await menuItems.clickEscapeInOptIn();
-  // await menuItems.randomClickSkipSomething();
-  // await menuItems.bannerNewDesign();
-  // await menuItems.bannerHiThere();
-  // await menuItems.acceptCookies();
-  // await menuItems.acceptTermsAndConditions();
+  await popupHandlers.handleAllPopups();
 });
 
 test.describe('Login Page Regression Tests - Desktop', () => {

@@ -15,12 +15,10 @@ export class LoginPage {
     private readonly createAccountButton = () => this.page.locator('button.bg-secondary-secondary.text-secondary-foreground');    
     private readonly closeButton = () => this.page.locator('.flex.grow.flex-row.justify-between button.text-greyLight');
     
-    // Error messages - multiple fallback approaches for cross-browser compatibility
     private readonly emailError = () => this.page.locator('form p.text-error').first();
     private readonly passwordError = () => this.page.locator('form p.text-error').last();
     private readonly invalidCredentialsError = () => this.page.locator('form button[type="submit"]').locator('..').locator('p.text-error'); 
     
-    // Alternative approach: use form structure to find errors more reliably
     private readonly emailErrorAlt = () => this.page.locator('input[name="email"]').locator('..').locator('..').locator('p.text-error');
     private readonly passwordErrorAlt = () => this.page.locator('input[name="password"]').locator('..').locator('..').locator('p.text-error');
     

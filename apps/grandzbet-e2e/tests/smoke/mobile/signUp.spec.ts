@@ -7,7 +7,7 @@ test.beforeEach(async ({ page, menuItems, popupHandlers }) => {
     await menuItems.clickRegister();
 });
 
-test.describe('Signup Smoke Tests - Desktop', () => {
+test.describe('Signup Smoke Tests - Mobile', () => {
     test.use({ storageState: path.resolve(__dirname, '../../../playwright/.auth/noAuthentication.json') });
 
     test('Validate SignUp', async ({ signUpStep1, signUpStep2, signUpStep3, signUpCommon }) => {

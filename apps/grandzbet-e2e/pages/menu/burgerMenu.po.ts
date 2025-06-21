@@ -11,7 +11,7 @@ export class BurgerMenu {
         this.bottomMenu = new BottomMenu(page);
     }
 
-    //Locators //TODO: everything
+    //Locators
     private readonly radixImage = () => this.page.locator('div[id*="radix"] img'); //icon burger menu
     
     readonly shortcutButton = () => this.page.locator('#shortcut-btn-shortcut');

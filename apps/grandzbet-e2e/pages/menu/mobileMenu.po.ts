@@ -15,7 +15,6 @@ export class BottomMenu {
     readonly menuButtonImage = (index: number) => this.menuButton(index).locator(' div img');
     readonly menuButtonLabel = (index: number) => this.menuButton(index).locator(' div[class*="styles_label_"]');
 
-    // Specific buttons using the general method
     readonly burgerMenuButton = () => this.menuButton(0);
     readonly burgerMenuImage = () => this.menuButtonImage(0);
     readonly burgerMenuLabel = () => this.menuButtonLabel(0);
@@ -24,7 +23,6 @@ export class BottomMenu {
     readonly myBonusesButtonImage = () => this.menuButtonImage(1);
     readonly myBonusesButtonLabel = () => this.menuButtonLabel(1);
 
-    // Other elements that don't follow the button index pattern
     readonly loginButton = () => this.page.locator('button#header-log-in-btn');
     readonly registerButton = () => this.page.locator('div[class*="_loggedOutButtonsWrapper_"] a');
 
