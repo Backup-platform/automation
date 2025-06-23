@@ -1,7 +1,7 @@
 import { createUIConfig, extendConfig } from '@test-utils';
 
 /**
- * SpaceFortuna E2E Test Suite Configuration
+ * GrandZBet E2E Test Suite Configuration
  * Uses the base UI configuration optimized for browser testing
  */
 const baseConfig = createUIConfig(__dirname);
@@ -20,9 +20,9 @@ const baseConfig = createUIConfig(__dirname);
 */
 
 export default extendConfig(baseConfig, {
-	// SpaceFortuna-specific overrides can go here
-	// For example, if you need different base URL or settings:
+	// GrandZBet-specific overrides can go here
+	// For example, if you need different base URL:
 	// use: {
-	//   baseURL: 'https://spacefortuna-specific-url.com',
+	//   baseURL: 'https://grandzbet-specific-url.com',
 	// },
 });

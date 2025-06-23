@@ -1,1 +1,2 @@
-export * from './navigation.po.js';
+export * from './navigation.po';
+export * from './playwright-configs';

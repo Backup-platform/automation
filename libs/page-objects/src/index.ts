@@ -1,1 +1,1 @@
-export * from './lib/page-objects.js';
+export * from './page-objects';

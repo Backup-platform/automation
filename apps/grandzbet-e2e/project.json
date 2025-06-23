@@ -1,55 +1,48 @@
 {
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-  "root": "apps/spaceFortuna-e2e",
-  "sourceRoot": "apps/spaceFortuna-e2e",
+  "root": "apps/grandzbet-e2e",
+  "sourceRoot": "apps/grandzbet-e2e",
   "targets": {
     "test": {
       "executor": "@nx/playwright:playwright",
       "options": {
-        "config": "apps/spaceFortuna-e2e/playwright.config.ts"
-      }
-    },
-    "test:all": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx playwright test",
-        "cwd": "apps/spaceFortuna-e2e"
+        "config": "apps/grandzbet-e2e/playwright.config.ts"
       }
     },
     "test:ui": {
       "executor": "nx:run-commands",
       "options": {
         "command": "npx playwright test --ui",
-        "cwd": "apps/spaceFortuna-e2e"
+        "cwd": "apps/grandzbet-e2e"
       }
     },
     "test:e2e": {
       "executor": "nx:run-commands",
       "options": {
         "command": "npx playwright test --grep \"e2e\"",
-        "cwd": "apps/spaceFortuna-e2e"
+        "cwd": "apps/grandzbet-e2e"
       }
     },
     "test:smoke": {
       "executor": "nx:run-commands",
       "options": {
         "command": "npx playwright test --grep \"smoke\"",
-        "cwd": "apps/spaceFortuna-e2e"
+        "cwd": "apps/grandzbet-e2e"
       }
     },
     "test:regression": {
       "executor": "nx:run-commands",
       "options": {
         "command": "npx playwright test --grep \"regression\"",
-        "cwd": "apps/spaceFortuna-e2e"
+        "cwd": "apps/grandzbet-e2e"
       }
     },
     "show-report": {
       "executor": "nx:run-commands",
       "options": {
         "command": "npx playwright show-report",
-        "cwd": "apps/spaceFortuna-e2e"
+        "cwd": "apps/grandzbet-e2e"
       }
     }
   },
@@ -57,8 +50,8 @@
     "executor": "@nx/eslint:eslint",
     "options": {
       "lintFilePatterns": [
-        "apps/spaceFortuna-e2e/**/*.ts",
-        "apps/spaceFortuna-e2e/**/*.js"
+        "apps/grandzbet-e2e/**/*.ts",
+        "apps/grandzbet-e2e/**/*.js"
       ]
     }
   },

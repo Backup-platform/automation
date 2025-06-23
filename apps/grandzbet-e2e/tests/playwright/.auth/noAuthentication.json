@@ -1,0 +1,65 @@
+{
+  "cookies": [
+    {
+      "name": "CR-Country-Code",
+      "value": "BG",
+      "domain": "stage.grandzbet7.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "CR-Device-Type",
+      "value": "desktop",
+      "domain": "stage.grandzbet7.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "CR-Referer",
+      "value": "Direct-Access",
+      "domain": "stage.grandzbet7.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "CR-Accept-Language",
+      "value": "en-US",
+      "domain": "stage.grandzbet7.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "__cf_bm",
+      "value": "QtiDMVd.ioznRhypqYDgkI5.dBfplVuD8.ZFQqJDDRQ-1750540041-1.0.1.1-Nw4FlTLfio3AfIX0pzlTDgj03YmEFbo._X3x39qzUK56rJHuUemNCQVL0FgKu0bRNcbDZ1OtrT.z2Fhd9.SUGcAZRyPipjtcTAAIrlKD570",
+      "domain": ".grandzbet7.com",
+      "path": "/",
+      "expires": 1750541841.117419,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "https://stage.grandzbet7.com",
+      "localStorage": [
+        {
+          "name": "trace-id",
+          "value": "c44e9b63-ea2a-440f-994c-3f67ff171603"
+        }
+      ]
+    }
+  ]
+}
