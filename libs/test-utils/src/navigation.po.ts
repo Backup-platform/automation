@@ -19,6 +19,18 @@ function stepMessage(description: string, action: string, state?: string) {
     return `Expect ${description} to${action ? ' ' + action : ''}${state ? ' be ' + state : ''}`.replace(/  +/g, ' ');
 }
 
+export async function assertVisibleNotActionable(element: CompositeLocator): Promise<void> {
+    // Implement the assertion logic here
+    await test.step(`I validate and element ${element.name} is visible but not actionable`, async () => {
+        await assertVisible(element.locator(), element.name);
+        const isActionable = await element.locator().click({ trial: true, timeout: 2000 })
+            .then(() => true)
+            .catch(() => false);
+        await expect(isActionable, `Element ${element.name} is actionable`).toBe(false);
+    });
+}
+
+
 export async function assertCondition(
   element: Locator,
   assertionType: 'visible' | 'enabled' | 'editable',
@@ -440,6 +452,7 @@ export async function performNavigationClick(
 ): Promise<void> {
     await test.step(`Perform navigation click on ${description} and assert url is ${expectedPath}`, async () => {
         await clickElement(locator, description);
+        await page.waitForLoadState('domcontentloaded', { timeout: 1000 });
         await assertUrl(page, `${expectedPath}`, true);
     });
 }
