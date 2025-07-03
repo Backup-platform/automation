@@ -5,7 +5,7 @@ test.beforeEach(async ({ page, popupHandlers }) => {
 	await page.goto(`${process.env.URL}`, { waitUntil: "load" });
   	await popupHandlers.handleAllPopups();
 });
-	test.describe.only('Profile Menu Tests', () => {
+	test.describe('Profile Menu Tests', () => {
 	test("Validate profile menu elements", async ({ profileMenu, menuItems }) => {
 		await menuItems.clickMyProfileButton();
 		await profileMenu.validateProfileMenuElements();

@@ -5,7 +5,7 @@ test.beforeEach(async ({ page, popupHandlers }) => {
 	await page.goto(`${process.env.URL}`, { waitUntil: "load" });
   	await popupHandlers.handleAllPopups();
 });
-test.describe.only('Regression', () => {
+test.describe('Regression', () => {
 test.describe('Validate profile menu navigation', () => {
 	const profileMenuScenarios = [
 		{ scenario: 'My Bonuses Button', buttonGetter: 'myBonusesButtonElement', url: `myBonuses` },

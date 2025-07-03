@@ -17,6 +17,13 @@
         "cwd": "apps/grandzbet-e2e"
       }
     },
+      "test:debug": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx playwright test --debug",
+        "cwd": "apps/grandzbet-e2e"
+      }
+    },
     "test:e2e": {
       "executor": "nx:run-commands",
       "options": {

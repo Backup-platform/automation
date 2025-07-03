@@ -10,6 +10,10 @@ import { SignUpCommon } from '../signUp/signUpCommon.po';
 import { ProfileMenu } from '../menu/profileMenu.po';
 import { ProfileMenuDesktop } from '../menu/profileMenu.desktop.po';
 import { CashierGeneral } from '../cashier/cashierGeneral.po';
+import { Deposit } from '../cashier/deposit.po';
+import { Withdraw } from '../cashier/withdraw.po';
+import { PaymentIQ } from '../cashier/paymentIQ.po';
+import { Wallet } from '../wallet/wallet.po';
 
 type pages = {
 	loginPage: LoginPage;
@@ -23,6 +27,10 @@ type pages = {
 	profileMenu: ProfileMenu;
 	profileMenuDesktop: ProfileMenuDesktop;
 	cashierGeneral: CashierGeneral;
+	deposit: Deposit;
+	withdraw: Withdraw;
+	paymentIQ: PaymentIQ;
+	wallet: Wallet;
 }
 
 function createPageFixture<T>(PageObject: new (page: Page) => T) {
@@ -46,6 +54,11 @@ const test = base.extend<pages>({
 	profileMenu: createPageFixture(ProfileMenu),
 	profileMenuDesktop: createPageFixture(ProfileMenuDesktop),
 	cashierGeneral: createPageFixture(CashierGeneral),
+	deposit: createPageFixture(Deposit),
+	withdraw: createPageFixture(Withdraw),
+	paymentIQ: createPageFixture(PaymentIQ),
+	wallet: createPageFixture(Wallet)
+
 });
 
 export default test;

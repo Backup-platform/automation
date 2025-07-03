@@ -78,8 +78,8 @@ export class MenuItems {
     public clickLogo = async () => await clickElement(await this.logoElement());
     public clickMyProfileButton = async () => await clickElement(this.myProfileButton);
     public clickDepositButton = async () => await clickElement(await this.deposit());
+    public clickBalanceButton = async () => await clickElement(this.balance);
 
-    // Add navigation method that accepts target
     public async navigateToPage(target: 'logo' | 'myProfile' | 'deposit'): Promise<void> {
         const navigationMap = {
             'logo': () => this.clickLogo(),
