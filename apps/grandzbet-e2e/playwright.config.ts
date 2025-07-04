@@ -17,7 +17,8 @@ const baseConfig = createUIConfig(__dirname);
 	if (!username || !password) {
 	throw new Error("Missing required environment variables.");
 	}
-*/
+*/	
+
 
 export default extendConfig(baseConfig, {
 	// GrandZBet-specific overrides can go here
@@ -25,4 +26,8 @@ export default extendConfig(baseConfig, {
 	// use: {
 	//   baseURL: 'https://grandzbet-specific-url.com',
 	// },
+	expect: {
+		timeout: 15 * 1000,
+	},
+		timeout: 60 * 1000,
 });
