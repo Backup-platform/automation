@@ -1,12 +1,8 @@
 import { Page } from '@playwright/test';
-import {
-    step,
-    assertVisible,
-    clickElement,
-    assertNotVisible,
-    compositeLocator,
-    CompositeLocator,
-} from '@test-utils/navigation.po';
+import { step } from '@test-utils/decorators';
+import { assertVisible, assertNotVisible } from '@test-utils/assertions';
+import { clickElement } from '@test-utils/interactions';
+import { compositeLocator, CompositeLocator } from '@test-utils/core-types';
 
 export class MenuItems {
     readonly page: Page;

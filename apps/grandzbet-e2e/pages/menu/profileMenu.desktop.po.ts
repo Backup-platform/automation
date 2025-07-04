@@ -1,13 +1,9 @@
 import { Page } from '@playwright/test';
-import { 
-    step, 
-    clickElement, 
-    assertVisible,
-    compositeLocator,
-    CompositeLocator,
-    performNavigationClick,
-    assertEnabled
-} from '@test-utils/navigation.po';
+import { step } from '@test-utils/decorators';
+import { clickElement } from '@test-utils/interactions';
+import { assertVisible, assertEnabled } from '@test-utils/assertions';
+import { compositeLocator, CompositeLocator } from '@test-utils/core-types';
+import { performNavigationClick } from '@test-utils/navigation-helpers';
 
 export class ProfileMenuDesktop {
     readonly page: Page;
@@ -73,7 +69,7 @@ export class ProfileMenuDesktop {
     public clickLogoutButton = async () => await clickElement(this.logoutButton);
 
     public validateNavigation = async (element: CompositeLocator, expectedURL: string) => {
-        await performNavigationClick(this.page, element.locator(), element.name, expectedURL);
+        await performNavigationClick(this.page, element, expectedURL);
     }
 
     @step('I validate the Profile Menu (Desktop) elements are visible')

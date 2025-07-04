@@ -6,12 +6,12 @@ import {
     assertVisible,
     assertNotVisible,
     assertEnabled,
-    assertNotEnabled,
-    clickElement,
-    compositeLocator,
-    step,
-    validateOnlyOneElementActive
-} from '@test-utils/navigation.po';
+    assertNotEnabled
+} from '@test-utils/assertions';
+import { clickElement } from '@test-utils/interactions';
+import { compositeLocator } from '@test-utils/core-types';
+import { step } from '@test-utils/decorators';
+import { validateOnlyOneElementActive } from '@test-utils/attributes';
 
 export type StepType = 'deposit' | 'withdraw';
 export type StepNumber = 1 | 2 | 3 | 4;

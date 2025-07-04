@@ -1,14 +1,14 @@
 import { Page, test, expect } from '@playwright/test';
+import { assertVisible } from '@test-utils/assertions';
+import { compositeLocator } from '@test-utils/core-types';
+import { clickElement } from '@test-utils/interactions';
 import {
-    assertVisible,
-    compositeLocator,
-    clickElement,
+    assertElementContainsText,
     validateElementMapVisibility,
     validateAllElementsVisibility,
     getElementMapText,
-    assertElementContainsText,
     validateElementMapContainsText
-} from '@test-utils/navigation.po';
+} from '@test-utils/attributes';
 
 export class Wallet {
     readonly page: Page;

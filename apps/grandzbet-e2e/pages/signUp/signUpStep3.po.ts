@@ -1,17 +1,9 @@
 import { Page } from '@playwright/test';
-import { 
-    step, 
-    stepParam, 
-    clickElement, 
-    assertVisible, 
-    fillInputField, 
-    assertEditable, 
-    assertCondition, 
-    callMethodIfDefined,
-    compositeLocator,
-    CompositeLocator,
-    selectDropdownOption
-} from '@test-utils/navigation.po';
+import { step, stepParam } from '@test-utils/decorators';
+import { clickElement, fillInputField, selectDropdownOption } from '@test-utils/interactions';
+import { assertVisible, assertEditable, assertCondition } from '@test-utils/assertions';
+import { callMethodIfDefined } from '@test-utils/utilities';
+import { compositeLocator, CompositeLocator } from '@test-utils/core-types';
 
 type Country = 'australia' | 'austria' | 'canada' | 'finland' | 'ghana' | 'gibraltar' | 'greece' | 
     'italy' | 'latvia' | 'new zealand' | 'norway' | 'singapore' | 'sweden';

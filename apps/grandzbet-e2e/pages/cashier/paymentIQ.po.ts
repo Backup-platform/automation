@@ -1,13 +1,9 @@
 import { Page } from '@playwright/test';
-import {
-    assertVisible,
-    compositeLocator,
-    clickElement,
-    compositeFrameLocator,
-    fillInputField,
-    step,
-    validateAllElementsVisibility
-} from '@test-utils/navigation.po';
+import { assertVisible } from '@test-utils/assertions';
+import { compositeLocator, compositeFrameLocator } from '@test-utils/core-types';
+import { clickElement, fillInputField } from '@test-utils/interactions';
+import { step } from '@test-utils/decorators';
+import { validateAllElementsVisibility } from '@test-utils/attributes';
 
 export class PaymentIQ {
     readonly page: Page;

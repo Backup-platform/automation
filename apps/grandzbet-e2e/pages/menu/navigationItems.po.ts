@@ -1,9 +1,8 @@
 import { Page } from '@playwright/test';
-import {
-    step,
-    assertVisible,
-    clickElement,
-} from '@test-utils/navigation.po';
+import { step } from '@test-utils/decorators';
+import { assertVisible } from '@test-utils/assertions';
+import { clickElement } from '@test-utils/interactions';
+import { compositeLocator } from '@test-utils/core-types';
 
 export class NavigationItems {
     readonly page: Page;
@@ -13,55 +12,55 @@ export class NavigationItems {
     }
 
     // Locators
-    private readonly desktop = () => this.page.locator('.lg\\:flex');
-    private readonly mobile = () => this.page.locator('.bg-tertiary-secondary');
+    private readonly desktop = compositeLocator(() => this.page.locator('.lg\\:flex'), 'Desktop navigation');
+    private readonly mobile = compositeLocator(() => this.page.locator('.bg-tertiary-secondary'), 'Mobile navigation');
     
-    private readonly vipDesktop = () => this.desktop().locator('a[href="/vip"]');
-    private readonly promotionsDesktop = () => this.desktop().locator('a[href="/promotions"]');
-    private readonly sportsBettingDesktop = () => this.desktop().locator('a[href="/sports-betting#/live"]');
-    private readonly sportsBettingOverviewDesktop = () => this.desktop().locator('a[href="/sports-betting#/overview"]');
-    private readonly liveCasinoDesktop = () => this.desktop().locator('a[href="/games/live-casino"]');
-    private readonly casinoDesktop = () => this.desktop().locator('a[href="/games"]');
+    private readonly vipDesktop = compositeLocator(() => this.desktop.locator().locator('a[href="/vip"]'), 'VIP link (Desktop)');
+    private readonly promotionsDesktop = compositeLocator(() => this.desktop.locator().locator('a[href="/promotions"]'), 'Promotions link (Desktop)');
+    private readonly sportsBettingDesktop = compositeLocator(() => this.desktop.locator().locator('a[href="/sports-betting#/live"]'), 'Sports Betting link (Desktop)');
+    private readonly sportsBettingOverviewDesktop = compositeLocator(() => this.desktop.locator().locator('a[href="/sports-betting#/overview"]'), 'Sports Betting Overview link (Desktop)');
+    private readonly liveCasinoDesktop = compositeLocator(() => this.desktop.locator().locator('a[href="/games/live-casino"]'), 'Live Casino link (Desktop)');
+    private readonly casinoDesktop = compositeLocator(() => this.desktop.locator().locator('a[href="/games"]'), 'Casino link (Desktop)');
 
-    private readonly vipMobile = () => this.mobile().locator('a[href="/vip"]');
-    private readonly promotionsMobile = () => this.mobile().locator('a[href="/promotions"]');
-    private readonly sportsBettingMobile = () => this.mobile().locator('a[href="/sports-betting#/live"]');
-    private readonly sportsBettingOverviewMobile = () => this.mobile().locator('a[href="/sports-betting#/overview"]');
-    private readonly liveCasinoMobile = () => this.mobile().locator('a[href="/games/live-casino"]');
-    private readonly casinoMobile = () => this.mobile().locator('a[href="/games"]');
+    private readonly vipMobile = compositeLocator(() => this.mobile.locator().locator('a[href="/vip"]'), 'VIP link (Mobile)');
+    private readonly promotionsMobile = compositeLocator(() => this.mobile.locator().locator('a[href="/promotions"]'), 'Promotions link (Mobile)');
+    private readonly sportsBettingMobile = compositeLocator(() => this.mobile.locator().locator('a[href="/sports-betting#/live"]'), 'Sports Betting link (Mobile)');
+    private readonly sportsBettingOverviewMobile = compositeLocator(() => this.mobile.locator().locator('a[href="/sports-betting#/overview"]'), 'Sports Betting Overview link (Mobile)');
+    private readonly liveCasinoMobile = compositeLocator(() => this.mobile.locator().locator('a[href="/games/live-casino"]'), 'Live Casino link (Mobile)');
+    private readonly casinoMobile = compositeLocator(() => this.mobile.locator().locator('a[href="/games"]'), 'Casino link (Mobile)');
 
     private readonly vip = async () => {
         const viewport = this.page.viewportSize();
-        return viewport && viewport.width >= 1024 ? this.vipDesktop() : this.vipMobile();
+        return viewport && viewport.width >= 1024 ? this.vipDesktop : this.vipMobile;
     };
     private readonly promotions = async () => {
         const viewport = this.page.viewportSize();
-        return viewport && viewport.width >= 1024 ? this.promotionsDesktop() : this.promotionsMobile();
+        return viewport && viewport.width >= 1024 ? this.promotionsDesktop : this.promotionsMobile;
     };
     private readonly sportsBetting = async () => {
         const viewport = this.page.viewportSize();
-        return viewport && viewport.width >= 1024 ? this.sportsBettingDesktop() : this.sportsBettingMobile();
+        return viewport && viewport.width >= 1024 ? this.sportsBettingDesktop : this.sportsBettingMobile;
     };
     private readonly sportsBettingOverview = async () => {
         const viewport = this.page.viewportSize();
-        return viewport && viewport.width >= 1024 ? this.sportsBettingOverviewDesktop() : this.sportsBettingOverviewMobile();
+        return viewport && viewport.width >= 1024 ? this.sportsBettingOverviewDesktop : this.sportsBettingOverviewMobile;
     };
     private readonly liveCasino = async () => {
         const viewport = this.page.viewportSize();
-        return viewport && viewport.width >= 1024 ? this.liveCasinoDesktop() : this.liveCasinoMobile();
+        return viewport && viewport.width >= 1024 ? this.liveCasinoDesktop : this.liveCasinoMobile;
     };
     private readonly casino = async () => {
         const viewport = this.page.viewportSize();
-        return viewport && viewport.width >= 1024 ? this.casinoDesktop() : this.casinoMobile();
+        return viewport && viewport.width >= 1024 ? this.casinoDesktop : this.casinoMobile;
     };
 
     // Actions
-    public clickCasinoButton = async () => await clickElement(await this.casino(), 'Casino button');
-    public clickLiveCasinoButton = async () => await clickElement(await this.liveCasino(), 'Live Casino button');
-    public clickSportsBettingButton = async () => await clickElement(await this.sportsBetting(), 'Sports Betting button');
-    public clickSportsBettingOverviewButton = async () => await clickElement(await this.sportsBettingOverview(), 'Sports Betting Overview button');
-    public clickPromotionsButton = async () => await clickElement(await this.promotions(), 'Promotions button');
-    public clickVipButton = async () => await clickElement(await this.vip(), 'VIP button');
+    public clickCasinoButton = async () => await clickElement(await this.casino());
+    public clickLiveCasinoButton = async () => await clickElement(await this.liveCasino());
+    public clickSportsBettingButton = async () => await clickElement(await this.sportsBetting());
+    public clickSportsBettingOverviewButton = async () => await clickElement(await this.sportsBettingOverview());
+    public clickPromotionsButton = async () => await clickElement(await this.promotions());
+    public clickVipButton = async () => await clickElement(await this.vip());
 
     // Add navigation method that accepts target
     public async navigateToPage(target: 'casino' | 'promotions' | 'liveCasino' | 'sportsBetting' | 'sportsBettingOverview' | 'vip'): Promise<void> {
@@ -79,11 +78,11 @@ export class NavigationItems {
 
     @step('I validate the header navigation items are visible')
     public async validateItemsVisible(softAssert = true): Promise<void> {
-        await assertVisible(await this.vip(), 'VIP link', softAssert);
-        await assertVisible(await this.promotions(), 'Promotions link', softAssert);
-        await assertVisible(await this.sportsBetting(), 'Sports Betting link', softAssert);
-        await assertVisible(await this.sportsBettingOverview(), 'Sports Betting Overview link', softAssert);
-        await assertVisible(await this.liveCasino(), 'Live Casino link', softAssert);
-        await assertVisible(await this.casino(), 'Casino link', softAssert);
+        await assertVisible(await this.vip(), softAssert);
+        await assertVisible(await this.promotions(), softAssert);
+        await assertVisible(await this.sportsBetting(), softAssert);
+        await assertVisible(await this.sportsBettingOverview(), softAssert);
+        await assertVisible(await this.liveCasino(), softAssert);
+        await assertVisible(await this.casino(), softAssert);
     }
 }

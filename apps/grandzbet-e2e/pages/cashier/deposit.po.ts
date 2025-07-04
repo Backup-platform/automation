@@ -1,13 +1,10 @@
 import { Page } from '@playwright/test';
-import {
-    assertVisible,
-    clickElement,
-    compositeLocator,
-    iterateElements,
-    validateAttributesContaining,
-    validateOnlyOneElementActive,
-    step
-} from '@test-utils/navigation.po';
+import { assertVisible } from '@test-utils/assertions';
+import { clickElement } from '@test-utils/interactions';
+import { compositeLocator } from '@test-utils/core-types';
+import { iterateElements } from '@test-utils/utilities';
+import { validateAttributesContaining, validateOnlyOneElementActive } from '@test-utils/attributes';
+import { step } from '@test-utils/decorators';
 
 export class Deposit {
     protected readonly page: Page;

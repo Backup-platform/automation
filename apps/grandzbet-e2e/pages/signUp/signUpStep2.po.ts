@@ -1,17 +1,9 @@
 import { Locator, Page } from '@playwright/test';
-import { 
-    step, 
-    clickElement, 
-    assertVisible, 
-    fillInputField, 
-    assertEditable,
-    stepParam, 
-    selectDropdownOption,
-    parseDateString,
-    callMethodIfDefined,
-    compositeLocator,
-    CompositeLocator
-} from '@test-utils/navigation.po';
+import { step, stepParam } from '@test-utils/decorators';
+import { clickElement, fillInputField, selectDropdownOption } from '@test-utils/interactions';
+import { assertVisible, assertEditable } from '@test-utils/assertions';
+import { parseDateString, callMethodIfDefined } from '@test-utils/utilities';
+import { compositeLocator, CompositeLocator } from '@test-utils/core-types';
     // Define types inline - no external dependencies
     type Gender = 'MALE' | 'FEMALE';
 export class SignUpStep2 {
@@ -84,11 +76,9 @@ export class SignUpStep2 {
     public async selectGender(selectedGender: Gender) {
         const genderOption = this.getGenderOption(selectedGender);
         await selectDropdownOption(
-            this.genderDropdown.locator(), 
-            this.genderExpandedDropdown.locator(), 
-            genderOption, 
-            this.genderDropdown.name, 
-            `Gender: ${selectedGender}`
+            this.genderDropdown, 
+            this.genderExpandedDropdown, 
+            compositeLocator(() => genderOption, `Gender: ${selectedGender}`)
         );
     }
 

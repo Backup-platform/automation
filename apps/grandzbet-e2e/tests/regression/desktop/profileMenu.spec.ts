@@ -1,5 +1,5 @@
 import test from '../../../pages/base/base.po';
-import { assertUrl } from '@test-utils/navigation.po';
+import { assertUrl } from '@test-utils/navigation-helpers';
 
 test.beforeEach(async ({ page, popupHandlers }) => {
 	await page.goto(`${process.env.URL}`, { waitUntil: "load" });

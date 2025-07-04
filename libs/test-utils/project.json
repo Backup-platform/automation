@@ -6,7 +6,10 @@
     "build": {
       "executor": "@nx/js:tsc",
       "options": {
-        "tsConfig": "libs/test-utils/tsconfig.json"
+        "main": "libs/test-utils/src/index.ts",
+        "outputPath": "dist/libs/test-utils",
+        "tsConfig": "libs/test-utils/tsconfig.json",
+        "assets": ["libs/test-utils/*.md"]
       }
     }
   }
