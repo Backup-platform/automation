@@ -1,162 +1,290 @@
 /// <reference lib="dom" />
 import { Locator, test } from '@playwright/test';
-import { fillInputField } from './interactions';
+import { fillElement } from './interactions';
 import { CompositeLocator } from './core-types';
 
 /**
- * Utility functions that don't fit other categories
+ * @fileoverview Core utility functions for test automation
+ * 
+ * This module provides organized utility functions for common test automation
+ * tasks including date parsing, conditional execution, element iteration,
+ * and month name conversion. All utilities are designed to eliminate redundancy
+ * and provide consistent, reliable functionality across test suites.
+ * 
+ * For debug utilities, see debug-config.ts
+ * 
+ * @example
+ * ```typescript
+ * // Date parsing
+ * const parsed = parseDateString('25/12/2023');
+ * console.log(parsed); // { year: '2023', month: 'December', day: '25' }
+ * 
+ * // Conditional execution
+ * await executeIfDefined(userInput, fillElement, { stepDescription: 'Fill name field' });
+ * ```
  */
 
-/**
- * Iterates over elements and performs an action on each.
- *
- * @param locator - Playwright Locator of the elements to iterate over.
- * @param action - Async callback function to execute for each element index.
- * @param description - Optional description for logging. Default is 'A number of elements'.
- * @param elementsToCheck - Optional number of elements to iterate over. If not provided, iterates all.
- * @returns Promise<void>
- */
-export async function iterateElements(
-    locator: Locator,
-    action: (index: number) => Promise<void>,
-    description = 'A number of elements',
-    elementsToCheck?: number
-): Promise<void> {
-    await test.step(`I iterate over ${description}`, async () => {
-        const count = elementsToCheck ?? await locator.count();
-        for (let i = 0; i < count; i++) {
-            await action(i);
-        }
-    });
+type DateFormat = 'DD/MM/YYYY' | 'YYYY-MM-DD' | 'DD-MM-YYYY';
+
+interface ParsedDate {
+    year: string;
+    month: string;
+    day: string;
 }
 
 /**
- * Parses a date string into year, month name, and day components.
- *
- * @param dateString - Date string in DD/MM/YYYY, YYYY-MM-DD, or DD-MM-YYYY format.
- * @returns Object with year, month (name), and day (without leading zeros).
+ * Unified date parsing function that handles multiple date formats.
+ * Automatically detects format or uses specified expected format for optimization.
+ * 
+ * @param dateString - The date string to parse
+ * @param expectedFormat - Optional expected format for performance optimization
+ * @returns Parsed date object with year, month name, and day
  */
-export function parseDateString(dateString: string): { year: string; month: string; day: string } {
+export function parseDateString(dateString: string, expectedFormat?: DateFormat): ParsedDate {
     const formats = [
-        /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/, // DD/MM/YYYY
-        /^(\d{4})-(\d{1,2})-(\d{1,2})$/, // YYYY-MM-DD
-        /^(\d{1,2})-(\d{1,2})-(\d{4})$/, // DD-MM-YYYY
+        { pattern: /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/, format: 'DD/MM/YYYY' as const, dayIndex: 0, monthIndex: 1, yearIndex: 2 },
+        { pattern: /^(\d{4})-(\d{1,2})-(\d{1,2})$/, format: 'YYYY-MM-DD' as const, dayIndex: 2, monthIndex: 1, yearIndex: 0 },
+        { pattern: /^(\d{1,2})-(\d{1,2})-(\d{4})$/, format: 'DD-MM-YYYY' as const, dayIndex: 0, monthIndex: 1, yearIndex: 2 },
     ];
 
-    for (let i = 0; i < formats.length; i++) {
-        const format = formats[i];
-        const match = dateString.match(format);
-        if (match) {
-            const [, first, second, third] = match;
-            
-            if (i === 1) { // YYYY-MM-DD
-                return {
-                    year: first,
-                    month: getMonthName(parseInt(second)),
-                    day: parseInt(third).toString()                };
-            } else { // DD/MM/YYYY, DD-MM-YYYY - day first
-                return {
-                    year: third,
-                    month: getMonthName(parseInt(second)),
-                    day: parseInt(first).toString()                };
+    // If expected format is specified, try that first
+    if (expectedFormat) {
+        const formatConfig = formats.find(f => f.format === expectedFormat);
+        if (formatConfig) {
+            const match = dateString.match(formatConfig.pattern);
+            if (match) {
+                return buildDateObject(match, formatConfig);
             }
         }
     }
+
+    // Try all formats
+    for (const formatConfig of formats) {
+        const match = dateString.match(formatConfig.pattern);
+        if (match) {
+            return buildDateObject(match, formatConfig);
+        }
+    }
     
-    throw new Error(`Unsupported date format: ${dateString}. Supported formats: DD/MM/YYYY, YYYY-MM-DD, DD-MM-YYYY`);
+    const supportedFormats = formats.map(f => f.format).join(', ');
+    throw new Error(`Unsupported date format: ${dateString}. Supported formats: ${supportedFormats}`);
+}
+
+function buildDateObject(match: RegExpMatchArray, config: {
+    pattern: RegExp;
+    format: DateFormat;
+    dayIndex: number;
+    monthIndex: number;
+    yearIndex: number;
+}): ParsedDate {
+    const parts = match.slice(1); // Remove full match
+    return {
+        year: parts[config.yearIndex],
+        month: getMonthName(parseInt(parts[config.monthIndex])),
+        day: parseInt(parts[config.dayIndex]).toString()
+    };
 }
 
 /**
- * Converts a month number to month name.
- *
- * @param monthNumber - Month number (1-12).
- * @returns Full month name in English.
+ * Enhanced month name function with validation and format options.
+ * 
+ * @param monthNumber - Month number (1-12)
+ * @param format - Output format ('long' or 'short')
+ * @returns Month name in requested format
  */
-export function getMonthName(monthNumber: number): string {
-    const months = [
-        'January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'
-    ];
+export function getMonthName(monthNumber: number, format: 'long' | 'short' = 'long'): string {
+    const months = {
+        long: [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ],
+        short: [
+            'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+        ]
+    };
     
     if (monthNumber < 1 || monthNumber > 12) {
         throw new Error(`Invalid month number: ${monthNumber}. Must be between 1 and 12.`);
     }
     
-    return months[monthNumber - 1];
+    return months[format][monthNumber - 1];
 }
 
 /**
- * Calls a method if the value is defined, otherwise logs an empty step.
- *
- * @param value - Value to pass to the method (undefined skips the method call).
- * @param method - Method to call if value is defined.
- * @param stepDescription - Description for the step when value is undefined.
- * @param context - The 'this' context for the method call.
+ * Element iteration and processing utilities.
  */
-export async function callMethodIfDefined<T>(
-    value: T | undefined, 
-    method: (value: T) => Promise<void>, 
-    stepDescription: string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    context: any
-): Promise<void> {
-    if (value !== undefined) {
-        await method.call(context, value);
-    } else {
-        await test.step(`I do NOT ${stepDescription}`, async () => {
-            // intentionally left blank
-        });
-    }
-}
+
+type IterationOptions = {
+    description?: string;
+    elementsToCheck?: number;
+    continueOnError?: boolean;
+    parallel?: boolean;
+};
 
 /**
- * Fills an input field directly if the value is defined, otherwise logs a step.
- *
- * @param fieldValue - Value to fill (undefined skips filling).
- * @param inputLocator - Function that returns the input locator.
- * @param fieldDescription - Description of the input field.
- * @param stepDescription - Description for the step when value is undefined.
+ * Unified element iteration function with enhanced options.
+ * Supports parallel execution, error handling, and flexible counting.
+ * 
+ * @param locator - Playwright locator for the elements to iterate
+ * @param action - Async function to execute for each element (receives index)
+ * @param options - Configuration options for iteration behavior
  */
-export async function fillInputIfDefined(
-    fieldValue: string | undefined, 
-    inputLocator: () => CompositeLocator, 
-    fieldDescription: string, 
-    stepDescription: string
-): Promise<void> {
-    if (fieldValue !== undefined) {
-        await test.step(`I fill ${fieldDescription} with ${fieldValue}`, async () => {
-            await fillInputField(inputLocator(), fieldValue);
-        });
-    } else {
-        await test.step(`I do NOT ${stepDescription}`, async () => {
-            // intentionally left blank
-        });
-    }
-}
-
-/**
- * Gets indices of elements that have a specific attribute value.
- *
- * @param locator - Playwright Locator of the elements to check.
- * @param attributeName - The attribute name to check.
- * @param attributeValue - The attribute value to match.
- * @returns Promise<number[]> - Array of indices where elements have the specified attribute value.
- */
-export async function getIndicesByAttribute(
+export async function iterateElements(
     locator: Locator,
-    attributeName: string,
-    attributeValue: string
+    action: (index: number) => Promise<void>,
+    options: IterationOptions = {}
+): Promise<void> {
+    const {
+        description = 'elements',
+        elementsToCheck,
+        continueOnError = false,
+        parallel = false
+    } = options;
+
+    await test.step(`Iterate over ${description}`, async () => {
+        const count = elementsToCheck ?? await locator.count();
+        
+        if (parallel) {
+            const promises = Array.from({ length: count }, (_, i) => 
+                continueOnError 
+                    ? action(i).catch(error => console.warn(`Error at index ${i}:`, error))
+                    : action(i)
+            );
+            await Promise.all(promises);
+        } else {
+            for (let i = 0; i < count; i++) {
+                try {
+                    await action(i);
+                } catch (error) {
+                    if (!continueOnError) throw error;
+                    console.warn(`Error at index ${i}:`, error);
+                }
+            }
+        }
+    });
+}
+
+/**
+ * Enhanced attribute-based element finder with flexible matching.
+ * Finds elements by attribute values with support for multiple match patterns.
+ * 
+ * @param locator - Playwright locator for elements to search
+ * @param attributeName - Name of the attribute to match against
+ * @param attributeValues - Values to match (string, array, or pattern)
+ * @returns Array of indices for matching elements
+ */
+export async function getElementIndices(
+    locator: Locator,
+    criteria: {
+        attributeName: string;
+        attributeValue: string | RegExp;
+        matchType?: 'contains' | 'equals' | 'startsWith' | 'endsWith';
+    }
 ): Promise<number[]> {
+    const { attributeName, attributeValue, matchType = 'contains' } = criteria;
     const count = await locator.count();
     const indices: number[] = [];
     
     for (let i = 0; i < count; i++) {
         const element = locator.nth(i);
         const actualValue = await element.getAttribute(attributeName);
-        if (actualValue && actualValue.includes(attributeValue)) {
+        
+        if (actualValue && matchesValue(actualValue, attributeValue, matchType)) {
             indices.push(i);
         }
     }
     
     return indices;
 }
+
+function matchesValue(actual: string, expected: string | RegExp, matchType: string): boolean {
+    if (expected instanceof RegExp) {
+        return expected.test(actual);
+    }
+    
+    switch (matchType) {
+        case 'equals': return actual === expected;
+        case 'contains': return actual.includes(expected);
+        case 'startsWith': return actual.startsWith(expected);
+        case 'endsWith': return actual.endsWith(expected);
+        default: return actual.includes(expected);
+    }
+}
+
+/**
+ * Conditional execution patterns for dynamic test flows.
+ */
+
+type ConditionalOptions = {
+    stepDescription?: string;
+    logWhenSkipped?: boolean;
+};
+
+/**
+ * Unified conditional execution function with optional context support.
+ * Executes action only if value is defined, with proper context binding when needed.
+ * 
+ * @param value - Value to check for definition
+ * @param action - Function or method to execute if value is defined
+ * @param contextOrOptions - The context (this) to bind to the action, or options if no context needed
+ * @param options - Configuration options for execution behavior (when context is provided)
+ */
+export async function executeIfDefined<T, C = object>(
+    value: T | undefined,
+    action: ((value: T) => Promise<void>) | ((this: C, value: T) => Promise<void>),
+    contextOrOptions?: C | ConditionalOptions,
+    options: ConditionalOptions = {}
+): Promise<void> {
+    // Determine if we're using context or just options
+    const hasContext = contextOrOptions && typeof contextOrOptions === 'object' && ('page' in contextOrOptions || 'constructor' in contextOrOptions);
+    const context = hasContext ? contextOrOptions as C : undefined;
+    const finalOptions = hasContext ? options : (contextOrOptions as ConditionalOptions || {});
+    
+    const { stepDescription = 'conditional action', logWhenSkipped = true } = finalOptions;
+
+    if (value !== undefined) {
+        if (context) {
+            await (action as (this: C, value: T) => Promise<void>).call(context, value);
+        } else {
+            await (action as (value: T) => Promise<void>)(value);
+        }
+    } else if (logWhenSkipped) {
+        await test.step(`Skip ${stepDescription} (value undefined)`, async () => {
+            // intentionally left blank
+        });
+    }
+}
+
+/**
+ * Enhanced conditional form filling with better error handling.
+ * Fills element only if value is defined, using the unified fill system.
+ * 
+ * @param value - Value to fill (skipped if undefined)
+ * @param element - Composite locator element to fill
+ * @param options - Configuration options including step description
+ */
+export async function fillIfDefined(
+    fieldValue: string | undefined,
+    element: CompositeLocator,
+    options: ConditionalOptions & {
+        fillOptions?: Parameters<typeof fillElement>[2];
+    } = {}
+): Promise<void> {
+    const { stepDescription = `fill ${element.name}`, fillOptions } = options;
+
+    await executeIfDefined(
+        fieldValue,
+        async (value) => {
+            await fillElement(element, value, fillOptions);
+        },
+        { stepDescription, logWhenSkipped: options.logWhenSkipped }
+    );
+}
+
+
+
+/**
+ * Export compositeLocator from core-types for convenience
+ */
+export { compositeLocator } from './core-types';

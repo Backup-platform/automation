@@ -1,6 +1,7 @@
 import { Page } from '@playwright/test';
 import { expect } from '../utils/base.po';
-import { step, stepParam, assertAttribute, assertUrl, getIndicesByAttribute, clickElement, assertVisible } from '@test-utils/navigation.po';
+import { step, stepParam, assertAttribute, assertUrl, clickElement, assertVisible } from '@test-utils/navigation.po';
+import { getElementIndices } from '@test-utils/utilities';
 
 export class LandingPageCarousel {
 	readonly page: Page;
@@ -104,7 +105,11 @@ export class LandingPageCarousel {
 	}
 	@step('I validate only one active dot is present')
 	async getActiveDotIndex(): Promise<number> {
-		const activeIndices = await getIndicesByAttribute(this.dots(), 'class', this.dotsActiveClass);
+		const activeIndices = await getElementIndices(this.dots(), {
+			attributeName: 'class',
+			attributeValue: this.dotsActiveClass,
+			matchType: 'contains'
+		});
 		expect(activeIndices.length,
 			`Expect exactly one active element with class "${this.dotsActiveClass}", found - ${activeIndices.length}.`).toEqual(1)
 		return activeIndices[0];

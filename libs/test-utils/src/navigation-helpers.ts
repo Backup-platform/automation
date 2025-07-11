@@ -4,18 +4,41 @@ import { clickElement } from './interactions';
 import { CompositeLocator } from './core-types';
 
 /**
- * Navigation and URL validation functions
+ * @fileoverview Navigation and URL validation utilities for test automation
+ * 
+ * This module provides comprehensive navigation helpers for testing single-page
+ * applications and multi-page workflows. Includes URL validation, navigation
+ * clicks with assertions, and URL substring matching for complex routing scenarios.
+ * 
+ * @author M Petrov
+ * 
+ * @example
+ * ```typescript
+ * // Assert exact URL match
+ * await assertUrl(page, 'https://example.com/dashboard');
+ * 
+ * // Assert URL contains specific substrings
+ * await assertUrlContains(page, ['user', 'profile'], true);
+ * 
+ * // Perform navigation click with URL validation
+ * await performNavigationClick(
+ *   page, 
+ *   profileLink, 
+ *   'Profile Link', 
+ *   '/user/profile'
+ * );
+ * ```
  */
 
 /**
  * Waits for a URL condition to be met and asserts the URL.
+ * Internal helper function for URL validation with flexible conditions.
  *
- * @param page - Playwright Page object.
- * @param urlCondition - The expected URL (string or RegExp) or a custom condition function.
- * @param description - Description for the step.
- * @param waitUntilDomContentLoaded - If true, waits for DOM content to be loaded before asserting. Default is false.
- * @param softAssert - If true, logs failures without stopping the test. Default is false.
- * @returns Promise<void>
+ * @param page - Playwright Page object
+ * @param urlCondition - Expected URL (string, RegExp, or custom condition function)
+ * @param description - Description for the test step
+ * @param waitUntilDomContentLoaded - Whether to wait for DOM content loaded
+ * @param softAssert - Whether to use soft assertions
  */
 async function waitForAndAssertUrl(
 	page: Page,
@@ -35,6 +58,15 @@ async function waitForAndAssertUrl(
   });
 }
 
+/**
+ * Asserts that the current page URL exactly matches the expected URL.
+ * Supports string matching and regular expression patterns.
+ *
+ * @param page - Playwright Page object
+ * @param expectedUrl - Expected URL (string or RegExp)
+ * @param waitUntilDomContentLoaded - Whether to wait for DOM content loaded
+ * @param softAssert - Whether to use soft assertions
+ */
 export async function assertUrl(
 	page: Page,
 	expectedUrl: string | RegExp,
@@ -50,6 +82,15 @@ export async function assertUrl(
 	);
 }
 
+/**
+ * Asserts that the current page URL contains all specified substrings.
+ * Useful for validating complex URLs with query parameters or dynamic segments.
+ *
+ * @param page - Playwright Page object
+ * @param expectedSubstrings - Array of substrings that must be present in URL
+ * @param waitUntilDomContentLoaded - Whether to wait for DOM content loaded
+ * @param softAssert - Whether to use soft assertions
+ */
 export async function assertUrlContains(
 	page: Page,
 	expectedSubstrings: string[],
@@ -67,12 +108,11 @@ export async function assertUrlContains(
 
 /**
  * Performs a navigation click and asserts the URL.
+ * Combines element clicking with URL validation for navigation testing.
  *
- * @param page - Playwright Page object.
- * @param locator - Playwright Locator of the element to click.
- * @param description - Description of the element for logging and error messages.
- * @param expectedPath - Expected URL path after navigation.
- * @returns Promise<void>
+ * @param page - Playwright Page object
+ * @param locator - Composite locator of the element to click
+ * @param expectedPath - Expected URL path after navigation
  */
 export async function performNavigationClick(
     page: Page,

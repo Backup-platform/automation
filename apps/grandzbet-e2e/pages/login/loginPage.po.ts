@@ -1,6 +1,6 @@
 import { Page } from '@playwright/test';
 import { step, stepParam } from '@test-utils/decorators';
-import { fillInputField, clickElement } from '@test-utils/interactions';
+import { fillElement, clickElement } from '@test-utils/interactions';
 import { assertVisible, assertEnabled, assertEditable } from '@test-utils/assertions';
 import { performNavigationClick } from '@test-utils/navigation-helpers';
 import { compositeLocator } from '@test-utils/core-types';
@@ -35,10 +35,10 @@ export class LoginPage {
     public clickCloseButton = async () => await clickElement(this.closeButton);
 
     public fillPassword = async (password: string) => 
-        await fillInputField(this.password, password);
+        await fillElement(this.password, password);
     
     public fillUsername = async (email: string) =>
-        await fillInputField(this.email, email);
+        await fillElement(this.email, email);
 
     public validateEmailError = async (softAssert = false) => {
         return await assertVisible(compositeLocator(() => this.emailError.locator().or(this.emailErrorAlt.locator()), 'Email error'), softAssert);

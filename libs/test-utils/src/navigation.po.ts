@@ -1,6 +1,7 @@
 /// <reference lib="dom" />
 //import { Locator, Page } from '@playwright/test';
 import { test, Locator, Page, FrameLocator } from '@playwright/test';
+import { CompositeLocator } from './core-types';
 
 const expect = test.expect;
 
@@ -18,10 +19,44 @@ function stepMessage(description: string, action: string, state?: string) {
     return `Expect ${description} to${action ? ' ' + action : ''}${state ? ' be ' + state : ''}`.replace(/  +/g, ' ');
 }
 
-export async function assertVisibleNotActionable(element: CompositeLocator): Promise<void> {
+export async function legacyAssertVisible(element: CompositeLocator, softAssert?: boolean): Promise<void>;
+export async function legacyAssertVisible(element: Locator, description?: string, softAssert?: boolean): Promise<void>;
+
+export async function legacyAssertVisible(
+    element: Locator | CompositeLocator, 
+    descriptionOrSoftAssert: string | boolean = 'Element', 
+    softAssert = false
+): Promise<void> {
+    if (typeof element === 'object' && 'locator' in element && 'name' in element) {
+        const actualSoftAssert = typeof descriptionOrSoftAssert === 'boolean' ? descriptionOrSoftAssert : false;
+        await assertCondition(element.locator(), 'visible', true, element.name, actualSoftAssert);
+    } else {
+        const description = typeof descriptionOrSoftAssert === 'string' ? descriptionOrSoftAssert : 'Element';
+        await assertCondition(element, 'visible', true, description, softAssert);
+    }
+}
+
+export async function legacyAssertEnabled(element: CompositeLocator, softAssert?: boolean): Promise<void>;
+export async function legacyAssertEnabled(element: Locator, description?: string, softAssert?: boolean): Promise<void>;
+
+export async function legacyAssertEnabled(
+    element: Locator | CompositeLocator, 
+    descriptionOrSoftAssert: string | boolean = 'Element', 
+    softAssert = false
+): Promise<void> {
+    if (typeof element === 'object' && 'locator' in element && 'name' in element) {
+        const actualSoftAssert = typeof descriptionOrSoftAssert === 'boolean' ? descriptionOrSoftAssert : false;
+        await assertCondition(element.locator(), 'enabled', true, element.name, actualSoftAssert);
+    } else {
+        const description = typeof descriptionOrSoftAssert === 'string' ? descriptionOrSoftAssert : 'Element';
+        await assertCondition(element, 'enabled', true, description, softAssert);
+    }
+}
+
+export async function legacyAssertVisibleNotActionable(element: CompositeLocator): Promise<void> {
     // Implement the assertion logic here
     await test.step(`I validate and element ${element.name} is visible but not actionable`, async () => {
-        await assertVisible(element.locator(), element.name);
+        await legacyAssertVisible(element);
         const isActionable = await element.locator().click({ trial: true, timeout: 2000 })
             .then(() => true)
             .catch(() => false);
@@ -73,11 +108,11 @@ export async function assertCondition(
  * @param softAssert - If true, logs failures without stopping the test. Default is false.
  * @returns Promise<void>
  */
-// Type for composite locator objects - move to top and export
-export type CompositeLocator = {
-    locator: () => Locator;
-    name: string;
-};
+// Remove the duplicate CompositeLocator type definition
+// export type CompositeLocator = {
+//     locator: () => Locator;
+//     name: string;
+// };
 
 /** //FIXME: docs need an update 
  * Creates a composite locator object with a locator function and display name.
@@ -111,13 +146,7 @@ export async function assertVisible(
     descriptionOrSoftAssert: string | boolean = 'Element', 
     softAssert = false
 ): Promise<void> {
-    if (typeof element === 'object' && 'locator' in element && 'name' in element) {
-        const actualSoftAssert = typeof descriptionOrSoftAssert === 'boolean' ? descriptionOrSoftAssert : false;
-        await assertCondition(element.locator(), 'visible', true, element.name, actualSoftAssert);
-    } else {
-        const description = typeof descriptionOrSoftAssert === 'string' ? descriptionOrSoftAssert : 'Element';
-        await assertCondition(element, 'visible', true, description, softAssert);
-    }
+    return legacyAssertVisible(element, descriptionOrSoftAssert, softAssert);
 }
 
 // Overloaded function signatures for assertNotVisible
@@ -183,34 +212,10 @@ export async function assertEnabled(
     descriptionOrSoftAssert: string | boolean = 'Element', 
     softAssert = false
 ): Promise<void> {
-    if (typeof element === 'object' && 'locator' in element && 'name' in element) {
-        const actualSoftAssert = typeof descriptionOrSoftAssert === 'boolean' ? descriptionOrSoftAssert : false;
-        await assertCondition(element.locator(), 'enabled', true, element.name, actualSoftAssert);
-    } else {
-        const description = typeof descriptionOrSoftAssert === 'string' ? descriptionOrSoftAssert : 'Element';
-        await assertCondition(element, 'enabled', true, description, softAssert);
-    }
+    return legacyAssertEnabled(element, descriptionOrSoftAssert, softAssert);
 }
 
-// Overloaded function signatures for assertNotEnabled
-export async function assertNotEnabled(element: CompositeLocator, softAssert?: boolean): Promise<void>;
-export async function assertNotEnabled(element: Locator, description?: string, softAssert?: boolean): Promise<void>;
-
-export async function assertNotEnabled(
-    element: Locator | CompositeLocator, 
-    descriptionOrSoftAssert: string | boolean = 'Element', 
-    softAssert = false
-): Promise<void> {
-    if (typeof element === 'object' && 'locator' in element && 'name' in element) {
-        const actualSoftAssert = typeof descriptionOrSoftAssert === 'boolean' ? descriptionOrSoftAssert : false;
-        await assertCondition(element.locator(), 'enabled', false, element.name, actualSoftAssert);
-    } else {
-        const description = typeof descriptionOrSoftAssert === 'string' ? descriptionOrSoftAssert : 'Element';
-        await assertCondition(element, 'enabled', false, description, softAssert);
-    }
-}
-
-// Fix the overloaded function signatures for clickElement
+// Overloaded function signatures for clickElement
 export async function clickElement(element: CompositeLocator): Promise<void>;
 export async function clickElement(element: Locator, description?: string): Promise<void>;
 
@@ -220,15 +225,15 @@ export async function clickElement(
 ): Promise<void> {
     if (typeof element === 'object' && 'locator' in element && 'name' in element) {
         await test.step(`I click on ${element.name}`, async () => {
-            await assertVisible(element.locator(), element.name);
-            await assertEnabled(element.locator(), element.name);
+            await legacyAssertVisible(element);
+            await legacyAssertEnabled(element);
             await element.locator().click();
         });
     } else {
         const elementDescription = description || 'Element';
         await test.step(`I click on ${elementDescription}`, async () => {
-            await assertVisible(element, elementDescription);
-            await assertEnabled(element, elementDescription);
+            await legacyAssertVisible(element, elementDescription);
+            await legacyAssertEnabled(element, elementDescription);
             await element.click();
         });
     }

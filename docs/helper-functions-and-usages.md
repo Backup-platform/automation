@@ -1,185 +1,160 @@
-# Navigation Page Object – Structure & Usage
+# Test Helper Functions – Structure & Usage
 
-In your Playwright test suite, you might have noticed the use of a `navigation.po.ts` file and wondered about its purpose. 
-In this document, we'll explain the motivation behind this Navigation Page Object, how it simplifies your tests, and how 
-to leverage its capabilities effectively.
+The test-utils library provides helper functions that simplify Playwright test automation and create structured, readable test reports. This guide explains the available helper modules and their usage.
 
----
+## Why Helper Functions?
 
-## How Tests Look Without Navigation Page Object
-
-Without using the Navigation Page Object, your test assertions might look scattered, repetitive, and less readable. 
-For example:
+Without helper functions, tests become verbose and inconsistent:
 
 ```typescript
+// Without helpers - verbose and repetitive
 await expect(page.locator('#submit-btn')).toBeVisible();
 await expect(page.locator('#submit-btn')).toBeEnabled();
 await page.locator('#submit-btn').click();
+
+// Validation scattered throughout tests
+const elements = await page.locator('.item').all();
+for (let i = 0; i < elements.length; i++) {
+    await expect(elements[i]).toBeVisible();
+}
 ```
 
-Repeated across tests, these assertions become redundant and hard to maintain.
+This approach leads to code duplication and inconsistent validation patterns across your test suite.
 
 ---
 
 ## The Problem
 
-Some common challenges when not using helpers are:
+Without helper functions, tests become verbose and hard to maintain:
 
-* Redundant visibility and interaction assertions across multiple test files.
-* Poor readability and maintainability.
-* Difficult debugging due to repetitive assertion patterns.
-* Lack of consistency in handling soft and strict assertions.
+* **Code duplication** - Same validation patterns repeated everywhere
+* **Inconsistent patterns** - Different approaches across tests
+* **Generic error messages** - Hard to debug when things fail
+* **Maintenance overhead** - Changes require updates in multiple places
 
 ---
 
-## The Solution: Navigation Page Object
+## The Solution: Helper Functions
 
-The Navigation Page Object centralizes common interactions and assertions, simplifying test readability, 
-maintainability, and consistency.
+The test-utils library provides helper functions organized by purpose:
 
-### 1. Visibility Assertions
+* **Consistent APIs** - Same function patterns across all helpers
+* **Better error messages** - Clear context when tests fail
+* **Composite locators** - Combine selectors with readable names
+* **TypeScript support** - Full type safety and auto-completion
 
-You can assert visibility with soft or strict checks easily:
+## Available Helper Modules
+
+### 1. Assertions (`assertions.ts`)
+
+Element state validation functions. Exports: `assertVisible`, `assertEnabled`, `assertEditable`, `assertElementStates`, and their negative counterparts.
 
 ```typescript
-await navigation.assertVisible(element, false, 'Submit button');
-await navigation.assertNotVisible(element, true, 'Hidden tooltip');
+import { assertVisible, assertElementStates } from '@test-utils';
+
+// Single element validation
+await assertVisible(submitButton, false);
+
+// Batch validations
+await assertElementStates([
+    { element: button1, validationType: 'visibility' },
+    { element: input1, validationType: 'editable' }
+]);
 ```
 
-### 2. Enabled and Editable Assertions
+### 2. Interactions (`interactions.ts`)
 
-Check quickly if elements are enabled or editable:
+Element interaction functions with built-in validation. Exports: `clickElement`, `fillInputField`, `selectOption`, `clickIfVisibleOrFallback`.
 
 ```typescript
-await navigation.assertEnabled(element, false, 'Submit button');
-await navigation.assertEditable(inputElement, true, 'Username field');
+import { clickElement, fillInputField } from '@test-utils';
+
+// Validates visibility/enabled before clicking
+await clickElement(submitButton, false);
+
+// Safe input filling with validation
+await fillInputField(usernameField, 'testuser', false);
 ```
 
-### 3. URL Assertions
+### 3. Text Extraction (`text-extraction.ts`)
 
-Easily verify the current URL:
-
-```typescript
-await navigation.assertUrl('https://example.com/dashboard');
-await navigation.assertUrlContains(['dashboard', 'userId=123']);
-```
-
-### 4. Click and Interaction Helpers
-
-Simplify element interactions:
+Text extraction and manipulation utilities. Exports: `getText`, `getGroupTexts`, `getAllGroupTexts`.
 
 ```typescript
-await navigation.clickElement(buttonLocator, false, 'Submit button');
-await navigation.fillInputField(inputLocator, 'username', false, 'Username input');
-```
+import { getText, getGroupTexts } from '@test-utils';
 
-### 5. Attribute Assertions
+// Extract single element text
+const buttonText = await getText(submitButton);
 
-Check element attributes effortlessly:
-
-```typescript
-await navigation.assertAttribute(element, 'aria-label');
-```
-
-### 6. Iteration Over Multiple Elements
-
-Easily iterate over multiple elements:
-
-```typescript
-await navigation.iterateElements(page.locator('.list-item'), async (index) => {
-    await navigation.assertVisible(page.locator('.list-item').nth(index), false, `List item ${index}`);
+// Extract multiple element texts
+const menuTexts = await getGroupTexts({
+    navigation: [homeLink, aboutLink, contactLink]
 });
 ```
 
-### 7. Conditional Clicks with Fallback
+### 4. Attributes (`attributes.ts`)
 
-Ensure robust interactions with conditional fallback actions:
+Attribute validation and manipulation functions. Exports: `validateAttributes`, `validateToggleBetweenTwoElements`, `validateOnlyOneElementActiveGroup`.
 
 ```typescript
-await navigation.clickIfVisibleOrFallback(
-    targetElement,
-    async () => { await page.locator('#open-menu').click(); },
-    false,
-    'Menu item'
+import { validateAttributes, validateOnlyOneElementActiveGroup } from '@test-utils';
+
+// Validate specific attributes
+await validateAttributes([
+    { element: button, attribute: 'aria-label', expectedValue: 'Submit Form' }
+]);
+```
+
+### 5. Utilities (`utilities.ts`)
+
+General-purpose helper functions. Exports: `iterateElements`, `parseDateString`, `executeIfDefined`, URL validation functions, and debug helpers.
+
+```typescript
+import { iterateElements, parseDateString } from '@test-utils';
+
+// Iterate over element collections
+await iterateElements(page.locator('.item'), async (index, element) => {
+    await assertVisible(element, false);
+});
+```
+
+## Composite Locators Integration
+
+Helper functions work with composite locators to create readable test steps. The element name automatically becomes part of the test step description:
+
+```typescript
+import { compositeLocator, assertVisible, fillInputField, clickElement } from '@test-utils';
+
+// Create composite locators with readable names
+const emailField = compositeLocator(
+    () => page.locator('#email'), 
+    'Email Address Input Field'
 );
+
+const submitButton = compositeLocator(
+    () => page.locator('#submit-btn'), 
+    'Submit Registration Form Button'
+);
+
+// Helper functions automatically create descriptive test steps:
+await assertVisible(emailField, false);
+// → Test step: "Validating Email Address Input Field is visible"
+
+await fillInputField(emailField, 'user@example.com', false);
+// → Test step: "Filling Email Address Input Field with 'user@example.com'"
+
+await clickElement(submitButton, false);
+// → Test step: "Clicking Submit Registration Form Button"
 ```
 
----
+## Validation Tests
 
-## `@step` and `@stepParam` Decorators
+All helper functions have comprehensive validation tests located in `libs/test-utils/src/validation-tests/`. Run them using:
 
-The Navigation class makes use of custom decorators to wrap assertions and interactions with readable test step names. 
-This improves traceability in Playwright reports.
-
-### `@step`
-Wraps a function to log its name as a Playwright test step:
-
-```typescript
-@step('I perform login')
-async login() {
-  // logic
-}
+```bash
+nx run test-utils:validate-helpers
+nx run test-utils:validate-helpers:detailed
 ```
 
-### `@stepParam`
-Dynamically generates a test step name using function parameters:
-
-```typescript
-@stepParam((element, _, name) => `I expect ${name} is visible`)
-async assertVisible(...) { ... }
-```
-
-This improves reporting clarity, especially when debugging failures.
-
----
-
-## Using Navigation in Other Page Objects
-
-The Navigation class is typically **injected into other Page Objects** to centralize assertion logic.
-
-For example, in `CashierDeposit` Page Object:
-
-```typescript
-readonly navigation: Navigation;
-
-constructor(page: Page) {
-  this.page = page;
-  this.navigation = new Navigation(page);
-}
-
-public async clickBackButton(softAssert = false): Promise<void> {
-  await this.navigation.clickElement(this.backButton(), softAssert, 'Back button');
-}
-```
-
-This allows:
-* Consistent assertions across the codebase.
-* Cleaner test logic (page object focuses on "what", navigation focuses on "how").
-* Reusability of methods like `assertVisible`, `clickElement`, `fillInputField`, etc.
-
----
-
-## Example: Putting It All Together
-
-Here's how concise and clear a test looks using the Navigation Page Object:
-
-```typescript
-await navigation.assertVisible(loginButton, false, 'Login button');
-await navigation.clickElement(loginButton, false, 'Login button');
-await navigation.assertUrlContains(['dashboard', 'login=true']);
-await navigation.fillInputField(searchBox, 'Playwright', false, 'Search Box');
-await navigation.clickIfVisibleOrFallback(resultElement, fallbackAction, false, 'First search result');
-```
-
----
-
-## Conclusion
-
-The Navigation Page Object is a powerful abstraction layer, simplifying test maintenance, readability, and reliability by:
-
-* Centralizing common element interactions and assertions.
-* Providing easy-to-use methods for both soft and strict assertions.
-* Ensuring test readability and consistency across your test suites.
-
-Use the Navigation Page Object to streamline your Playwright tests, making your codebase more maintainable and developer-friendly as it grows.
+Helper functions provide consistent patterns, readable test reports, and clear error messages while integrating seamlessly with composite locators for human-readable test steps.
 

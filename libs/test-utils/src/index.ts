@@ -1,30 +1,65 @@
 /// <reference lib="dom" />
 
 /**
- * Barrel export file for navigation utilities
- * This file re-exports all functions from the split files to maintain backward compatibility
+ * @fileoverview Barrel export file for test-utils library
+ * 
+ * This module provides a unified entry point for all test-utils functionality,
+ * re-exporting all public APIs from individual modules while maintaining
+ * backward compatibility. Organized by functional domains for clear
+ * understanding of available capabilities.
+ * 
+ * 
+ * @example
+ * ```typescript
+ * // Import everything from the main entry point
+ * import { 
+ *   clickElement, 
+ *   assertVisible, 
+ *   compositeLocator,
+ *   step 
+ * } from '@test-utils';
+ * 
+ * // Or import from specific modules
+ * import { clickElement } from '@test-utils/interactions';
+ * import { assertVisible } from '@test-utils/assertions';
+ * ```
  */
 
-// Core types
+// Core types and factory functions
 export * from './core-types';
 
-// Basic assertions
+// Unified assertion system
 export * from './assertions';
 
-// Element interactions
+// Unified interaction system
 export * from './interactions';
 
-// Consolidated attribute and validation functions
+// Advanced attribute validation
 export * from './attributes';
 
-// Navigation helpers
+// Text extraction utilities
+export * from './text-extraction';
+
+// Group assertion utilities
+export * from './assertions.groups';
+
+// Navigation and URL helpers
 export * from './navigation-helpers';
 
-// Decorators
+// Test step decorators
 export * from './decorators';
 
-// Utilities
+// General utilities (date parsing, conditional execution, etc.)
 export * from './utilities';
 
-// Keep original playwright configs export
+// Playwright configuration helpers
 export * from './playwright-configs';
+
+// Legacy navigation functions (for debugging/comparison) - export only specific functions
+export { 
+    legacyAssertVisibleNotActionable,
+    legacyAssertVisible,
+    legacyAssertEnabled,
+    compositeLocator as legacyCompositeLocator,
+    step as legacyStep
+} from './navigation.po';

@@ -1,77 +1,36 @@
-# Page Object Design Motivation
+# Page Object Design Pattern
 
-You might've noticed that we implement little modules called Page objects. In this document we will explore 
-the motivation behind this particular design and why we are doing it.
+Page Objects organize test code by grouping related functionality and using composite locators with helper functions. This makes tests easier to read, maintain, and debug.
 
-## How the codebase looks without page objects
+## The Problem Without Page Objects
 
-Usually our test cases would look like this in our code (Playwright):
+Without page objects, tests have complex selectors scattered everywhere:
 
 ```typescript
-/* Some imports... */
-
-test.beforeEach((/*...*/) => {
-	/* Some steps before each test... */ 
-});
-
-test.describe("Landing Page Tests", () => {
-    test("Validate page header content is present on the page for a guest user", async ( /*...*/ ) => {
-        /* Testing case steps... */
-    });
-
-    test("Validate page main content is present on the page for a guest user", async ( /*...*/ ) => {
-        /* Testing case steps... */
-    });
-
-    test("Validate page footer content is present on the page for a guest user", async ( /*...*/ ) => {
-        /* Testing case steps... */
-    });
+test("Validate page header content is present", async ( /*...*/ ) => {
+    await assertVisible(page.locator('#header #desktop-header'), false);
+    await assertVisible(page.locator('a[class*="desktopHeader_desktopHeaderLogoContainer_"]'), false);
+    await assertVisible(page.locator('#desktop-nav-link-Crash'), false);
+    await assertVisible(page.locator('#desktop-nav-link-Live'), false);
+    await assertVisible(page.locator('#desktop-nav-link-Tournaments'), false);
+    // More complex locators...
 });
 ```
 
-Now let's explore the actual test steps, but let's explore how they would look without page objects. The first thing that would come to mind is the fact that we will usually have very complex
-locators (the selectors via which we locate elements on the page in order to verify their presence or use them).
+### Issues:
+* **Hard to read** - Complex selectors don't explain what they do
+* **Code duplication** - Same selectors repeated in multiple tests
+* **Hard to maintain** - Selector changes require updates everywhere
+* **No context** - Raw selectors provide no business meaning
+* **Hard to debug** - Error messages are unclear
+
+## The Solution: Page Objects + Composite Locators
+
+### Step 1: Group locators with descriptive names
 
 ```typescript
-test("Validate page header content is present on the page for a guest user", async ( /*...*/ ) => {
-    await this.navigation.assertVisible(this.page.locator('#header #desktop-header'), softAssert, 'Expect Header to be visible');
-    await this.navigation.assertVisible(this.page.locator('a[class*="desktopHeader_desktopHeaderLogoContainer_"]'), softAssert, 'Expect SF logo to be visible');
-    await this.navigation.assertVisible(this.page.locator('#desktop-nav-link-Crash'), softAssert, 'Expect Crash button to be visible');
-    await this.navigation.assertVisible(this.page.locator('#desktop-nav-link-Live'), softAssert, 'Expect Live button to be visible');
-    await this.navigation.assertVisible(this.page.locator('#desktop-nav-link-Tournaments'), softAssert, 'Expect Tournament button to be visible');
-    await this.navigation.assertVisible(this.page.locator('#desktop-nav-link-Games'), softAssert, 'Expect Games button to be visible');
-    await this.navigation.assertVisible(this.page.locator('#desktop-nav-link-Promotions'), softAssert, 'Expect Promotions button to be visible');
-    await this.navigation.assertVisible(this.page.locator('#desktop-nav-link-VIP'), softAssert, 'Expect VIP button to be visible');
-    /* More test case steps... */
-});
-```
+import { compositeLocator } from '@test-utils';
 
-## The problem
-
-What are the problems that you can immediately see in the aforementioned code? (give yourself several seconds, think about it, then read the following bullet-points):
-
-* First and foremost this doesn't look too good. 
-  * It's hardly discernible if there is any mistake in the locators. 
-* Now imagine that some of these locators will be reused in other test cases. 
-  * It's gonna be a disastrous code.
-* Now imagine that they are reused in other test cases in other functionalities (e.g. totally different test scenarios). 
-  * You'd have to introduce the disastrous code to other scenarios as well.
-* Now imagine that with all the reusability, there is a change in the code and the locator is no longer valid.
-  * You'd have to look for it and modify it everywhere.
-
-There are many more negatives that can be mentioned here, but the ones given should be enough. So what's the solution?
-
-## The solution
-
-Maybe you are asking yourself - "But what if we extract it into a constant?". 
-
-You're on the right path, but let's push it one level further:
-
-### 1. Let's extract all such constants and group them together depending on their context!
-
-What do we get when we do that? We get a page object. 
-
-```typescript
 export class HeaderMenu {
     readonly page: Page;
 
@@ -79,95 +38,127 @@ export class HeaderMenu {
         this.page = page;
     }
     
-    readonly desktopHeader = () => this.page.locator('#header #desktop-header');
-    readonly sfLogo = () => this.page.locator('a[class*="desktopHeader_desktopHeaderLogoContainer_"]');
-    readonly crashButton = () => this.page.locator('#desktop-nav-link-Crash');
-    readonly liveButton = () => this.page.locator('#desktop-nav-link-Live');
-    readonly tournamentButton = () => this.page.locator('#desktop-nav-link-Tournaments');
-    readonly gamesButton = () => this.page.locator('#desktop-nav-link-Games');
-    readonly promotionsButton = () => this.page.locator('#desktop-nav-link-Promotions');
-    readonly vipButton = () => this.page.locator('#desktop-nav-link-VIP');
+    // Composite locators with descriptive names
+    readonly desktopHeader = compositeLocator(
+        () => this.page.locator('#header #desktop-header'),
+        'Desktop Header Container'
+    );
     
-    /* More properties and methods */
+    readonly sfLogo = compositeLocator(
+        () => this.page.locator('a[class*="desktopHeader_desktopHeaderLogoContainer_"]'),
+        'SpaceFortuna Logo'
+    );
+    
+    readonly crashButton = compositeLocator(
+        () => this.page.locator('#desktop-nav-link-Crash'),
+        'Crash Games Navigation Button'
+    );
+    
+    readonly gamesButton = compositeLocator(
+        () => this.page.locator('#desktop-nav-link-Games'),
+        'Games Navigation Button'
+    );
 }
 ```
 
-Now we can use these properties as from a central point of data. 
-The code of the test case would look cleaner:
+Now the test code is cleaner:
 
 ```typescript
-test("Validate page header content is present on the page for a guest user", async ( /*...*/ ) => {
-    await this.navigation.assertVisible(headerMenu.desktopHeader(), softAssert, 'Expect Header to be visible');
-    await this.navigation.assertVisible(headerMenu.sfLogo(), softAssert, 'Expect SF logo to be visible');
-    await this.navigation.assertVisible(headerMenu.crashButton(), softAssert, 'Expect Crash button to be visible');
-    await this.navigation.assertVisible(headerMenu.liveButton(), softAssert, 'Expect Live button to be visible');
-    await this.navigation.assertVisible(HeaderMenu.tournamentsButton(), softAssert, 'Expect Tournament button to be visible');
-    await this.navigation.assertVisible(headerMenu.gamesButton(), softAssert, 'Expect Games button to be visible');
-    await this.navigation.assertVisible(headerMenu.promotionsButton(), softAssert, 'Expect Promotions button to be visible');
-    await this.navigation.assertVisible(headerMenu.vipButton(), softAssert, 'Expect VIP button to be visible');
-    /* More test case steps... */
+test("Validate page header content is present", async ( /*...*/ ) => {
+    await assertVisible(headerMenu.desktopHeader, false);
+    await assertVisible(headerMenu.sfLogo, false);
+    await assertVisible(headerMenu.crashButton, false);
+    await assertVisible(headerMenu.gamesButton, false);
 });
 ```
 
-And if tomorrow one of the locators changes, we will need to change it in one place only.
+When selectors change, you only update them in one place. Plus, descriptive names make test reports clearer!
 
-### 2. Let's then extend the abstraction with logic that encapsulates the properties and exposes only a programming interface which you can use!
-(e.g. a **blackbox**... You don't need to know what stands below, just how to use it)
+### Step 2: Add business logic methods
 
 ```typescript
+import { assertVisible, clickElement } from '@test-utils';
+
 export class HeaderMenu {
     readonly page: Page;
-    readonly navigation: Navigation;
 
     constructor(page: Page) {
         this.page = page;
-        this.navigation = new Navigation(page);
     }
     
-    readonly desktopHeader = () => this.page.locator('#header #desktop-header');
-    readonly sfLogo = () => this.page.locator('a[class*="desktopHeader_desktopHeaderLogoContainer_"]');
-    readonly crashButton = () => this.page.locator('#desktop-nav-link-Crash');
-    readonly liveButton = () => this.page.locator('#desktop-nav-link-Live');
-    readonly tournamentButton = () => this.page.locator('#desktop-nav-link-Tournaments');
-    readonly gamesButton = () => this.page.locator('#desktop-nav-link-Games');
-    readonly promotionsButton = () => this.page.locator('#desktop-nav-link-Promotions');
-    readonly vipButton = () => this.page.locator('#desktop-nav-link-VIP');
+    // Composite locators
+    readonly desktopHeader = compositeLocator(
+        () => this.page.locator('#header #desktop-header'),
+        'Desktop Header Container'
+    );
     
+    readonly gamesButton = compositeLocator(
+        () => this.page.locator('#desktop-nav-link-Games'),
+        'Games Navigation Button'
+    );
+    
+    readonly promotionsButton = compositeLocator(
+        () => this.page.locator('#desktop-nav-link-Promotions'),
+        'Promotions Navigation Button'
+    );
+    
+    // Business logic methods
     public async validateHeaderContentPresent(softAssert = false): Promise<void> {
-        await this.navigation.assertVisible(headerMenu.desktopHeader(), softAssert, 'Expect Header to be visible');
-        await this.navigation.assertVisible(headerMenu.sfLogo(), softAssert, 'Expect SF logo to be visible');
-        await this.navigation.assertVisible(headerMenu.crashButton(), softAssert, 'Expect Crash button to be visible');
-        await this.navigation.assertVisible(headerMenu.liveButton(), softAssert, 'Expect Live button to be visible');
-        await this.navigation.assertVisible(HeaderMenu.tournamentsButton(), softAssert, 'Expect Tournament button to be visible');
-        await this.navigation.assertVisible(headerMenu.gamesButton(), softAssert, 'Expect Games button to be visible');
-        await this.navigation.assertVisible(headerMenu.promotionsButton(), softAssert, 'Expect Promotions button to be visible');
-        await this.navigation.assertVisible(headerMenu.vipButton(), softAssert, 'Expect VIP button to be visible');
-        /* More header elements validation steps... */
+        await assertVisible(this.desktopHeader, softAssert);
+        await assertVisible(this.gamesButton, softAssert);
+        await assertVisible(this.promotionsButton, softAssert);
     }
     
-    /* More properties and methods */
+    public async navigateToGames(): Promise<void> {
+        await clickElement(this.gamesButton, false);
+    }
+    
+    public async navigateToPromotions(): Promise<void> {
+        await clickElement(this.promotionsButton, false);
+    }
 }
 ```
 
-Then our test case code would look even cleaner:
+Now your test becomes very clean:
 
 ```typescript
-test("Validate page header content is present on the page for a guest user", async ( /*...*/ ) => {
+test("Validate page header content is present", async ( /*...*/ ) => {
     await headerMenu.validateHeaderContentPresent();
 });
 ```
- 
-And you also have a central method to verify that the header is present, which you would most likely reuse in several pages - as content such as the header is visible on multiple pages.
 
-## Conclusion
+You have centralized methods to verify the header and interact with it, which you can reuse across multiple tests.
 
-Page objects are a good way to group and aggregate functionality for locating specific elements. 
+## Benefits of Page Objects
 
-* Page objects need not be massive, they can be split into smaller objects.
-  * It is a good idea to first start somewhere - so start big and then divide and conquer when you think you are ready to do it.
-* Page objects create reusable code that is easily configurable.
-  * If you have breaking changes (e.g. locator changes), you will not need to edit it in several places but in the page object only. (as all test cases use it as an interface)
-* Page objects encapsulate logic.
-  * You don't always need to know what stands below - it can work as a comfortable black box for you, which you can use in other test cases as well.
-* Page objects make the code look better.
-  * Locators are not exactly TypeScript code - and one of the most important thing in coding is to mix technologies as little as possible.
+### 1. Composite Locators
+- **Better debugging** - Descriptive names appear in test reports and error messages
+- **Easier maintenance** - Locator logic centralized with meaningful descriptions
+- **Improved readability** - `await assertVisible(submitButton, false)` vs `await assertVisible(page.locator('#btn-submit'), false)`
+
+### 2. Helper Function Integration
+- **Standardized interactions** - All page objects use the same helper functions
+- **Consistent error handling** - Soft/hard assertions handled uniformly
+- **Enhanced reporting** - Step decorators provide clear test execution traces
+
+### 3. Business Logic Encapsulation
+- **Semantic methods** - `validateHeaderContentPresent()` clearly describes what the test does
+- **Reusable workflows** - Complex user interactions abstracted into simple method calls
+- **Domain-specific language** - Test code reads like natural language
+
+## Key Principles
+
+- **Group related functionality** for specific pages or components
+- **Use composite locators** with descriptive names for better debugging
+- **Encapsulate business logic** into reusable, semantic methods
+- **Keep page objects focused** - split large objects into smaller, focused ones
+- **Start simple and iterate** - begin with basic page objects and evolve as needed
+
+Page objects with composite locators and helper functions create maintainable, readable, and robust test automation that scales with your application's complexity.
+
+* **Keep page objects focused** - split them into smaller objects when they get too big
+* **Start simple and improve** - begin with basic page objects and add complexity as needed
+* **Centralize changes** - when locators change, you only need to update the page object
+* **Hide complexity** - page objects create simple interfaces for complex interactions
+
+Use page objects with composite locators and helper functions to create maintainable, readable test automation.

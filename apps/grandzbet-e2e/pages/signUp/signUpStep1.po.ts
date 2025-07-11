@@ -1,6 +1,6 @@
 import { Page } from '@playwright/test';
 import { step, stepParam } from '@test-utils/decorators';
-import { clickElement, fillInputField } from '@test-utils/interactions';
+import { clickElement, fillElement } from '@test-utils/interactions';
 import {
 	assertVisible,
 	assertEditable,
@@ -112,9 +112,9 @@ export class SignUpStep1 {
 
 	public validatePasswordEditable = async (softAssert = false) => await assertEditable(this.password, softAssert);
 
-	public fillEmail = async (userEmail: string) => await fillInputField(this.email, userEmail);
+	public fillEmail = async (userEmail: string) => await fillElement(this.email, userEmail);
 
-	public fillPassword = async (password: string) => await fillInputField(this.password, password);
+	public fillPassword = async (password: string) => await fillElement(this.password, password);
 
 	public validatePreferencesErrorNOTVisible = async (softAssert = false) => await assertNotVisible(this.preferencesError, softAssert);
 
