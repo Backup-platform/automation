@@ -1,5 +1,5 @@
 import { Page } from '@playwright/test';
-import { step } from '@test-utils/navigation.po';
+import { step } from '@test-utils/decorators';
 
 
 export class PopupHandlers {

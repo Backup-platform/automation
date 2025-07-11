@@ -1,109 +1,99 @@
-# SbtMonorepo
+# Test Automation Framework
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+A comprehensive Playwright test automation framework built with Nx monorepo for gaming platform testing.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+## Overview
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/nx-api/js?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+This project provides automated testing for multiple gaming platforms using Playwright and TypeScript, organized in an Nx monorepo structure for scalability and maintainability.
 
-## Generate a library
+### Test Applications
 
-```sh
-npx nx g @nx/js:lib packages/pkg1 --publishable --importPath=@my-org/pkg1
+- **`grandzbet-e2e`** - Main E2E test suite for GrandZbet platform
+- **`spaceFortuna-e2e`** - E2E tests for SpaceFortuna platform  
+- **`aleaAPI`** - API testing suite for Alea gaming services
+- **`test-utils`** - Shared helper functions and utilities library
+
+### Goals
+
+- **Reliable Testing** - Robust test automation across multiple gaming platforms
+- **Modular Design** - Reusable helper functions and page objects
+- **Developer Experience** - Easy-to-use commands and clear documentation
+- **Scalability** - Nx monorepo structure for managing multiple test projects
+
+## Quick Start
+
+### Prerequisites
+
+- Node.js (latest LTS)
+- npm or yarn
+
+### Installation
+
+```bash
+# Clone and install dependencies
+npm install
+
+# Install Playwright browsers
+npx playwright install
 ```
 
-## Run tasks
+### Verify Setup
 
-To build the library use:
+```bash
+# Run helper validation tests
+nx run test-utils:validate-helpers
 
-```sh
-npx nx build pkg1
+# Run smoke tests
+nx run grandzbet-e2e:test:smoke
+
+# Open interactive test UI
+nx run grandzbet-e2e:test:ui
 ```
 
-To run any task with Nx use:
+### Basic Commands
 
-```sh
-npx nx <target> <project-name>
+```bash
+# Run all tests for a project
+nx run grandzbet-e2e:test
+nx run spaceFortuna-e2e:test
+nx run aleaAPI:test
+
+# Interactive testing
+nx run grandzbet-e2e:test:ui
+
+# View test reports
+nx run grandzbet-e2e:show-report
 ```
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+## Documentation
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+Comprehensive documentation is available in the `docs/` folder:
 
-## Versioning and releasing
-
-To version and release the library use
+## Project Structure
 
 ```
-npx nx release
+apps/
+  grandzbet-e2e/       # Main E2E test suite
+  spaceFortuna-e2e/    # SpaceFortuna tests
+  aleaAPI/             # API testing
+libs/
+  test-utils/          # Shared utilities and helpers
+  page-objects/        # Reusable page objects
+docs/                  # Documentation
 ```
 
-Pass `--dry-run` to see what would happen without actually releasing the library.
+## Development
 
-[Learn more about Nx release &raquo;](hhttps://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+All commands should be run from the project root directory.
 
-## Keep TypeScript project references up to date
+### Running Tests
 
-Nx automatically updates TypeScript [project references](https://www.typescriptlang.org/docs/handbook/project-references.html) in `tsconfig.json` files to ensure they remain accurate based on your project dependencies (`import` or `require` statements). This sync is automatically done when running tasks such as `build` or `typecheck`, which require updated references to function correctly.
+- Use `nx run project:test` for basic test execution
+- Use `nx run project:test:ui` for interactive debugging
+- See [Running Tests and Commands](docs/running-tests-and-commands.md) for complete reference
 
-To manually trigger the process to sync the project graph dependencies information to the TypeScript project references, run the following command:
+## Getting Help
 
-```sh
-npx nx sync
-```
-
-You can enforce that the TypeScript project references are always in the correct state when running in CI by adding a step to your CI job configuration that runs the following command:
-
-```sh
-npx nx sync:check
-```
-
-[Learn more about nx sync](https://nx.dev/reference/nx-commands#sync)
-
-## Set up CI!
-
-### Step 1
-
-To connect to Nx Cloud, run the following command:
-
-```sh
-npx nx connect
-```
-
-Connecting to Nx Cloud ensures a [fast and scalable CI](https://nx.dev/ci/intro/why-nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
-
-- [Remote caching](https://nx.dev/ci/features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/ci/features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/ci/features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/ci/features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-### Step 2
-
-Use the following command to configure a CI workflow for your workspace:
-
-```sh
-npx nx g ci-workflow
-```
-
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Install Nx Console
-
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
-
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Useful links
-
-Learn more:
-
-- [Learn more about this workspace setup](https://nx.dev/nx-api/js?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+- Check the `docs/` folder for detailed guides
+- Use `nx run project:test --help` to see available options
+- Run `nx list` to see all available commands

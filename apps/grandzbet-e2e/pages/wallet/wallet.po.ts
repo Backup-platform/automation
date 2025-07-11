@@ -1,14 +1,10 @@
 import { Page, test, expect } from '@playwright/test';
-import {
-    assertVisible,
-    compositeLocator,
-    clickElement,
-    validateElementMapVisibility,
-    validateAllElementsVisibility,
-    getElementMapText,
-    assertElementContainsText,
-    validateElementMapContainsText
-} from '@test-utils/navigation.po';
+import { assertVisible } from '@test-utils/assertions';
+import { compositeLocator } from '@test-utils/core-types';
+import { clickElement } from '@test-utils/interactions';
+import { getElementText } from '@test-utils/text-extraction';
+import { assertElementContainsText } from '@test-utils/assertions';
+import { validateAllElementsVisibility, validateGroupsContainText } from '@test-utils/assertions.groups';
 
 export class Wallet {
     readonly page: Page;
@@ -61,7 +57,11 @@ export class Wallet {
         elementKey: keyof typeof this.walletBalanceElementsMap,
         softAssert = false
     ): Promise<void> {
-        await validateElementMapVisibility(this.walletBalanceElementsMap, elementKey, softAssert);
+        // const element = this.walletBalanceElementsMap[elementKey];
+        // const elementMap = { [elementKey]: [element.label, element.value] };
+        // await validateElementMapVisibility(elementMap, softAssert);
+
+        await validateAllElementsVisibility(this.walletBalanceElementsMap[elementKey], softAssert);
     }
     
     // Actions
@@ -78,7 +78,9 @@ export class Wallet {
         await this.validateWalletBalanceElement('casinoBonus', softAssert);
 
     public validateSportBonusBalanceVisible = async (softAssert = false) =>
-        await this.validateWalletBalanceElement('sportBonus', softAssert);    public validateTotalBalanceVisible = async (softAssert = false) =>
+        await this.validateWalletBalanceElement('sportBonus', softAssert);    
+
+    public validateTotalBalanceVisible = async (softAssert = false) =>
         await this.validateWalletBalanceElement('totalBalance', softAssert);
 
     public validateAllWalletBalanceElementsVisible = async (softAssert = false): Promise<void> => {
@@ -89,19 +91,19 @@ export class Wallet {
         await assertVisible(this.depositButton, softAssert);
 
     public getRealMoneyBalanceValue = async (): Promise<string> =>
-        await getElementMapText(this.walletBalanceElementsMap, 'realMoney', 'value');
+        await getElementText(this.walletBalanceElementsMap, 'realMoney', 'value');
 
     public getCasinoBonusBalanceValue = async (): Promise<string> =>
-        await getElementMapText(this.walletBalanceElementsMap, 'casinoBonus', 'value');
+        await getElementText(this.walletBalanceElementsMap, 'casinoBonus', 'value');
 
     public getSportBonusBalanceValue = async (): Promise<string> =>
-        await getElementMapText(this.walletBalanceElementsMap, 'sportBonus', 'value');
+        await getElementText(this.walletBalanceElementsMap, 'sportBonus', 'value');
 
     public getTotalBalanceValue = async (): Promise<string> =>
-        await getElementMapText(this.walletBalanceElementsMap, 'totalBalance', 'value');
+        await getElementText(this.walletBalanceElementsMap, 'totalBalance', 'value');
 
     public getBalanceValueByKey = async (balanceKey: keyof typeof this.walletBalanceElementsMap): Promise<string> => {
-        return await getElementMapText(this.walletBalanceElementsMap, balanceKey, 'value');
+        return await getElementText(this.walletBalanceElementsMap, balanceKey, 'value');
     }
 
     public validateBalanceElementsVisibility = async (softAssert = false): Promise<void> => {
@@ -210,7 +212,7 @@ export class Wallet {
         expectedText: string,
         softAssert = false
     ): Promise<void> => {
-        await validateElementMapContainsText(this.walletBalanceElementsMap, balanceKey, expectedText, softAssert);
+        await validateGroupsContainText(this.walletBalanceElementsMap, expectedText, balanceKey, softAssert);
     };
 
     public validateAllBalanceElementsMapVisibility = async (softAssert = false): Promise<void> => {

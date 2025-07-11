@@ -4,5 +4,6 @@
     "rootDir": "src",
     "types": ["node", "@playwright/test"]
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts", "src/assertions.ts.backup"],
+  "exclude": ["src/navigation.po.ts"]
 }

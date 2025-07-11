@@ -6,12 +6,12 @@ import {
     assertVisible,
     assertNotVisible,
     assertEnabled,
-    assertNotEnabled,
-    clickElement,
-    compositeLocator,
-    step,
-    validateOnlyOneElementActive
-} from '@test-utils/navigation.po';
+    assertNotEnabled
+} from '@test-utils/assertions';
+import { clickElement } from '@test-utils/interactions';
+import { compositeLocator } from '@test-utils/core-types';
+import { step } from '@test-utils/decorators';
+import { validateOnlyOneElementActiveGroup } from '@test-utils/attributes';
 
 export type StepType = 'deposit' | 'withdraw';
 export type StepNumber = 1 | 2 | 3 | 4;
@@ -71,7 +71,7 @@ export class CashierGeneral {
 
     // Tab button activity validation
     public validateTabButtonActive = async (stepType: StepType) => {
-        await validateOnlyOneElementActive(
+        await validateOnlyOneElementActiveGroup(
             [this.depositButton, this.withdrawButton],
             stepType === 'deposit' ? 0 : 1,
             this.ACTIVE_TAB_CLASSES,
@@ -102,7 +102,7 @@ export class CashierGeneral {
             elements.push(this.getStep(stepType, stepNum as StepNumber));
         }
         const activeIndex = activeStepNumber - 1;
-        await validateOnlyOneElementActive(
+        await validateOnlyOneElementActiveGroup(
             elements,
             activeIndex,
             this.ACTIVE_STEP_CLASSES,

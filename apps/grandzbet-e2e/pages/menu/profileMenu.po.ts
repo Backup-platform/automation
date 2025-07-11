@@ -1,16 +1,10 @@
 import { Page } from '@playwright/test';
-import { 
-    step, 
-    clickElement, 
-    assertVisible, 
-    assertNotVisible,
-    compositeLocator,
-    CompositeLocator,
-    performNavigationClick,
-    assertEnabled,
-    assertVisibleNotActionable,
-    validateAttributes
-} from '@test-utils/navigation.po';
+import { step } from '@test-utils/decorators';
+import { clickElement } from '@test-utils/interactions';
+import { assertVisible, assertNotVisible, assertEnabled, assertVisibleNotActionable } from '@test-utils/assertions';
+import { compositeLocator, CompositeLocator } from '@test-utils/core-types';
+import { performNavigationClick } from '@test-utils/navigation-helpers';
+import { validateAttributes } from '@test-utils/attributes';
 
 export class ProfileMenu {
     readonly page: Page;
@@ -84,7 +78,7 @@ export class ProfileMenu {
         await assertNotVisible(this.profileMenuDialog, softAssert);
 
     public validateNavigation = async (element: CompositeLocator, expectedURL: string) => {
-        await performNavigationClick(this.page, element.locator(), element.name, expectedURL);
+        await performNavigationClick(this.page, element, expectedURL);
     }
 
     @step('I validate the Profile menu dialog is hidden behind the deposit overlay')

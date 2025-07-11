@@ -1,13 +1,11 @@
 import { Page } from '@playwright/test';
-import {
-    assertVisible,
-    clickElement,
-    compositeLocator,
-    iterateElements,
-    validateAttributesContaining,
-    validateOnlyOneElementActive,
-    step,
-} from '@test-utils/navigation.po';
+import { assertVisible } from '@test-utils/assertions';
+import { clickElement } from '@test-utils/interactions';
+import { compositeLocator } from '@test-utils/core-types';
+import { iterateElements } from '@test-utils/utilities';
+import { validateAttributesContaining } from '@test-utils/attributes';
+import { validateOnlyOneElementActiveGroup } from '@test-utils/attributes';
+import { step } from '@test-utils/decorators';
 
 export class Withdraw {
     protected readonly page: Page;
@@ -37,7 +35,7 @@ export class Withdraw {
         await assertVisible(this.paymentMethod(index), softAssert);
 
     public assertPaymentMethodActive = async (index: number): Promise<void> =>
-        await validateAttributesContaining(this.paymentMethod(index), { 'class': [this.ACTIVE_PAYMENT_METHOD_ATTRIBUTES.class] });
+        await validateAttributesContaining(this.paymentMethod(index), { 'class': this.ACTIVE_PAYMENT_METHOD_ATTRIBUTES.class });
 
     @step('I validate that only one payment method is active at a time')
     public async assertOnlyOnePaymentMethodActive(activeIndex: number): Promise<void> {
@@ -46,7 +44,7 @@ export class Withdraw {
         for (let i = 0; i < totalMethods; i++) {
             elements.push(this.paymentMethod(i));
         }
-        await validateOnlyOneElementActive(
+        await validateOnlyOneElementActiveGroup(
             elements,
             activeIndex,
             this.ACTIVE_PAYMENT_METHOD_ATTRIBUTES,

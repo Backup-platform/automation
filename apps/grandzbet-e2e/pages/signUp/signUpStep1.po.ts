@@ -1,17 +1,14 @@
 import { Page } from '@playwright/test';
+import { step, stepParam } from '@test-utils/decorators';
+import { clickElement, fillElement } from '@test-utils/interactions';
 import {
-	step,
-	stepParam,
-	clickElement,
 	assertVisible,
-	fillInputField,
-	assertEnabled,
 	assertEditable,
-	assertNotVisible,
-	validateAttributes,
-	compositeLocator,
-	CompositeLocator,
-} from '@test-utils/navigation.po';
+	assertEnabled,
+	assertNotVisible
+} from '@test-utils/assertions';
+import { validateAttributes } from '@test-utils/attributes';
+import { compositeLocator, CompositeLocator } from '@test-utils/core-types';
 
 type PreferenceType = 'CASINO' | 'SPORT' | 'ALL';
 
@@ -115,9 +112,9 @@ export class SignUpStep1 {
 
 	public validatePasswordEditable = async (softAssert = false) => await assertEditable(this.password, softAssert);
 
-	public fillEmail = async (userEmail: string) => await fillInputField(this.email, userEmail);
+	public fillEmail = async (userEmail: string) => await fillElement(this.email, userEmail);
 
-	public fillPassword = async (password: string) => await fillInputField(this.password, password);
+	public fillPassword = async (password: string) => await fillElement(this.password, password);
 
 	public validatePreferencesErrorNOTVisible = async (softAssert = false) => await assertNotVisible(this.preferencesError, softAssert);
 
@@ -150,17 +147,14 @@ export class SignUpStep1 {
 
 		// Validate attributes
 		await validateAttributes(
-			this.preferenceRadioButton(preference).locator(),
-			`${displayName} preference`,
+			compositeLocator(() => this.preferenceRadioButton(preference).locator(), `${displayName} preference`),
 			attributes,
 			softAssert
 		);
 
 		// Validate checkmark visibility
-		const checkmarkLocator = this.preferenceRadioButton(preference).locator().locator('span svg');
 		await (isSelected ? assertVisible : assertNotVisible)(
-			checkmarkLocator,
-			`${displayName} checkmark indicator`,
+			compositeLocator(() => this.preferenceRadioButton(preference).locator().locator('span svg'), `${displayName} checkmark indicator`),
 			softAssert
 		);
 	}

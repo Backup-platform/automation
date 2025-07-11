@@ -1,17 +1,9 @@
 import { Locator, Page } from '@playwright/test';
-import { 
-    step, 
-    clickElement, 
-    assertVisible, 
-    fillInputField, 
-    assertEditable,
-    stepParam, 
-    selectDropdownOption,
-    parseDateString,
-    callMethodIfDefined,
-    compositeLocator,
-    CompositeLocator
-} from '@test-utils/navigation.po';
+import { step, stepParam } from '@test-utils/decorators';
+import { clickElement, fillElement, performInteractionChain } from '@test-utils/interactions';
+import { assertVisible, assertEditable } from '@test-utils/assertions';
+import { parseDateString, executeIfDefined } from '@test-utils/utilities';
+import { compositeLocator, CompositeLocator } from '@test-utils/core-types';
     // Define types inline - no external dependencies
     type Gender = 'MALE' | 'FEMALE';
 export class SignUpStep2 {
@@ -77,27 +69,30 @@ export class SignUpStep2 {
 
 	public clickGenderDropdown = async () => await clickElement(this.genderDropdown);
 
-    public fillFirstName = async (firstName: string) => await fillInputField(this.firstName, firstName);
+    public fillFirstName = async (firstName: string) => await fillElement(this.firstName, firstName);
 
-    public fillLastName = async (lastName: string) => await fillInputField(this.lastName, lastName);
+    public fillLastName = async (lastName: string) => await fillElement(this.lastName, lastName);
 
     public async selectGender(selectedGender: Gender) {
         const genderOption = this.getGenderOption(selectedGender);
-        await selectDropdownOption(
-            this.genderDropdown.locator(), 
-            this.genderExpandedDropdown.locator(), 
-            genderOption, 
-            this.genderDropdown.name, 
-            `Gender: ${selectedGender}`
-        );
+        await performInteractionChain([
+            { element: this.genderDropdown, action: 'click' },
+            { element: compositeLocator(() => genderOption, `Gender: ${selectedGender}`), action: 'click', options: { preValidations: [{ type: 'visible' }] } }
+        ]);
     }
 
     @stepParam((dateString: string) => (`Select date of birth: ${dateString}`))
     public async selectDateOfBirth(dateString: string) {
         const { year, month, day } = parseDateString(dateString);
         await clickElement(this.dateOfBirth);
-        await selectDropdownOption(this.yearDropdown, this.calendarOptionsList, this.yearOption(year));
-        await selectDropdownOption(this.monthDropdown, this.calendarOptionsList, this.monthOption(month));
+        await performInteractionChain([
+            { element: this.yearDropdown, action: 'click' },
+            { element: this.yearOption(year), action: 'click', options: { preValidations: [{ type: 'visible' }] } }
+        ]);
+        await performInteractionChain([
+            { element: this.monthDropdown, action: 'click' },
+            { element: this.monthOption(month), action: 'click', options: { preValidations: [{ type: 'visible' }] } }
+        ]);
         await clickElement(this.dayButton(day));
     }
 
@@ -113,10 +108,10 @@ export class SignUpStep2 {
         if (firstName && lastName && DOB && gender) {
             await this.fillSecondStep(firstName, lastName, DOB, gender);
         } else {
-            await callMethodIfDefined(firstName, this.fillFirstName, 'set first name', this);
-            await callMethodIfDefined(lastName, this.fillLastName, 'set last name', this);
-            await callMethodIfDefined(gender, this.selectGender, 'set a gender', this);
-            await callMethodIfDefined(DOB, this.selectDateOfBirth, 'set date of birth', this);
+            await executeIfDefined(firstName, this.fillFirstName, this, { stepDescription: 'set first name' });
+            await executeIfDefined(lastName, this.fillLastName, this, { stepDescription: 'set last name' });
+            await executeIfDefined(gender, this.selectGender, this, { stepDescription: 'set a gender' });
+            await executeIfDefined(DOB, this.selectDateOfBirth, this, { stepDescription: 'set date of birth' });
         }
     }
 

@@ -1,13 +1,9 @@
 import { Page } from '@playwright/test';
-import {
-    assertVisible,
-    compositeLocator,
-    clickElement,
-    compositeFrameLocator,
-    fillInputField,
-    step,
-    validateAllElementsVisibility
-} from '@test-utils/navigation.po';
+import { assertVisible } from '@test-utils/assertions';
+import { compositeLocator } from '@test-utils/core-types';
+import { clickElement, fillElement } from '@test-utils/interactions';
+import { step } from '@test-utils/decorators';
+import { validateAllElementsVisibility } from '@test-utils/assertions.groups';
 
 export class PaymentIQ {
     readonly page: Page;
@@ -164,19 +160,19 @@ export class PaymentIQ {
         await assertVisible(this.predefinedAmountsContainer, softAssert);
 
     public fillAmount = async (amount: string) =>
-        await fillInputField(this.amountInput, amount);
+        await fillElement(this.amountInput, amount);
 
     public fillCardNumber = async (cardNumber: string) =>
-        await fillInputField(this.cardNumber, cardNumber);
+        await fillElement(this.cardNumber, cardNumber);
 
     public fillCardName = async () =>
-        await fillInputField(this.cardName, 'Test User');
+        await fillElement(this.cardName, 'Test User');
 
     public fillExpirationDate = async (expirationDate: string) =>
-        await fillInputField(this.expirationDate, expirationDate);
+        await fillElement(this.expirationDate, expirationDate);
 
     public fillCVV = async (cvv: string) =>
-        await fillInputField(this.cvv, cvv);
+        await fillElement(this.cvv, cvv);
 
     public clickSetAmountButton = async () =>
         await clickElement(this.setAmountButton);
