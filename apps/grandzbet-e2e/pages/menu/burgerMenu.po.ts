@@ -55,6 +55,7 @@ export class BurgerMenu {
 
     public validateHomeButtonVisible = async (softAssert = false) => await assertVisible(this.home, softAssert);
 
+    //TODO: check this works with validate attribute properly 
     public validateHomeButtonImageVisible = async (softAssert = false) =>
         await validateAttributes(compositeLocator(() => this.home.locator().locator(this.buttonImage.locator()), 'Home Button image'), {srcset: null, src: null}, softAssert);
 

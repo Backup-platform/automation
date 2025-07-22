@@ -2,7 +2,7 @@ import { assertUrl } from '@test-utils';
 import test from '../../../pages/base/base.po';
 
 test.beforeEach(async ({ page, popupHandlers }) => {
-	await page.goto(`${process.env.URL}`, { waitUntil: "load" });
+	await page.goto(`${process.env.URL}`, { waitUntil: "domcontentloaded" });
   	await popupHandlers.handleAllPopups();
 });
 	test.describe('Profile Menu Tests', () => {

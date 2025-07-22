@@ -13,12 +13,12 @@ setup('Authenticate for Desktop', async ({ page }) => {
 	const loginPage = new LoginPage(page);
 
 	await page.setViewportSize({ width: 1320, height: 720 });
-	await page.goto(`${process.env.URL}`);
+	await page.goto(`${process.env.URL}`, { waitUntil: "domcontentloaded" });
 	await menuItems.validateGuestItems();
 	await menuItems.clickLogin();
 	await loginPage.actionLogin(`${process.env.USER}`, `${process.env.PASS}`);
-	await page.waitForEvent("load");
 	await menuItems.validateUserItems();
+
 	// Save the authentication state to a file
 	await page.context().storageState({ path: authFile });
 });

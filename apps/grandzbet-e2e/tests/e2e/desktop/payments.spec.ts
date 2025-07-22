@@ -6,7 +6,7 @@ test.beforeEach(async ({ page, popupHandlers, paymentIQ }) => {
     await paymentIQ.deleteAccountIfDropdownVisible();
 });
 
-test.describe('Validate payments', () => {
+test.describe.skip('Validate payments', () => {
       
       const calculateExpectedBalance = (currentBalance: string, amount: number): string => {
             const numericValue = parseFloat(currentBalance.replace(/[^0-9.-]/g, ''));

@@ -66,6 +66,33 @@ async function validateOnlyOneElementActive(
  * Core attribute validation - single element attribute checks
  */
 
+/**
+ * Compares element attribute values against expected values.
+ * Returns a boolean result indicating whether all attributes match exactly.
+ * 
+ * @param locator - The element to compare
+ * @param attributes - Record of attribute names and their expected string values
+ * @returns Promise<boolean> - true if all attributes match exactly, false otherwise
+ * 
+ */
+export async function compareAttributeValues(
+  locator: CompositeLocator,
+  attributes: Record<string, string>
+): Promise<boolean> {
+  return await test.step(`Compare ${locator.name} attribute values`, async () => {
+    const element = locator.locator();
+    
+    for (const [attr, expectedValue] of Object.entries(attributes)) {
+      const actualValue = await element.getAttribute(attr);
+      if (actualValue !== expectedValue) {
+        return false;
+      }
+    }
+    
+    return true;
+  });
+}
+
 export async function validateAttributes(
   locator: CompositeLocator,
   attributes: Record<string, string | RegExp | null>,
@@ -96,6 +123,166 @@ export async function validateAttributesContaining(
       })
     );
   });
+}
+
+/**
+ * New explicit attribute validation methods following the assertions.ts pattern
+ */
+
+/**
+ * Core attribute validation function that handles the common validation logic.
+ * This is the base function used by all specific validation methods.
+ * 
+ * @param locator - The element to check
+ * @param validationPairs - Array of [attributeName, expectedValue] pairs ready for validation
+ * @param soft - Whether to use soft assertions
+ * @param stepName - Custom step name for the test output
+ * 
+ */
+async function validateAttributesCore(
+  locator: CompositeLocator,
+  validationPairs: Array<[string, string | RegExp]>,
+  soft = false,
+  stepName: string
+): Promise<void> {
+  await test.step(stepName, async () => {
+    const assertion = soft ? expect.soft : expect;
+    await Promise.all(
+      validationPairs.map(([attr, expectedValue]) => 
+        assertion(locator.locator()).toHaveAttribute(attr, expectedValue, { timeout: 1000 })
+      )
+    );
+  });
+}
+
+/**
+ * Validates that specified attributes exist on an element (regardless of their values).
+ * This is the foundational check used internally by other validation methods.
+ * 
+ * @param locator - The element to check
+ * @param attributeNames - Array of attribute names that should exist
+ * @param soft - Whether to use soft assertions
+ * 
+ * @example
+ * ```typescript
+ * // Check if button has required accessibility attributes
+ * await validateAttributesExist(button, ['aria-pressed', 'data-state', 'role']);
+ * 
+ * // This passes for any of these scenarios:
+ * // <button aria-pressed="true" data-state="active" role="button">
+ * // <button aria-pressed="false" data-state="" role="switch">
+ * // <button aria-pressed="" data-state="inactive" role="">
+ * 
+ * // Use in forms to ensure required attributes are present
+ * await validateAttributesExist(inputField, ['name', 'id', 'aria-describedby']);
+ * ```
+ */
+export async function validateAttributesExist(
+  locator: CompositeLocator,
+  attributeNames: string[],
+  soft = false
+): Promise<void> {
+  // Convert attribute names to validation pairs with regex pattern for existence check
+  const validationPairs: Array<[string, RegExp]> = attributeNames.map(attr => [attr, /.*/]);
+  
+  await validateAttributesCore(
+    locator,
+    validationPairs,
+    soft,
+    `Validate attributes exist for ${locator.name}`
+  );
+}
+
+/**
+ * Validates that attributes have exact matching values.
+ * 
+ * @param locator - The element to check
+ * @param attributes - Record of attribute names and their expected exact values
+ * @param soft - Whether to use soft assertions
+ * 
+ * @example
+ * ```typescript
+ * // Validate button is in exact active state
+ * await validateAttributesExact(button, { 
+ *   'aria-pressed': 'true', 
+ *   'data-state': 'active',
+ *   'class': 'btn btn-primary active'
+ * });
+ * 
+ * // Validate form field has exact validation state
+ * await validateAttributesExact(inputField, {
+ *   'aria-invalid': 'false',
+ *   'data-validation': 'passed'
+ * });
+ * 
+ * // Use with RegExp for complex exact matching
+ * await validateAttributesExact(element, {
+ *   'data-timestamp': /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/
+ * });
+ * ```
+ */
+export async function validateAttributesExact(
+  locator: CompositeLocator,
+  attributes: Record<string, string | RegExp>,
+  soft = false
+): Promise<void> {
+  // Convert attributes to validation pairs - values are used as-is for exact matching
+  const validationPairs: Array<[string, string | RegExp]> = Object.entries(attributes);
+  
+  await validateAttributesCore(
+    locator,
+    validationPairs,
+    soft,
+    `Validate exact attribute values for ${locator.name}`
+  );
+}
+
+/**
+ * Validates that attributes contain specified substrings (partial matching).
+ * 
+ * @param locator - The element to check
+ * @param attributes - Record of attribute names and substrings they should contain
+ * @param soft - Whether to use soft assertions
+ * 
+ * @example
+ * ```typescript
+ * // Check if button has required CSS classes (partial match)
+ * await validateAttributesPartial(button, { 
+ *   'class': 'active',           // matches "btn btn-primary active disabled"
+ *   'data-state': 'select',      // matches "multi-selected" or "pre-selected"
+ *   'aria-label': 'Save'         // matches "Save Document" or "Auto-Save"
+ * });
+ * 
+ * // Useful for dynamic attributes with changing values
+ * await validateAttributesPartial(element, {
+ *   'id': 'user-',              // matches "user-123", "user-456-profile"
+ *   'data-testid': 'modal'       // matches "modal-dialog", "confirmation-modal"
+ * });
+ * 
+ * // Check error states contain expected keywords
+ * await validateAttributesPartial(errorField, {
+ *   'aria-describedby': 'error',  // matches "field-error-123"
+ *   'class': 'invalid'            // matches "form-control invalid required"
+ * });
+ * ```
+ */
+export async function validateAttributesPartial(
+  locator: CompositeLocator,
+  attributes: Record<string, string>,
+  soft = false
+): Promise<void> {
+  // Convert string values to RegExp patterns for partial matching
+  const validationPairs: Array<[string, RegExp]> = Object.entries(attributes).map(([attr, val]) => {
+    const pattern = typeof val === 'string' ? new RegExp(val) : val;
+    return [attr, pattern];
+  });
+  
+  await validateAttributesCore(
+    locator,
+    validationPairs,
+    soft,
+    `Validate partial attribute values for ${locator.name}`
+  );
 }
 
 /**

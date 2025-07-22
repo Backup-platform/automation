@@ -100,6 +100,7 @@ export class LoginPage {
         await this.fillUsername(username);
         await this.fillPassword(password);
         await this.clickLoginButton();
+        await this.page.waitForEvent("domcontentloaded");
     }
 
     @stepParam((scenario: string, expectedURL: string) => `I validate ${scenario} navigation back to ${expectedURL}`)
