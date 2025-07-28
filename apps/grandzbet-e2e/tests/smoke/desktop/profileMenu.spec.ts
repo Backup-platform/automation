@@ -1,9 +1,8 @@
 import { assertUrl } from '@test-utils';
 import test from '../../../pages/base/base.po';
 
-test.beforeEach(async ({ page, popupHandlers }) => {
+test.beforeEach(async ({ page }) => {
 	await page.goto(`${process.env.URL}`, { waitUntil: "domcontentloaded" });
-  	await popupHandlers.handleAllPopups();
 });
 	test.describe('Profile Menu Tests', () => {
 	test("Validate profile menu elements", async ({ profileMenu, menuItems }) => {

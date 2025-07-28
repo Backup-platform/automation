@@ -20,20 +20,21 @@ export class PersonalInfo {
     }
 
     // Locators
-
-    private readonly nameFieldSelector = '#account-information .flex.w-full.flex-col.items-start.gap-1\\.5:first-child';
+    private readonly nameFieldSelector = '#account-information > .flex.w-full.flex-col.items-start:nth-child(2)';
     private readonly dobFieldSelector = '#account-information .flex.items-start.gap-6 .flex.w-full.flex-col:first-child';
     private readonly currencyFieldSelector = '#account-information .flex.items-start.gap-6 .flex.w-full.flex-col:last-child';
-    private readonly emailFieldSelector = '#account-information .flex.w-full.flex-col.items-start.gap-1\\.5:nth-child(3)';
-    private readonly phoneFieldSelector = '#account-information .flex.w-full.flex-col.items-start.gap-1\\.5:last-child'
-    private readonly checkedAttributes = {"aria-checked": "true", "data-state": "checked"}
-    private readonly uncheckedAttributes = {"aria-checked": "false", "data-state": "unchecked"}
+    private readonly emailFieldSelector = '#account-information > .flex.w-full.flex-col.items-start:nth-child(4)';
+    private readonly phoneFieldSelector = '#account-information > .flex.w-full.flex-col.items-start:last-child';
+    private readonly passwordSelector = '#change-password form > div';
 
+    private readonly checkedAttributes = {"aria-checked": "true", "data-state": "checked"};
+    private readonly uncheckedAttributes = {"aria-checked": "false", "data-state": "unchecked"};
+
+    // Headers
     private readonly personalInfoHeader = compositeLocator(() => this.page.locator('#personal-info-header'), 'Personal Info Header');
+    private readonly accountInfoHeader = compositeLocator(() => this.page.locator('#account-information h5'), 'Account Info Header');
 
     // Account Information Section
-    private readonly accountInfoHeader = compositeLocator(() => this.page.locator('#account-information h5'), 'Account Info Header');
-    
     private readonly nameLabel = compositeLocator(() => this.page.locator(`${this.nameFieldSelector} label`), 'Name Label');
     private readonly nameInput = compositeLocator(() => this.page.locator(`${this.nameFieldSelector} input`), 'Name Input Field');
     
@@ -49,22 +50,22 @@ export class PersonalInfo {
     private readonly phoneLabel = compositeLocator(() => this.page.locator(`${this.phoneFieldSelector} label`), 'Phone Label');
     private readonly phoneInput = compositeLocator(() => this.page.locator(`${this.phoneFieldSelector} input`), 'Phone Input Field');
 
-    // Password Section
+    // Password Section - Using base selector with nth-child for consistency
     private readonly changePasswordHeader = compositeLocator(() => this.page.locator('#change-password h3'), 'Change Password Header');
     
-    private readonly oldPasswordLabel = compositeLocator(() => this.page.locator('form .space-y-2:first-child label'), 'Old Password Label');
+    private readonly oldPasswordLabel = compositeLocator(() => this.page.locator(`${this.passwordSelector}:nth-child(1) label`), 'Old Password Label');
     private readonly oldPasswordInput = compositeLocator(() => this.page.locator('input[name="oldPassword"]'), 'Old Password Input Field');
     private readonly oldPasswordToggle = compositeLocator(() => this.page.locator('input[name="oldPassword"]').locator('..').locator('.absolute.inset-y-0.right-0'), 'Old Password Toggle');
     
-    private readonly newPasswordLabel = compositeLocator(() => this.page.locator('form .space-y-2:nth-child(2) label'), 'New Password Label');
+    private readonly newPasswordLabel = compositeLocator(() => this.page.locator(`${this.passwordSelector}:nth-child(2) label`), 'New Password Label');
     private readonly newPasswordInput = compositeLocator(() => this.page.locator('input[name="newPassword"]'), 'New Password Input Field');
     private readonly newPasswordToggle = compositeLocator(() => this.page.locator('input[name="newPassword"]').locator('..').locator('.absolute.inset-y-0.right-0'), 'New Password Toggle');
     
-    private readonly confirmPasswordLabel = compositeLocator(() => this.page.locator('form .space-y-2:last-child label'), 'Confirm Password Label');
+    private readonly confirmPasswordLabel = compositeLocator(() => this.page.locator(`${this.passwordSelector}:nth-child(3) label`), 'Confirm Password Label');
     private readonly confirmPasswordInput = compositeLocator(() => this.page.locator('input[name="confirmNewPassword"]'), 'Confirm Password Input Field');
     private readonly confirmPasswordToggle = compositeLocator(() => this.page.locator('input[name="confirmNewPassword"]').locator('..').locator('.absolute.inset-y-0.right-0'), 'Confirm Password Toggle');
     
-    private readonly updatePasswordButton = compositeLocator(() => this.page.locator('form .flex.flex-col.gap-1\\.5.pt-5 button'), 'Update Password Button');
+    private readonly updatePasswordButton = compositeLocator(() => this.page.locator('#change-password form button'), 'Update Password Button');
 
     // Checkboxes 
     private readonly communicationPreferencesHeader = compositeLocator(() => this.page.locator('.my-3.flex.items-center.gap-1 span'), 'Communication Preferences Header');

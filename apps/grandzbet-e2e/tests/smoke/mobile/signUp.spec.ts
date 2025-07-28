@@ -1,9 +1,8 @@
 import test from "../../../pages/base/base.po";
 import path from 'path';
 
-test.beforeEach(async ({ page, menuItems, popupHandlers }) => {
+test.beforeEach(async ({ page, menuItems }) => {
     await page.goto(`${process.env.URL}`);
-  	await popupHandlers.handleAllPopups();
     await menuItems.clickRegister();
 });
 

@@ -1,14 +1,13 @@
 import test from '../../../pages/base/base.po';
 
-test.beforeEach(async ({ page, popupHandlers, personalInfo }) => {
+test.beforeEach(async ({ page, personalInfo }) => {
 	await page.goto(`${process.env.URL}`, { waitUntil: "domcontentloaded" });
-  	await popupHandlers.handleAllPopups();
     await personalInfo.navigateToPage();
 });
 
 test.describe("Login Page Smoke Tests", () => {
 
-	test("Validate personal info page", async ({ personalInfo }) => {
+	test.only("Validate personal info page", async ({ personalInfo }) => {
 		await personalInfo.validateAccountInfoFieldsVisible();
         await personalInfo.validateAccountInfoFieldsDisabled();
         await personalInfo.validateAccountInfoFieldsNotEditable();

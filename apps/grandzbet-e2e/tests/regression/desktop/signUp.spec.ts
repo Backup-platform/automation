@@ -1,9 +1,8 @@
 import test from "../../../pages/base/base.po";
 import path from 'path';
 
-test.beforeEach(async ({ page, popupHandlers }) => {
+test.beforeEach(async ({ page }) => {
     await page.goto(`${process.env.URL}`);
-  	await popupHandlers.handleAllPopups();
 });
 
 test.describe('Signup Regression Tests', () => {

@@ -55,8 +55,8 @@ async function validateOnlyOneElementActive(
     await Promise.all(
       elements.map((el, i) =>
         i === activeIndex
-          ? assertion(el.locator()).toHaveAttribute(activeAttr, activeRegex, { timeout: 1000 })
-          : assertion(el.locator()).not.toHaveAttribute(activeAttr, activeRegex, { timeout: 1000 })
+          ? assertion(el.locator()).toHaveAttribute(activeAttr, activeRegex)
+          : assertion(el.locator()).not.toHaveAttribute(activeAttr, activeRegex)
       )
     );
   });
@@ -103,7 +103,7 @@ export async function validateAttributes(
       Object.entries(attributes).map(([attr, val]) => {
         if (val === null) throw new Error(`Null attribute value for ${attr}`);
         const assertion = soft ? expect.soft : expect;
-        return assertion(locator.locator()).toHaveAttribute(attr, val, { timeout: 1000 });
+        return assertion(locator.locator()).toHaveAttribute(attr, val);
       })
     );
   });
@@ -118,8 +118,7 @@ export async function validateAttributesContaining(
     await Promise.all(
       Object.entries(attributes).map(([attr, val]) => {
         const assertion = soft ? expect.soft : expect;
-        // Use RegExp for substring match
-        return assertion(locator.locator()).toHaveAttribute(attr, new RegExp(val), { timeout: 1000 });
+        return assertion(locator.locator()).toHaveAttribute(attr, new RegExp(val));
       })
     );
   });
@@ -145,14 +144,12 @@ async function validateAttributesCore(
   soft = false,
   stepName: string
 ): Promise<void> {
-  await test.step(stepName, async () => {
-    const assertion = soft ? expect.soft : expect;
-    await Promise.all(
-      validationPairs.map(([attr, expectedValue]) => 
-        assertion(locator.locator()).toHaveAttribute(attr, expectedValue, { timeout: 1000 })
-      )
-    );
-  });
+await test.step(stepName, async () => {
+    const assertion = soft ? expect.soft : expect;    
+    await Promise.all(validationPairs.map(([attr, expectedValue]) => assertion(locator.locator(), 
+	  	`Validate attribute "${attr}" with value "${expectedValue}" for ${locator.name}`).
+		toHaveAttribute(attr, expectedValue)));
+  	});
 }
 
 /**
@@ -182,15 +179,17 @@ export async function validateAttributesExist(
   attributeNames: string[],
   soft = false
 ): Promise<void> {
-  // Convert attribute names to validation pairs with regex pattern for existence check
-  const validationPairs: Array<[string, RegExp]> = attributeNames.map(attr => [attr, /.*/]);
-  
-  await validateAttributesCore(
-    locator,
-    validationPairs,
-    soft,
-    `Validate attributes exist for ${locator.name}`
-  );
+await test.step(`Validate attributes exist for ${locator.name}`, async () => {
+    const assertion = soft ? expect.soft : expect;
+    
+    for (const attr of attributeNames) {
+		await test.step(`Check attribute "${attr}"`, async () => {
+      		await assertion(locator.locator(), 
+        	`Expected attribute "${attr}" to exist on ${locator.name}`).
+        	toHaveAttribute(attr);
+    	});
+  	}
+});
 }
 
 /**
@@ -271,7 +270,6 @@ export async function validateAttributesPartial(
   attributes: Record<string, string>,
   soft = false
 ): Promise<void> {
-  // Convert string values to RegExp patterns for partial matching
   const validationPairs: Array<[string, RegExp]> = Object.entries(attributes).map(([attr, val]) => {
     const pattern = typeof val === 'string' ? new RegExp(val) : val;
     return [attr, pattern];
@@ -285,9 +283,6 @@ export async function validateAttributesPartial(
   );
 }
 
-/**
- * Group element attribute validation functions
- */
 
 /**
  * Validates that only one element in a group has the specified active attributes,
@@ -307,7 +302,6 @@ export async function validateOnlyOneElementActiveGroup(
   softAssert = false,
   groupDescription = 'elements'
 ): Promise<void> {
-  // Extract the first (and expected only) attribute from the object
   const [activeAttributeType, activeAttributeValue] = Object.entries(attributes)[0];
   await test.step(`Validate only ${elements[activeElementIndex].name} is active among ${groupDescription}`, async () => {
     await validateOnlyOneElementActive(
@@ -350,7 +344,6 @@ export async function validateToggleBetweenTwoElements(
       softAssert,
       toggleDescription
     );
-    // Click the inactive element and validate the toggle
     const elementToClick = initialActiveElement === 'A' ? elementB : elementA;
     const newActiveIndex = initialActiveElement === 'A' ? 1 : 0;
     await clickElement(elementToClick);

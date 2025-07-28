@@ -1,8 +1,7 @@
 import test from '../../../pages/base/base.po';
 
-test.beforeEach(async ({ page, popupHandlers, personalInfo }) => {
+test.beforeEach(async ({ page, personalInfo }) => {
 	await page.goto(`${process.env.URL}`, { waitUntil: "domcontentloaded" });
-  	await popupHandlers.handleAllPopups();
 	await personalInfo.navigateToPage();
 });
 
@@ -24,14 +23,10 @@ test.describe("Update Password error validations", () => {
 		await personalInfo.isConfirmPasswordErrorVisible();
 	});
 
-	test.only ("Validate Password Visibility Toggle", async ({ personalInfo }) => {
-		const testPassword = 'TestPassword123!';
-		const testNewPassword = 'NewPassword456@';
-		const testConfirmPassword = 'ConfirmPassword789#';
-
-		await personalInfo.fillOldPassword(testPassword);
-		await personalInfo.fillNewPassword(testNewPassword);
-		await personalInfo.fillConfirmPassword(testConfirmPassword);
+	test("Validate Password Visibility Toggle", async ({ personalInfo }) => {
+		await personalInfo.fillOldPassword(oldPassword);
+		await personalInfo.fillNewPassword(newPassword);
+		await personalInfo.fillConfirmPassword(newPassword);
 
 		// Verify all fields start as hidden
 		await personalInfo.validateOldPasswordIsHidden();

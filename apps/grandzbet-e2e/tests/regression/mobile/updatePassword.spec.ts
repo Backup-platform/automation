@@ -1,8 +1,8 @@
 import test from '../../../pages/base/base.po';
 
-test.beforeEach(async ({ page, popupHandlers }) => {
+test.beforeEach(async ({ page, personalInfo }) => {
 	await page.goto(`${process.env.URL}`, { waitUntil: "domcontentloaded" });
-  	await popupHandlers.handleAllPopups();
+  	await personalInfo.navigateToPage();
 });
 
 test.describe("Update Password error validations", () => {
@@ -12,24 +12,18 @@ test.describe("Update Password error validations", () => {
     const confirmPasswordNotMatching = `${process.env.PASS}_not_matching`; 
 	const invalidPassword = ['Passw1@', 'PASSWORD1@', 'password1@', 'Password@', 'Парола1'];
 
-	test("Update password with invalid new password", async ({ menuItems, personalInfo, profileMenu }) => {
-		await menuItems.clickMyProfileButton();
-		await profileMenu.clickPersonalInfoButton();
+	test("Update password with invalid new password", async ({ personalInfo }) => {
 		await personalInfo.fillAndValidateNewPasswordError(invalidPassword, true);	
 	});
 
-	test("Update password with confirm password not matching new password", async ({ menuItems, personalInfo, profileMenu }) => {
-		await menuItems.clickMyProfileButton();
-		await profileMenu.clickPersonalInfoButton();
-
+	test("Update password with confirm password not matching new password", async ({ personalInfo }) => {
 		await personalInfo.fillOldPassword(oldPassword);
 		await personalInfo.fillNewPassword(newPassword);
 		await personalInfo.fillConfirmPassword(confirmPasswordNotMatching);
 		await personalInfo.isConfirmPasswordErrorVisible();
 	});
 
-		test.only ("Validate Password Visibility Toggle", async ({ personalInfo }) => {
-
+	test("Validate Password Visibility Toggle", async ({ personalInfo }) => {
 		await personalInfo.fillOldPassword(oldPassword);
 		await personalInfo.fillNewPassword(newPassword);
 		await personalInfo.fillConfirmPassword(newPassword);

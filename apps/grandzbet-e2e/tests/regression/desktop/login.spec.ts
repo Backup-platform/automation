@@ -3,9 +3,8 @@ import path from 'path';
 import { MenuItems } from '../../../pages/menu/menuItems.po';
 import { NavigationItems } from '../../../pages/menu/navigationItems.po';
 
-test.beforeEach(async ({ page, popupHandlers }) => {
+test.beforeEach(async ({ page }) => {
   await page.goto(`${process.env.URL}`, { waitUntil: 'load' });
-  await popupHandlers.handleAllPopups();
 });
 
 test.describe('Login Page Regression Tests - Desktop', () => {
@@ -84,7 +83,8 @@ test.describe('Login Page Regression Tests - Desktop', () => {
       {
         scenario: 'LandingPage',
         url: '',
-        navigate: async ({ menuItems }) => await menuItems.clickLogo(),
+        navigate: async ({ menuItems }) => 
+          await menuItems.clickLogo(),
       },
       {
         scenario: 'Casino',

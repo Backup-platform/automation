@@ -1,8 +1,7 @@
 import test from '../../../pages/base/base.po';
 
-test.beforeEach(async ({ page, popupHandlers }) => {
+test.beforeEach(async ({ page }) => {
 	await page.goto(`${process.env.URL}`, { waitUntil: "domcontentloaded" });
-  	await popupHandlers.handleAllPopups();
 });
 
 test.skip("Update password e2e", async ({ menuItems, loginPage, personalInfo, profileMenu }) => {

@@ -14,44 +14,48 @@ export class ProfileMenu {
     }
 
     // Locators
+    private readonly menuSelector = 'div[role="dialog"][aria-describedby="The profile menu content"]';
+    private readonly balanceSelector = '.flex.flex-col.items-end.gap-\\[2px\\]:last-child';
+    private readonly linksSelector = '#my-profile-menu-links > button';
+
     private readonly profileMenuDialog = compositeLocator(() => 
-        this.page.locator('div[role="dialog"][data-state="open"][aria-describedby="The profile menu content"]'), 'Profile menu dialog');
+        this.page.locator(this.menuSelector), 'Profile menu dialog');
 
     private readonly escapeButton = compositeLocator(() => 
-        this.page.locator('div[role="dialog"][data-state="open"][aria-describedby="The profile menu content"] button.absolute.right-4.top-4'), 'Escape button');
+        this.page.locator(`${this.menuSelector} button.absolute.right-4.top-4`), 'Escape button');
     
     private readonly depositButton = compositeLocator(() => 
-        this.page.locator('div[role="dialog"][data-state="open"][aria-describedby="The profile menu content"] button.bg-primary'), 'Deposit button');
+        this.page.locator(`${this.menuSelector} button.bg-primary`), 'Deposit button');
     
     private readonly realMoney = compositeLocator(() => 
-        this.page.locator('div[role="dialog"][data-state="open"][aria-describedby="The profile menu content"] .flex.flex-col.items-end.gap-\\[2px\\]:last-child span:nth-child(1)'), 'Real Money');
+        this.page.locator(`${this.menuSelector} ${this.balanceSelector} span:nth-child(1)`), 'Real Money');
     
     private readonly casinoBonus = compositeLocator(() => 
-        this.page.locator('div[role="dialog"][data-state="open"][aria-describedby="The profile menu content"] .flex.flex-col.items-end.gap-\\[2px\\]:last-child span:nth-child(2)'), 'Casino Bonus');
-    
+        this.page.locator(`${this.menuSelector} ${this.balanceSelector} span:nth-child(2)`), 'Casino Bonus');
+
     private readonly sportBonus = compositeLocator(() => 
-        this.page.locator('div[role="dialog"][data-state="open"][aria-describedby="The profile menu content"] .flex.flex-col.items-end.gap-\\[2px\\]:last-child span:nth-child(3)'), 'Sport Bonus');
-    
+        this.page.locator(`${this.menuSelector} ${this.balanceSelector} span:nth-child(3)`), 'Sport Bonus');
+
     private readonly balance = compositeLocator(() => 
-        this.page.locator('div[role="dialog"][data-state="open"][aria-describedby="The profile menu content"] .flex.flex-col.items-end.gap-\\[2px\\]:last-child span.text-primary:nth-child(4)'), 'Balance');
-    
+        this.page.locator(`${this.menuSelector} ${this.balanceSelector} span.text-primary:nth-child(4)`), 'Balance');
+
     private readonly myBonusesButton = compositeLocator(() => 
-        this.page.locator('div[role="dialog"][data-state="open"][aria-describedby="The profile menu content"] #my-profile-menu-links > button').first(), 'My Bonuses button');
+        this.page.locator(`${this.menuSelector} ${this.linksSelector}`).first(), 'My Bonuses button');
     
     private readonly personalInfoButton = compositeLocator(() => 
-        this.page.locator('div[role="dialog"][data-state="open"][aria-describedby="The profile menu content"] #my-profile-menu-links > button').nth(1), 'Personal Info button');
+        this.page.locator(`${this.menuSelector} ${this.linksSelector}`).nth(1), 'Personal Info button');
     
     private readonly verificationButton = compositeLocator(() => 
-        this.page.locator('div[role="dialog"][data-state="open"][aria-describedby="The profile menu content"] #my-profile-menu-links > button').nth(2), 'Verification button');
+        this.page.locator(`${this.menuSelector} ${this.linksSelector}`).nth(2), 'Verification button');
     
     private readonly historyButton = compositeLocator(() => 
-        this.page.locator('div[role="dialog"][data-state="open"][aria-describedby="The profile menu content"] #my-profile-menu-links > button').nth(3), 'History button');
+        this.page.locator(`${this.menuSelector} ${this.linksSelector}`).nth(3), 'History button');
     
     private readonly limitsButton = compositeLocator(() => 
-        this.page.locator('div[role="dialog"][data-state="open"][aria-describedby="The profile menu content"] #my-profile-menu-links > button').nth(4), 'Limits button');
+        this.page.locator(`${this.menuSelector} ${this.linksSelector}`).nth(4), 'Limits button');
     
     private readonly logoutButton = compositeLocator(() => 
-        this.page.locator('div[role="dialog"][data-state="open"][aria-describedby="The profile menu content"] .flex-end > button'), 'Logout button');
+        this.page.locator(`${this.menuSelector} .flex-end > button`), 'Logout button');
 
     // Public getters for clickable elements
     public get profileMenuDialogElement() { return this.profileMenuDialog; }
