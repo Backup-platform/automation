@@ -7,7 +7,7 @@ test.beforeEach(async ({ page, personalInfo }) => {
 
 test.describe("Login Page Smoke Tests", () => {
 
-	test.only("Validate personal info page", async ({ personalInfo }) => {
+	test("Validate personal info page", async ({ personalInfo }) => {
 		await personalInfo.validateAccountInfoFieldsVisible();
         await personalInfo.validateAccountInfoFieldsDisabled();
         await personalInfo.validateAccountInfoFieldsNotEditable();
