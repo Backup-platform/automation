@@ -53,12 +53,25 @@ test.describe('Login Page Regression Tests - Desktop', () => {
         password: `${process.env.PASS}`,
         error: 'email',
       },
-      //   { TODO: figure out how to handle this case
-      //     scenario: `Empty both`,
-      //     username: '',
-      //     password: '',
-      //     error: 'credentials',
-      //   }
+      {
+      scenario: `Empty both`,
+      username: '',
+      password: '',
+      error: 'email',
+      },
+       {
+      scenario: `Empty both tabs`,
+       username: '',
+     password: '',
+      error: 'password',
+       },
+    //      {
+    //   scenario: `Empty both tabs after deleted autofill fields`,
+    //    username: '',
+    //  password: '',
+    //   error: 'credentials',
+    //    },
+      
     ];
     for (const fields of wrongCredentials) {
       test(`Validate ${fields.scenario} tab`, async ({
