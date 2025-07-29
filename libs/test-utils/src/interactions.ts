@@ -225,38 +225,41 @@ export async function clearAndFill(element: CompositeLocator, value: string, opt
 
 /**
  * Click an element with retries until a result element becomes visible.
+ * Use with discretion: this function is intended for elements 
+ * that become visible after a click and are not 100% stable.
  *
  * @param clickElement - CompositeLocator for the element to click
  * @param resultElement - CompositeLocator for the element to validate after click
  */
 export async function retryUntilCondition(
-  clickElement: CompositeLocator,
-  resultElement: CompositeLocator
+	clickElement: CompositeLocator,
+	resultElement: CompositeLocator
 ): Promise<void> {
-  const clickLocator = clickElement.locator();
-  const resultLocator = resultElement.locator();
-  const page = clickLocator.page();
-  const maxRetries = 3;
-  const retryDelay = 500;
+	await test.step(`Retry until condition: click ${clickElement.name} and wait for ${resultElement.name} to be visible`, async () => {
+		const page = clickElement.locator().page();
+		const maxRetries = 3;
+		const retryDelay = 500;
 
-  const actionDescription = `click ${clickElement.name}`;
-  const validationDescription = `${resultElement.name} to be visible`;
-
-  let lastError: Error | undefined;
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      await clickLocator.click({ force: true });
-      await resultLocator.waitFor({ state: 'visible', timeout: 4000 });
-      return;
-    } catch (error) {
-      lastError = error as Error;
-      if (attempt >= maxRetries) {
-        throw new Error(`Failed to ${actionDescription} and wait for ${validationDescription} after ${maxRetries} attempts. Last error: ${lastError?.message}`);
-      }
-      console.log(`Retrying ${actionDescription} (waiting for ${validationDescription}): Attempt ${attempt}/${maxRetries} failed - ${lastError?.message || 'Unknown error'}`);
-      await page.waitForTimeout(retryDelay);
-    }
-  }
+		for (let attempt = 1; attempt <= maxRetries; attempt++) {
+			try {
+				await test.step(`Attempt ${attempt}/${maxRetries}: click ${clickElement.name}`, async () => {
+                    //TODO: check if using out of the box click vs our custom methods
+					await clickElement.locator().click({ force: true });
+					await resultElement.locator().waitFor({ state: 'visible', timeout: 4000 });
+				});
+				// Success - return early
+				return;
+			} catch (error) {
+				if (attempt === maxRetries) {
+					throw new Error(`Failed to click ${clickElement.name} and wait for ${resultElement.name} to be visible after ${maxRetries} attempts. Last error: ${(error as Error)?.message}`);
+				}
+				
+				await test.step(`Wait ${retryDelay}ms before retry`, async () => {
+					await page.waitForTimeout(retryDelay);
+				});
+			}
+		}
+	});
 }
 
 /**
