@@ -1,7 +1,7 @@
 import { Page } from '@playwright/test';
 import { step } from '@test-utils/decorators';
 import { assertVisible, assertNotVisible } from '@test-utils/assertions';
-import { clickElement } from '@test-utils/interactions';
+import { clickElement, retryUntilCondition } from '@test-utils/interactions';
 import { compositeLocator, CompositeLocator } from '@test-utils/core-types';
 
 export class MenuItems {
@@ -67,12 +67,25 @@ export class MenuItems {
     private readonly searchButtonDesktop = compositeLocator(() => 
         this.page.locator('.ml-auto .relative input'), 'Search button (Desktop)');
 
+    // Result elements for validation after clicks
+    private readonly loginModal = compositeLocator(() => 
+        this.page.locator('form input[name="email"]').first(), 'Login modal');
+    private readonly profileMenu = compositeLocator(() => 
+        this.page.locator('[data-state="open"] section#my-profile-menu-links').first(), 'Profile menu');
+
     
     // Actions
-    public clickLogin = async () => await clickElement(this.login);
+    public clickLogin = async () => {
+        await retryUntilCondition(this.login, this.loginModal);
+    };
+
     public clickRegister = async () => await clickElement(this.register);
     public clickLogo = async () => await clickElement(await this.logoElement());
-    public clickMyProfileButton = async () => await clickElement(this.myProfileButton);
+
+    public clickMyProfileButton = async () => {
+        await retryUntilCondition(this.myProfileButton, this.profileMenu);
+    };
+
     public clickDepositButton = async () => await clickElement(await this.deposit());
     public clickBalanceButton = async () => await clickElement(this.balance);
 

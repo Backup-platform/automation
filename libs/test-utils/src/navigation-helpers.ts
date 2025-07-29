@@ -4,30 +4,11 @@ import { clickElement } from './interactions';
 import { CompositeLocator } from './core-types';
 
 /**
- * @fileoverview Navigation and URL validation utilities for test automation
  * 
  * This module provides comprehensive navigation helpers for testing single-page
  * applications and multi-page workflows. Includes URL validation, navigation
  * clicks with assertions, and URL substring matching for complex routing scenarios.
  * 
- * @author M Petrov
- * 
- * @example
- * ```typescript
- * // Assert exact URL match
- * await assertUrl(page, 'https://example.com/dashboard');
- * 
- * // Assert URL contains specific substrings
- * await assertUrlContains(page, ['user', 'profile'], true);
- * 
- * // Perform navigation click with URL validation
- * await performNavigationClick(
- *   page, 
- *   profileLink, 
- *   'Profile Link', 
- *   '/user/profile'
- * );
- * ```
  */
 
 /**
@@ -121,7 +102,6 @@ export async function performNavigationClick(
 ): Promise<void> {
     await test.step(`Perform navigation click on ${locator.name} and assert url is ${expectedPath}`, async () => {
         await clickElement(locator);
-        await page.waitForLoadState('domcontentloaded', { timeout: 1000 });
         await assertUrl(page, `${expectedPath}`, true);
     });
 }

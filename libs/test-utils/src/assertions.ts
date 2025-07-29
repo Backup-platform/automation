@@ -12,7 +12,7 @@ import { CompositeLocator } from './core-types';
  * belong logically with other group-based operations.
  */
 
-type AssertionType = 'visible' | 'enabled' | 'editable';
+type AssertionType = 'visible' | 'enabled' | 'editable' | 'disabled';
 type AssertionMode = 'positive' | 'negative';
 
 function stepMessage(description: string, action: string, state?: string) {
@@ -56,6 +56,10 @@ export async function assertElementState(
             positive: async () => await assertionExpected(locator, message).toBeEditable(),
             negative: async () => await assertionExpected(locator, message).not.toBeEditable(),
         },
+        disabled: {
+            positive: async () => await assertionExpected(locator, message).toBeDisabled(),
+            negative: async () => await assertionExpected(locator, message).not.toBeDisabled(),
+        }
     };
 
     await test.step(message, async () => {
@@ -92,13 +96,11 @@ export async function assertElementStates(
                 softAssert
             );
         }
-    });
-}
+        });
+    }
 
 /**
- * Convenience functions built on the unified assertion engine.
- * These provide simple, commonly-used assertion patterns while leveraging
- * the power and consistency of the underlying unified system.
+ * Convenience functions for common assertions
  */
 
 export async function assertVisible(element: CompositeLocator, softAssert = false): Promise<void> {
@@ -123,6 +125,14 @@ export async function assertEnabled(element: CompositeLocator, softAssert = fals
 
 export async function assertNotEnabled(element: CompositeLocator, softAssert = false): Promise<void> {
     await assertElementState(element, 'enabled', 'negative', undefined, softAssert);
+}
+
+export async function assertDisabled(element: CompositeLocator, softAssert = false): Promise<void> {
+    await assertElementState(element, 'disabled', 'positive', undefined, softAssert);
+}
+
+export async function assertNotDisabled(element: CompositeLocator, softAssert = false): Promise<void> {
+    await assertElementState(element, 'disabled', 'negative', undefined, softAssert);
 }
 
 /**
@@ -168,10 +178,6 @@ export async function assertVisibleNotActionable(element: CompositeLocator, soft
         await assertionExpected(isActionable, `${element.name} should NOT be actionable (covered by overlay)`).toBe(false);
     });
 }
-
-/**
- * Single element text content assertions
- */
 
 /**
  * Assert that an individual element contains specific text

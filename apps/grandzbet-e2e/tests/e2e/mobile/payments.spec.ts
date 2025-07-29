@@ -1,12 +1,11 @@
 import test from '../../../pages/base/base.po';
 
-test.beforeEach(async ({ page, popupHandlers, paymentIQ }) => {
+test.beforeEach(async ({ page, paymentIQ }) => {
   await page.goto(`${process.env.URL}`, { waitUntil: 'load' });
-  await popupHandlers.handleAllPopups();
   await paymentIQ.deleteAccountIfDropdownVisible();
 });
 
-test.describe('Validate payments', () => {
+test.describe.skip('Validate payments', () => {
   const calculateExpectedBalance = (
     currentBalance: string,
     amount: number

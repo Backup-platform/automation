@@ -1,8 +1,7 @@
 import test from '../../../pages/base/base.po';
 
-test.beforeEach(async ({ page, popupHandlers, paymentIQ }) => {
+test.beforeEach(async ({ page, paymentIQ }) => {
 	await page.goto(`${process.env.URL}`, { waitUntil: "load" });
-  	await popupHandlers.handleAllPopups();
       await paymentIQ.deleteAccountIfDropdownVisible();
 });
 

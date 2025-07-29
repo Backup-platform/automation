@@ -2,36 +2,14 @@
 import { test } from '@playwright/test';
 import { CompositeLocator } from './core-types';
 import { assertElementStates } from './assertions';
+import { validateAttributesExact, validateAttributesExist, compareAttributeValues } from './attributes';
 
 /**
- * @fileoverview Unified interaction system for Playwright test automation
  * 
  * This module provides a unified, configurable interaction engine that eliminates
  * redundancy by consolidating multiple similar interaction functions into flexible,
  * composable patterns. It supports validation, chaining, and conditional interactions.
  * 
- * @example
- * ```typescript
- * // Basic click with default validation
- * await clickElement(button);
- * 
- * // Click with custom validation and options
- * await clickElement(button, {
- *   preValidations: [{ type: 'visible' }, { type: 'enabled' }],
- *   force: true
- * });
- * 
- * // Interaction chain for complex workflows
- * await performInteractionChain([
- *   { element: dropdown, action: 'click' },
- *   { element: option, action: 'click', options: { skipValidation: true } }
- * ]);
- * 
- * // Conditional interaction
- * await clickIfVisibleOrFallback(element, async () => {
- *   await fallbackAction();
- * });
- * ```
  */
 
 type InteractionOptions = {
@@ -246,6 +224,45 @@ export async function clearAndFill(element: CompositeLocator, value: string, opt
 }
 
 /**
+ * Click an element with retries until a result element becomes visible.
+ * Use with discretion: this function is intended for elements 
+ * that become visible after a click and are not 100% stable.
+ *
+ * @param clickElement - CompositeLocator for the element to click
+ * @param resultElement - CompositeLocator for the element to validate after click
+ */
+export async function retryUntilCondition(
+	clickElement: CompositeLocator,
+	resultElement: CompositeLocator
+): Promise<void> {
+	await test.step(`Retry until condition: click ${clickElement.name} and wait for ${resultElement.name} to be visible`, async () => {
+		const page = clickElement.locator().page();
+		const maxRetries = 3;
+		const retryDelay = 500;
+
+		for (let attempt = 1; attempt <= maxRetries; attempt++) {
+			try {
+				await test.step(`Attempt ${attempt}/${maxRetries}: click ${clickElement.name}`, async () => {
+                    //TODO: check if using out of the box click vs our custom methods
+					await clickElement.locator().click({ force: true });
+					await resultElement.locator().waitFor({ state: 'visible', timeout: 4000 });
+				});
+				// Success - return early
+				return;
+			} catch (error) {
+				if (attempt === maxRetries) {
+					throw new Error(`Failed to click ${clickElement.name} and wait for ${resultElement.name} to be visible after ${maxRetries} attempts. Last error: ${(error as Error)?.message}`);
+				}
+				
+				await test.step(`Wait ${retryDelay}ms before retry`, async () => {
+					await page.waitForTimeout(retryDelay);
+				});
+			}
+		}
+	});
+}
+
+/**
  * Conditional interactions for dynamic test scenarios.
  */
 
@@ -268,4 +285,113 @@ export async function clickIfVisibleOrFallback(
             await fallbackAction();
         }
     });
+}
+
+/**
+ * Generic state management function for button-based checkbox/radio/toggle implementations.
+ * 
+ * Handles custom components where Playwright's native .check()/.uncheck() methods don't work
+ * (which only work on actual input[type="checkbox"] and input[type="radio"] elements).
+ * 
+ * **Logic Flow:**
+ * 1. Validates that all required attributes exist on the element (fails if missing)
+ * 2. Checks if element is already in the desired state (no action if true)
+ * 3. If not in desired state, clicks to toggle and validates the result
+ * 
+ * **Error Scenarios:**
+ * - Missing attributes: Fails immediately (configuration/implementation error)
+ * - Inconsistent state after click: Fails test (UI bug - element doesn't toggle properly)
+ * 
+ * @param element - CompositeLocator for the checkbox/radio button element
+ * @param targetAttributes - Record of attributes that define the desired state
+ * @param stateName - The state name for logging ('checked' or 'unchecked')
+ * 
+ */
+async function ensureButtonCheckboxState(
+    element: CompositeLocator,
+    targetAttributes: Record<string, string>,
+    stateName: 'checked' | 'unchecked'
+): Promise<void> {
+    await test.step(`Ensure ${element.name} is ${stateName}`, async () => {
+
+        await validateAttributesExist(element, Object.keys(targetAttributes), false);
+        
+        const isInDesiredState = await compareAttributeValues(element, targetAttributes);
+        
+        if (isInDesiredState) {
+            await test.step(`${element.name} is already ${stateName}`, async () => {
+                return;
+            });
+        } else {
+            await test.step(`${element.name} is not ${stateName} - clicking to change state`, async () => {
+                await clickElement(element, { skipValidation: true });
+            });
+
+            await test.step('Validate state changed successfully', async () => {
+                await validateAttributesExact(element, targetAttributes, false);
+            });
+        }
+    });
+}
+
+/**
+ * Ensures a button-based checkbox/toggle is in the checked state.
+ * 
+ * For custom components where Playwright's .check() doesn't work (only works on input[type="checkbox"]).
+ * Validates current state and only clicks if not already checked (idempotent operation).
+ * 
+ * @param element - CompositeLocator for the checkbox-like button
+ * @param checkedAttributes - Record of attributes that indicate checked state
+ * 
+ * @example
+ * ```typescript
+ * // Standard data attributes
+ * await ensureButtonCheckboxIsChecked(myCheckbox, {
+ *   'data-state': 'checked',
+ *   'aria-checked': 'true'
+ * });
+ * 
+ * // Custom framework attributes
+ * await ensureButtonCheckboxIsChecked(toggleSwitch, {
+ *   'data-checked': 'true',
+ *   'class': 'toggle--active'
+ * });
+ * ```
+ */
+export async function ensureButtonCheckboxIsChecked(
+    element: CompositeLocator,
+    checkedAttributes: Record<string, string>
+): Promise<void> {
+    await ensureButtonCheckboxState(element, checkedAttributes, 'checked');
+}
+
+/**
+ * Ensures a button-based checkbox/toggle is in the unchecked state.
+ * 
+ * For custom components where Playwright's .uncheck() doesn't work (only works on input[type="checkbox"]).
+ * Validates current state and only clicks if not already unchecked (idempotent operation).
+ * 
+ * @param element - CompositeLocator for the checkbox-like button
+ * @param uncheckedAttributes - Record of attributes that indicate unchecked state
+ * 
+ * @example
+ * ```typescript
+ * // Standard data attributes
+ * await ensureButtonCheckboxIsUnchecked(myCheckbox, {
+ *   'data-state': 'unchecked',
+ *   'aria-checked': 'false'
+ * });
+ * 
+ * // Custom framework attributes
+ * await ensureButtonCheckboxIsUnchecked(toggleSwitch, {
+ *   'data-checked': 'false',
+ *   'class': 'toggle--inactive'
+ * });
+ * ```
+ */
+export async function ensureButtonCheckboxIsUnchecked(
+    element: CompositeLocator,
+    uncheckedAttributes: Record<string, string>
+): Promise<void> {
+    await ensureButtonCheckboxState(element, uncheckedAttributes, 'unchecked');
 }

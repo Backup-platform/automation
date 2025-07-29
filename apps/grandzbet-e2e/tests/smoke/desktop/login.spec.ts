@@ -1,9 +1,8 @@
 import test from '../../../pages/base/base.po';
 import path from 'path';
 
-test.beforeEach(async ({ page, popupHandlers }) => {
-	await page.goto(`${process.env.URL}`, { waitUntil: "load" });
-  	await popupHandlers.handleAllPopups();
+test.beforeEach(async ({ page }) => {
+	await page.goto(`${process.env.URL}`, { waitUntil: "domcontentloaded" });
 });
 
 test.describe("Login Page Smoke Tests - Desktop", () => {

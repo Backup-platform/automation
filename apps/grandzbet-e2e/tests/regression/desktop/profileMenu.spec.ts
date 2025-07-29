@@ -1,9 +1,8 @@
 import test from '../../../pages/base/base.po';
 import { assertUrl } from '@test-utils/navigation-helpers';
 
-test.beforeEach(async ({ page, popupHandlers }) => {
+test.beforeEach(async ({ page }) => {
 	await page.goto(`${process.env.URL}`, { waitUntil: "load" });
-  	await popupHandlers.handleAllPopups();
 });
 test.describe('Regression', () => {
 
