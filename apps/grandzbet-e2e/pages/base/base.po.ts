@@ -15,6 +15,8 @@ import { Withdraw } from '../cashier/withdraw.po';
 import { PaymentIQ } from '../cashier/paymentIQ.po';
 import { Wallet } from '../wallet/wallet.po';
 import { PersonalInfo } from '../personalInfo/personal.info.po';
+import { BonusCard } from '../bonuses/bonusCard.po';
+import { Bonuses } from '../bonuses/bonuses.po';
 
 type pages = {
 	loginPage: LoginPage;
@@ -33,6 +35,8 @@ type pages = {
 	paymentIQ: PaymentIQ;
 	wallet: Wallet;
 	personalInfo: PersonalInfo;
+	bonusCard: BonusCard;
+	bonuses: Bonuses;
 }
 
 function createPageFixture<T>(PageObject: new (page: Page) => T) {
@@ -60,7 +64,9 @@ const test = base.extend<pages>({
 	withdraw: createPageFixture(Withdraw),
 	paymentIQ: createPageFixture(PaymentIQ),
 	wallet: createPageFixture(Wallet),
-	personalInfo: createPageFixture(PersonalInfo)
+	personalInfo: createPageFixture(PersonalInfo),
+	bonusCard: createPageFixture(BonusCard),
+	bonuses: createPageFixture(Bonuses)
 
 });
 
