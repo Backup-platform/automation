@@ -1,0 +1,1475 @@
+{
+	"info": {
+		"_postman_id": "bonus-testing-collection",
+		"name": "Bonus Testing Collection",
+		"description": "Collection for testing bonus functionality used in bonuses.po.ts and bonusCard.po.ts",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://stage-gw.grandzbet7.com",
+			"type": "string"
+		},
+		{
+			"key": "authUrl",
+			"value": "https://keycloak-stage.grandzbet.com",
+			"type": "string"
+		},
+		{
+			"key": "accessToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "username",
+			"value": "mpetrov15@sbtsolution.com",
+			"type": "string"
+		},
+		{
+			"key": "password",
+			"value": "Mpetrov15@sbtsolution.com",
+			"type": "string"
+		},
+		{
+			"key": "backofficeUrl",
+			"value": "https://stage-backoffice-gw.grandzbet.com",
+			"type": "string"
+		},
+		{
+			"key": "backofficeToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "bonusId",
+			"value": "1770764",
+			"type": "string"
+		},
+		{
+			"key": "profileId",
+			"value": "254171",
+			"type": "string"
+		},
+		{
+			"key": "bonusAmount",
+			"value": "10",
+			"type": "string"
+		},
+		{
+			"key": "profileBonusId",
+			"value": "1774254",
+			"type": "string"
+		},
+		{
+			"key": "currency",
+			"value": "CAD",
+			"type": "string"
+		},
+		{
+			"key": "comment",
+			"value": "test",
+			"type": "string"
+		},
+		{
+			"key": "aleaApiUrl",
+			"value": "https://stage-games.innovatech.ltd/alea",
+			"type": "string"
+		},
+		{
+			"key": "aleaSecret",
+			"value": "bK4pJGnoTmlktPup41ozgvc8JXUzPWht",
+			"type": "string",
+			"description": "SpaceFortuna secret key"
+		},
+		{
+			"key": "aleaSecretGrandzbet",
+			"value": "aTm9o3W8K2HVzXuGOTx6fNPVe8B7No13",
+			"type": "string",
+			"description": "Grandzbet secret key"
+		},
+		{
+			"key": "brandId",
+			"value": "3",
+			"type": "string",
+			"description": "Brand ID for API endpoints (3 for Grandzbet, 1 for SpaceFortuna)"
+		},
+		{
+			"key": "brandName",
+			"value": "grandzbet",
+			"type": "string",
+			"description": "Brand name (grandzbet or spacefortuna) - used to select correct secret"
+		},
+		{
+			"key": "aleaPlayerId",
+			"value": "254171",
+			"type": "string"
+		},
+		{
+			"key": "casinoSessionId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "aleaTransactionId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "aleaRoundId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "aleaGetSignature",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "aleaBetHash",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "aleaBetPayload",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "aleaWinHash",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "aleaWinPayload",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "aleaAuthenticateSignature",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "aleaSessionSignature",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Get FrontOffice Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const responseJson = pm.response.json();",
+									"    pm.collectionVariables.set('accessToken', responseJson.access_token);",
+									"    console.log('Token set successfully');",
+									"} else {",
+									"    console.log('Failed to get token');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "frontoffice-client"
+								},
+								{
+									"key": "grant_type",
+									"value": "password"
+								},
+								{
+									"key": "username",
+									"value": "{{username}}"
+								},
+								{
+									"key": "password",
+									"value": "{{password}}"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{authUrl}}/auth/realms/casino/protocol/openid-connect/token",
+							"host": ["{{authUrl}}"],
+							"path": ["auth", "realms", "casino", "protocol", "openid-connect", "token"]
+						},
+						"description": "Get authentication token for front office user"
+					}
+				},
+				{
+					"name": "Get BackOffice Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const responseJson = pm.response.json();",
+									"    pm.collectionVariables.set('backofficeToken', responseJson.access_token);",
+									"    console.log('BackOffice token set successfully');",
+									"} else {",
+									"    console.log('Failed to get backoffice token');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "backoffice-client"
+								},
+								{
+									"key": "grant_type",
+									"value": "password"
+								},
+								{
+									"key": "username",
+									"value": "misho"
+								},
+								{
+									"key": "password",
+									"value": "Backbeatpro2!"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{authUrl}}/auth/realms/backoffice/protocol/openid-connect/token",
+							"host": ["{{authUrl}}"],
+							"path": ["auth", "realms", "backoffice", "protocol", "openid-connect", "token"]
+						},
+						"description": "Get authentication token for back office operations"
+					}
+				}
+			]
+		},
+		{
+			"name": "Bonus Data Fetching",
+			"item": [
+				{
+					"name": "Fetch All User Bonuses",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Response status is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response contains bonus data', function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.data).to.exist;",
+									"});",
+									"",
+									"// Log bonus counts for debugging",
+									"if (pm.response.code === 200) {",
+									"    const data = pm.response.json().data;",
+									"    console.log('Active bonuses:', data.activeBonuses ? data.activeBonuses.length : 0);",
+									"    console.log('Pending bonuses:', data.pendingBonuses ? data.pendingBonuses.length : 0);",
+									"    console.log('Issued bonuses:', data.issuedBonuses ? data.issuedBonuses.length : 0);",
+									"    console.log('Free spins waiting:', data.freeSpinsWaitingBonuses ? data.freeSpinsWaitingBonuses.length : 0);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"operationName\": \"fetchUserBonuses\",\n  \"variables\": {\n    \"locale\": \"en\"\n  },\n  \"query\": \"query fetchUserBonuses($locale: String) {\\n  activeBonuses: userBonuses(locale: $locale, status: ACTIVE) {\\n    bonusId\\n    cmsBonus\\n    canCancel\\n    profileBonus {\\n      betsAmount\\n      bonusId\\n      bonusModel\\n      cashierAvailabilityDate\\n      claimed\\n      createdAt\\n      expireDate\\n      fixedBonusAmount\\n      freeSpinsCount\\n      id\\n      initialBonusAmount\\n      maxBonus\\n      maxDeposit\\n      minBonus\\n      minDeposit\\n      neededBetsAmount\\n      profileId\\n      status\\n      transactionId\\n      validTo\\n      wageringModel\\n      wageFactor\\n    }\\n  }\\n  issuedBonuses: userBonuses(locale: $locale, status: ISSUED) {\\n    bonusId\\n    cmsBonus\\n    canCancel\\n    profileBonus {\\n      betsAmount\\n      bonusId\\n      bonusModel\\n      cashierAvailabilityDate\\n      claimed\\n      createdAt\\n      expireDate\\n      fixedBonusAmount\\n      freeSpinsCount\\n      id\\n      initialBonusAmount\\n      maxBonus\\n      maxDeposit\\n      minBonus\\n      minDeposit\\n      neededBetsAmount\\n      profileId\\n      status\\n      transactionId\\n      validTo\\n      wageringModel\\n      wageFactor\\n    }\\n  }\\n  freeSpinsWaitingBonuses: userBonuses(\\n    locale: $locale\\n    status: FREE_SPINS_WAITING\\n  ) {\\n    bonusId\\n    cmsBonus\\n    profileBonus {\\n      betsAmount\\n      bonusId\\n      bonusModel\\n      cashierAvailabilityDate\\n      claimed\\n      createdAt\\n      expireDate\\n      fixedBonusAmount\\n      freeSpinsCount\\n      id\\n      initialBonusAmount\\n      maxBonus\\n      maxDeposit\\n      minBonus\\n      minDeposit\\n      neededBetsAmount\\n      profileId\\n      status\\n      transactionId\\n      validTo\\n      wageringModel\\n      wageFactor\\n    }\\n  }\\n  pendingBonuses: userBonuses(locale: $locale, status: PENDING) {\\n    bonusId\\n    canCancel\\n    cmsBonus\\n    profileBonus {\\n      betsAmount\\n      bonusId\\n      bonusModel\\n      cashierAvailabilityDate\\n      claimed\\n      createdAt\\n      expireDate\\n      fixedBonusAmount\\n      freeSpinsCount\\n      id\\n      initialBonusAmount\\n      maxBonus\\n      maxDeposit\\n      minBonus\\n      minDeposit\\n      neededBetsAmount\\n      profileId\\n      status\\n      transactionId\\n      validTo\\n      wageringModel\\n      wageFactor\\n    }\\n  }\\n}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": ["{{baseUrl}}"],
+							"path": ["graphql"]
+						},
+						"description": "Fetch all user bonuses with different statuses - corresponds to validateAllTabContent() method in bonuses.po.ts"
+					}
+				},
+				{
+					"name": "Fetch Active Bonuses Only",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Response status is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Only active bonuses returned', function () {",
+									"    const responseJson = pm.response.json();",
+									"    if (responseJson.data && responseJson.data.activeBonuses) {",
+									"        responseJson.data.activeBonuses.forEach(bonus => {",
+									"            pm.expect(bonus.profileBonus.status).to.equal('ACTIVE');",
+									"        });",
+									"    }",
+									"});",
+									"",
+									"// Log details for active bonuses",
+									"if (pm.response.code === 200) {",
+									"    const data = pm.response.json().data;",
+									"    if (data.activeBonuses) {",
+									"        console.log('Active bonuses found:', data.activeBonuses.length);",
+									"        data.activeBonuses.forEach((bonus, index) => {",
+									"            console.log(`Bonus ${index + 1}: ${bonus.cmsBonus ? bonus.cmsBonus.name || 'No name' : 'No CMS data'}`);",
+									"        });",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"operationName\": \"fetchActiveBonuses\",\n  \"variables\": {\n    \"locale\": \"en\"\n  },\n  \"query\": \"query fetchActiveBonuses($locale: String) {\\n  activeBonuses: userBonuses(locale: $locale, status: ACTIVE) {\\n    bonusId\\n    cmsBonus\\n    canCancel\\n    profileBonus {\\n      betsAmount\\n      bonusId\\n      bonusModel\\n      cashierAvailabilityDate\\n      claimed\\n      createdAt\\n      expireDate\\n      fixedBonusAmount\\n      freeSpinsCount\\n      id\\n      initialBonusAmount\\n      maxBonus\\n      maxDeposit\\n      minBonus\\n      minDeposit\\n      neededBetsAmount\\n      profileId\\n      status\\n      transactionId\\n      validTo\\n      wageringModel\\n      wageFactor\\n    }\\n  }\\n}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": ["{{baseUrl}}"],
+							"path": ["graphql"]
+						},
+						"description": "Fetch only active bonuses - corresponds to validateActiveTabContent() method in bonuses.po.ts"
+					}
+				},
+				{
+					"name": "Fetch Pending Bonuses Only",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Response status is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Only pending bonuses returned', function () {",
+									"    const responseJson = pm.response.json();",
+									"    if (responseJson.data && responseJson.data.pendingBonuses) {",
+									"        responseJson.data.pendingBonuses.forEach(bonus => {",
+									"            pm.expect(bonus.profileBonus.status).to.equal('PENDING');",
+									"        });",
+									"    }",
+									"});",
+									"",
+									"// Log details for pending bonuses",
+									"if (pm.response.code === 200) {",
+									"    const data = pm.response.json().data;",
+									"    if (data.pendingBonuses) {",
+									"        console.log('Pending bonuses found:', data.pendingBonuses.length);",
+									"        data.pendingBonuses.forEach((bonus, index) => {",
+									"            console.log(`Bonus ${index + 1}: ${bonus.cmsBonus ? bonus.cmsBonus.name || 'No name' : 'No CMS data'}`);",
+									"        });",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"operationName\": \"fetchPendingBonuses\",\n  \"variables\": {\n    \"locale\": \"en\"\n  },\n  \"query\": \"query fetchPendingBonuses($locale: String) {\\n  pendingBonuses: userBonuses(locale: $locale, status: PENDING) {\\n    bonusId\\n    canCancel\\n    cmsBonus\\n    profileBonus {\\n      betsAmount\\n      bonusId\\n      bonusModel\\n      cashierAvailabilityDate\\n      claimed\\n      createdAt\\n      expireDate\\n      fixedBonusAmount\\n      freeSpinsCount\\n      id\\n      initialBonusAmount\\n      maxBonus\\n      maxDeposit\\n      minBonus\\n      minDeposit\\n      neededBetsAmount\\n      profileId\\n      status\\n      transactionId\\n      validTo\\n      wageringModel\\n      wageFactor\\n    }\\n  }\\n}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": ["{{baseUrl}}"],
+							"path": ["graphql"]
+						},
+						"description": "Fetch only pending bonuses - corresponds to validatePendingTabContent() method in bonuses.po.ts"
+					}
+				},
+				{
+					"name": "Fetch Available Bonuses Only",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Response status is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Only issued bonuses returned', function () {",
+									"    const responseJson = pm.response.json();",
+									"    if (responseJson.data && responseJson.data.issuedBonuses) {",
+									"        responseJson.data.issuedBonuses.forEach(bonus => {",
+									"            pm.expect(bonus.profileBonus.status).to.equal('ISSUED');",
+									"        });",
+									"    }",
+									"});",
+									"",
+									"// Log details for available bonuses",
+									"if (pm.response.code === 200) {",
+									"    const data = pm.response.json().data;",
+									"    if (data.issuedBonuses) {",
+									"        console.log('Available bonuses found:', data.issuedBonuses.length);",
+									"        data.issuedBonuses.forEach((bonus, index) => {",
+									"            console.log(`Bonus ${index + 1}: ${bonus.cmsBonus ? bonus.cmsBonus.name || 'No name' : 'No CMS data'}`);",
+									"        });",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"operationName\": \"fetchAvailableBonuses\",\n  \"variables\": {\n    \"locale\": \"en\"\n  },\n  \"query\": \"query fetchAvailableBonuses($locale: String) {\\n  issuedBonuses: userBonuses(locale: $locale, status: ISSUED) {\\n    bonusId\\n    cmsBonus\\n    canCancel\\n    profileBonus {\\n      betsAmount\\n      bonusId\\n      bonusModel\\n      cashierAvailabilityDate\\n      claimed\\n      createdAt\\n      expireDate\\n      fixedBonusAmount\\n      freeSpinsCount\\n      id\\n      initialBonusAmount\\n      maxBonus\\n      maxDeposit\\n      minBonus\\n      minDeposit\\n      neededBetsAmount\\n      profileId\\n      status\\n      transactionId\\n      validTo\\n      wageringModel\\n      wageFactor\\n    }\\n  }\\n}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": ["{{baseUrl}}"],
+							"path": ["graphql"]
+						},
+						"description": "Fetch only available (issued) bonuses - corresponds to validateAvailableTabContent() method in bonuses.po.ts"
+					}
+				}
+			]
+		},
+		{
+			"name": "Bonus Actions",
+			"item": [
+				{
+					"name": "Grant Bonus (BackOffice)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Response status is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Grant bonus operation completed', function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.data).to.exist;",
+									"    pm.expect(responseJson.data.grantBonus).to.exist;",
+									"});",
+									"",
+									"// Log grant bonus result",
+									"if (pm.response.code === 200) {",
+									"    const data = pm.response.json().data;",
+									"    if (data.grantBonus) {",
+									"        console.log('Grant Bonus Result:');",
+									"        console.log('Status:', data.grantBonus.status);",
+									"        console.log('Message:', data.grantBonus.message);",
+									"        console.log('Description:', data.grantBonus.description);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{backofficeToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"operationName\": \"GrantBonus\",\n  \"variables\": {\n    \"bonusId\": {{bonusId}},\n    \"profileId\": {{profileId}},\n    \"bonusAmount\": {{bonusAmount}},\n    \"reason\": \"Gift - Technical issue\",\n    \"comment\": \"test\",\n    \"maxDeposit\": null,\n    \"minDeposit\": null\n  },\n  \"query\": \"mutation GrantBonus($bonusId: Int!, $profileId: Int!, $bonusAmount: Float!, $reason: String!, $comment: String!, $maxDeposit: Float, $minDeposit: Float) {\\n  grantBonus(\\n    bonusId: $bonusId\\n    profileId: $profileId\\n    bonusAmount: $bonusAmount\\n    reason: $reason\\n    comment: $comment\\n    maxDeposit: $maxDeposit\\n    minDeposit: $minDeposit\\n  ) {\\n    description\\n    message\\n    status\\n  }\\n}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{backofficeUrl}}/graphql",
+							"host": ["{{backofficeUrl}}"],
+							"path": ["graphql"]
+						},
+						"description": "Grant a bonus to a user via back office - uses parameterized bonusId, profileId, and bonusAmount"
+					}
+				},
+				{
+					"name": "Claim Profile Bonus (FrontOffice)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Response status is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Claim profile bonus operation completed', function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.data).to.exist;",
+									"    pm.expect(responseJson.data.claimProfileBonus).to.exist;",
+									"});",
+									"",
+									"// Log claim profile bonus result",
+									"if (pm.response.code === 200) {",
+									"    const data = pm.response.json().data;",
+									"    if (data.claimProfileBonus) {",
+									"        console.log('Claim Profile Bonus Result:');",
+									"        console.log('Status:', data.claimProfileBonus.status);",
+									"        console.log('Message:', data.claimProfileBonus.message);",
+									"        console.log('Description:', data.claimProfileBonus.description);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"operationName\": \"ClaimProfileBonus\",\n  \"variables\": {\n    \"profileBonusId\": \"{{profileBonusId}}\",\n    \"currency\": \"{{currency}}\",\n    \"transactionId\": null\n  },\n  \"query\": \"mutation ClaimProfileBonus($profileBonusId: String!, $currency: String!, $transactionId: String) {\\n  claimProfileBonus(\\n    profileBonusId: $profileBonusId\\n    currency: $currency\\n    transactionId: $transactionId\\n  ) {\\n    description\\n    message\\n    status\\n  }\\n}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": ["{{baseUrl}}"],
+							"path": ["graphql"]
+						},
+						"description": "Claim a profile bonus via front office - uses parameterized profileBonusId and currency. Corresponds to clicking claim/activate buttons in bonusCard.po.ts"
+					}
+				},
+				{
+					"name": "Cancel Profile Bonus (BackOffice)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Response status is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Cancel profile bonus operation completed', function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.data).to.exist;",
+									"    pm.expect(responseJson.data.cancelProfileBonus).to.exist;",
+									"});",
+									"",
+									"// Log cancel profile bonus result",
+									"if (pm.response.code === 200) {",
+									"    const data = pm.response.json().data;",
+									"    if (data.cancelProfileBonus) {",
+									"        console.log('Cancel Profile Bonus Result:');",
+									"        console.log('Status:', data.cancelProfileBonus.status);",
+									"        console.log('Message:', data.cancelProfileBonus.message);",
+									"        console.log('Description:', data.cancelProfileBonus.description);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{backofficeToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"operationName\": \"cancelProfileBonus\",\n  \"variables\": {\n    \"profileBonusId\": {{profileBonusId}},\n    \"comment\": \"{{comment}}\"\n  },\n  \"query\": \"mutation cancelProfileBonus($profileBonusId: BigInteger!, $comment: String) {\\n  cancelProfileBonus(profileBonusId: $profileBonusId, comment: $comment) {\\n    status\\n    message\\n    description\\n  }\\n}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{backofficeUrl}}/graphql",
+							"host": ["{{backofficeUrl}}"],
+							"path": ["graphql"]
+						},
+						"description": "Cancel a profile bonus via back office - uses parameterized profileBonusId and comment. Administrative operation for bonus cancellation."
+					}
+				},
+				{
+					"name": "Cancel Bonus",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"operationName\": \"cancelBonus\",\n  \"variables\": {\n    \"bonusId\": \"REPLACE_WITH_ACTUAL_BONUS_ID\"\n  },\n  \"query\": \"mutation cancelBonus($bonusId: String!) {\\n  cancelBonus(bonusId: $bonusId) {\\n    success\\n    message\\n  }\\n}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": ["{{baseUrl}}"],
+							"path": ["graphql"]
+						},
+						"description": "Cancel an active bonus - corresponds to clickCancelBonusButton() method in bonusCard.po.ts"
+					}
+				},
+				{
+					"name": "Claim Bonus",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"operationName\": \"claimBonus\",\n  \"variables\": {\n    \"bonusId\": \"REPLACE_WITH_ACTUAL_BONUS_ID\"\n  },\n  \"query\": \"mutation claimBonus($bonusId: String!) {\\n  claimBonus(bonusId: $bonusId) {\\n    success\\n    message\\n    bonus {\\n      id\\n      status\\n    }\\n  }\\n}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": ["{{baseUrl}}"],
+							"path": ["graphql"]
+						},
+						"description": "Claim an available bonus - corresponds to clickPrimaryButton() method in bonusCard.po.ts for available cards"
+					}
+				}
+			]
+		},
+		{
+			"name": "Test Data Validation",
+			"item": [
+				{
+					"name": "Validate Bonus Card Structure",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Response contains expected bonus structure', function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.data).to.exist;",
+									"    ",
+									"    // Check if any bonuses exist",
+									"    const allBonuses = [];",
+									"    if (responseJson.data.activeBonuses) allBonuses.push(...responseJson.data.activeBonuses);",
+									"    if (responseJson.data.pendingBonuses) allBonuses.push(...responseJson.data.pendingBonuses);",
+									"    if (responseJson.data.issuedBonuses) allBonuses.push(...responseJson.data.issuedBonuses);",
+									"    ",
+									"    if (allBonuses.length > 0) {",
+									"        const firstBonus = allBonuses[0];",
+									"        ",
+									"        // Validate structure matches what bonusCard.po.ts expects",
+									"        pm.expect(firstBonus).to.have.property('bonusId');",
+									"        pm.expect(firstBonus).to.have.property('profileBonus');",
+									"        pm.expect(firstBonus.profileBonus).to.have.property('status');",
+									"        pm.expect(firstBonus.profileBonus).to.have.property('bonusModel');",
+									"        ",
+									"        // Log structure for debugging",
+									"        console.log('First bonus structure:');",
+									"        console.log('Bonus ID:', firstBonus.bonusId);",
+									"        console.log('Status:', firstBonus.profileBonus.status);",
+									"        console.log('Can Cancel:', firstBonus.canCancel);",
+									"        console.log('CMS Bonus exists:', !!firstBonus.cmsBonus);",
+									"    } else {",
+									"        console.log('No bonuses found for validation');",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"operationName\": \"fetchUserBonuses\",\n  \"variables\": {\n    \"locale\": \"en\"\n  },\n  \"query\": \"query fetchUserBonuses($locale: String) {\\n  activeBonuses: userBonuses(locale: $locale, status: ACTIVE) {\\n    bonusId\\n    cmsBonus\\n    canCancel\\n    profileBonus {\\n      betsAmount\\n      bonusId\\n      bonusModel\\n      cashierAvailabilityDate\\n      claimed\\n      createdAt\\n      expireDate\\n      fixedBonusAmount\\n      freeSpinsCount\\n      id\\n      initialBonusAmount\\n      maxBonus\\n      maxDeposit\\n      minBonus\\n      minDeposit\\n      neededBetsAmount\\n      profileId\\n      status\\n      transactionId\\n      validTo\\n      wageringModel\\n      wageFactor\\n    }\\n  }\\n  issuedBonuses: userBonuses(locale: $locale, status: ISSUED) {\\n    bonusId\\n    cmsBonus\\n    canCancel\\n    profileBonus {\\n      betsAmount\\n      bonusId\\n      bonusModel\\n      cashierAvailabilityDate\\n      claimed\\n      createdAt\\n      expireDate\\n      fixedBonusAmount\\n      freeSpinsCount\\n      id\\n      initialBonusAmount\\n      maxBonus\\n      maxDeposit\\n      minBonus\\n      minDeposit\\n      neededBetsAmount\\n      profileId\\n      status\\n      transactionId\\n      validTo\\n      wageringModel\\n      wageFactor\\n    }\\n  }\\n  pendingBonuses: userBonuses(locale: $locale, status: PENDING) {\\n    bonusId\\n    canCancel\\n    cmsBonus\\n    profileBonus {\\n      betsAmount\\n      bonusId\\n      bonusModel\\n      cashierAvailabilityDate\\n      claimed\\n      createdAt\\n      expireDate\\n      fixedBonusAmount\\n      freeSpinsCount\\n      id\\n      initialBonusAmount\\n      maxBonus\\n      maxDeposit\\n      minBonus\\n      minDeposit\\n      neededBetsAmount\\n      profileId\\n      status\\n      transactionId\\n      validTo\\n      wageringModel\\n      wageFactor\\n    }\\n  }\\n}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": ["{{baseUrl}}"],
+							"path": ["graphql"]
+						},
+						"description": "Validate that API returns data structure expected by page objects"
+					}
+				}
+			]
+		},
+		{
+			"name": "Alea API - Game Transactions",
+			"description": "Alea API endpoints for game transactions (BET, WIN, Balance) used in bonus testing scenarios",
+			"item": [
+				{
+					"name": "Create Game Session",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"console.log('Create Game Session - Response Code:', pm.response.code);",
+									"console.log('Create Game Session - Response Body:', pm.response.text());",
+									"",
+									"if (pm.response.code === 200) {",
+									"    const responseJson = pm.response.json();",
+									"    console.log('GraphQL Response:', JSON.stringify(responseJson, null, 2));",
+									"    ",
+									"    if (responseJson.data && responseJson.data.startGameSession) {",
+									"        const gameUrl = responseJson.data.startGameSession.gameUrl;",
+									"        console.log('Game URL received:', gameUrl);",
+									"        ",
+									"        if (gameUrl) {",
+									"            try {",
+									"                const urlObj = new URL(gameUrl);",
+									"                const sessionId = urlObj.searchParams.get('casinoSessionId');",
+									"                console.log('Extracted Session ID:', sessionId);",
+									"                ",
+									"                if (sessionId) {",
+									"                    pm.collectionVariables.set('casinoSessionId', sessionId);",
+									"                    console.log('✅ Casino Session ID set successfully:', sessionId);",
+									"                } else {",
+									"                    console.log('❌ No casinoSessionId parameter found in URL');",
+									"                    console.log('Available URL parameters:', Array.from(urlObj.searchParams.keys()));",
+									"                }",
+									"            } catch (error) {",
+									"                console.log('❌ Error parsing game URL:', error.message);",
+									"            }",
+									"        } else {",
+									"            console.log('❌ No gameUrl in response');",
+									"        }",
+									"    } else {",
+									"        console.log('❌ No startGameSession data in response');",
+									"        if (responseJson.errors) {",
+									"            console.log('GraphQL Errors:', responseJson.errors);",
+									"        }",
+									"    }",
+									"} else {",
+									"    console.log('❌ Failed to create game session - Status:', pm.response.code);",
+									"    console.log('Error response:', pm.response.text());",
+									"}",
+									"",
+									"// Verify session ID was set",
+									"const sessionId = pm.collectionVariables.get('casinoSessionId');",
+									"console.log('Current casinoSessionId variable:', sessionId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							},
+							{
+								"key": "referer",
+								"value": "https://stage.grandzbet7.com/"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"query\": \"mutation startGameSession($gameSessionData: GameSessionDataInput) {\\n    startGameSession(gameSessionData: $gameSessionData) {\\n      gameUrl\\n      strategy\\n    }\\n  }\",\n  \"variables\": {\n    \"gameSessionData\": {\n      \"gameIdentifier\": \"16375\",\n      \"gameProvider\": \"alea\",\n      \"locale\": \"en\",\n      \"clientType\": \"desktop\",\n      \"returnPath\": \"/games\",\n      \"gameProducer\": \"Felix Gaming\",\n      \"gameTitle\": \"Book of Dragon Hold And Win\",\n      \"gameProducerId\": \"4\",\n      \"currency\": \"CAD\",\n      \"technicalCategory\": null,\n      \"technicalCategoryMobile\": null,\n      \"tableId\": null,\n      \"depositPath\": \"en/?openCashier=true\"\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://stage-gw.grandzbet7.com/graphql",
+							"protocol": "https",
+							"host": ["stage-gw.grandzbet7.com"],
+							"path": ["graphql"]
+						},
+						"description": "Create a game session and extract casinoSessionId for Alea API transactions"
+					}
+				},
+				{
+					"name": "Authenticate Session",
+					"event": [
+						{
+							"listen": "pre-request",
+							"script": {
+								"exec": [
+									"// Generate SHA-512 signature for session authentication according to Alea API rule:",
+									"// SHA512(casinoSessionId + secretApiKey)",
+									"const CryptoJS = require('crypto-js');",
+									"",
+									"const casinoSessionId = pm.collectionVariables.get('casinoSessionId');",
+									"",
+									"// Dynamic secret selection based on brand",
+									"const brandName = pm.collectionVariables.get('brandName') || 'grandzbet';",
+									"let secretKey;",
+									"if (brandName === 'spacefortuna') {",
+									"    secretKey = pm.collectionVariables.get('aleaSecret'); // SpaceFortuna secret",
+									"} else {",
+									"    secretKey = pm.collectionVariables.get('aleaSecretGrandzbet'); // Grandzbet secret",
+									"}",
+									"",
+									"// Create signature data: sessionId + secret",
+									"const signatureData = casinoSessionId + secretKey;",
+									"",
+									"console.log('Session Authentication Signature Calculation:');",
+									"console.log('  Brand:', brandName);",
+									"console.log('  casinoSessionId:', casinoSessionId);",
+									"console.log('  secretKey:', secretKey ? '[HIDDEN]' : '[MISSING]');",
+									"console.log('  Signature data (concatenated):', signatureData);",
+									"",
+									"const signature = CryptoJS.SHA512(signatureData).toString(CryptoJS.enc.Hex);",
+									"",
+									"pm.collectionVariables.set('aleaAuthenticateSignature', signature);",
+									"console.log('  Generated Authentication signature:', signature);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const sessionDetails = pm.response.json();",
+									"    console.log('Session authentication successful:', sessionDetails);",
+									"    console.log('Country:', sessionDetails.country);",
+									"    console.log('Currency:', sessionDetails.currency);",
+									"    console.log('Casino Player ID:', sessionDetails.casinoPlayerId);",
+									"    console.log('Is Test:', sessionDetails.isTest);",
+									"} else if (pm.response.code === 403) {",
+									"    console.log('Expected 403 - Authentication endpoint not implemented by operator');",
+									"    const error = pm.response.json();",
+									"    console.log('Error:', error);",
+									"} else {",
+									"    console.log('Unexpected response:', pm.response.code, pm.response.text());",
+									"}",
+									"",
+									"pm.test('Session authentication endpoint called', function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 403, 404]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Digest",
+								"value": "SHA-512={{aleaAuthenticateSignature}}"
+							}
+						],
+						"url": {
+							"raw": "{{aleaApiUrl}}/brandId/{{brandId}}/sessions/{{casinoSessionId}}",
+							"host": ["{{aleaApiUrl}}"],
+							"path": ["brandId", "{{brandId}}", "sessions", "{{casinoSessionId}}"]
+						},
+						"description": "Authenticate the session with Alea API - required after creating a game session"
+					}
+				},
+				{
+					"name": "Get Player Balance",
+					"event": [
+						{
+							"listen": "pre-request",
+							"script": {
+								"exec": [
+									"// Generate SHA-512 signature for Balance request according to Alea API rule:",
+									"// SHA512(casinoSessionId + currency + gameId + integratorId + softwareId + secretApiKey)",
+									"const CryptoJS = require('crypto-js');",
+									"",
+									"const casinoSessionId = pm.collectionVariables.get('casinoSessionId');",
+									"const currency = 'CAD';",
+									"const gameId = '16375';",
+									"const integratorId = '42';",
+									"const softwareId = '42';",
+									"",
+									"// Dynamic secret selection based on brand",
+									"const brandName = pm.collectionVariables.get('brandName') || 'grandzbet';",
+									"let secretKey;",
+									"if (brandName === 'spacefortuna') {",
+									"    secretKey = pm.collectionVariables.get('aleaSecret'); // SpaceFortuna secret",
+									"} else {",
+									"    secretKey = pm.collectionVariables.get('aleaSecretGrandzbet'); // Grandzbet secret",
+									"}",
+									"",
+									"// Create signature data in exact order specified by Alea API rule",
+									"const signatureData = casinoSessionId + currency + gameId + integratorId + softwareId + secretKey;",
+									"",
+									"console.log('Signature components:');",
+									"console.log('  Brand:', brandName);",
+									"console.log('  casinoSessionId:', casinoSessionId);",
+									"console.log('  currency:', currency);",
+									"console.log('  gameId:', gameId);",
+									"console.log('  integratorId:', integratorId);",
+									"console.log('  softwareId:', softwareId);",
+									"console.log('  secretKey:', secretKey ? '[HIDDEN]' : '[MISSING]');",
+									"console.log('Signature data (concatenated):', signatureData);",
+									"",
+									"const signature = CryptoJS.SHA512(signatureData).toString(CryptoJS.enc.Hex);",
+									"",
+									"pm.collectionVariables.set('aleaGetSignature', signature);",
+									"console.log('Generated Balance signature:', signature);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Balance request successful', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"if (pm.response.code === 200) {",
+									"    const balance = pm.response.json();",
+									"    console.log('Player Balance:', balance);",
+									"    console.log('Real Balance:', balance.realBalance);",
+									"    console.log('Bonus Balance:', balance.bonusBalance);",
+									"    console.log('Total Balance:', balance.totalBalance);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Digest",
+								"value": "SHA-512={{aleaGetSignature}}"
+							}
+						],
+						"url": {
+							"raw": "{{aleaApiUrl}}/brandId/{{brandId}}/players/{{aleaPlayerId}}/balance?currency=CAD&casinoSessionId={{casinoSessionId}}&gameId=16375&softwareId=42&integratorId=42",
+							"host": ["{{aleaApiUrl}}"],
+							"path": ["brandId", "{{brandId}}", "players", "{{aleaPlayerId}}", "balance"],
+							"query": [
+								{
+									"key": "currency",
+									"value": "CAD"
+								},
+								{
+									"key": "casinoSessionId",
+									"value": "{{casinoSessionId}}"
+								},
+								{
+									"key": "gameId",
+									"value": "16375"
+								},
+								{
+									"key": "softwareId",
+									"value": "42"
+								},
+								{
+									"key": "integratorId",
+									"value": "42"
+								}
+							]
+						},
+						"description": "Get player balance - used to verify bonus funds before and after transactions"
+					}
+				},
+				{
+					"name": "Place BET Transaction",
+					"event": [
+						{
+							"listen": "pre-request",
+							"script": {
+								"exec": [
+									"// Generate SHA-512 signature for BET transaction according to Alea API rule:",
+									"// SHA512(JSON.stringify(requestBody) + secretApiKey)",
+									"const CryptoJS = require('crypto-js');",
+									"",
+									"// Generate transaction and round IDs",
+									"const timestamp = Date.now();",
+									"const transactionId = `bet-${timestamp}-${Math.floor(Math.random() * 1000)}`;",
+									"const roundId = `round-${timestamp}-${Math.floor(Math.random() * 1000)}`;",
+									"",
+									"pm.collectionVariables.set('aleaTransactionId', transactionId);",
+									"pm.collectionVariables.set('aleaRoundId', roundId);",
+									"",
+									"// Create payload for signature calculation (exact structure for Alea API)",
+									"const payload = {",
+									"    id: transactionId,",
+									"    integratorTransactionId: transactionId,",
+									"    type: 'BET',",
+									"    requestedAt: new Date().toISOString(),",
+									"    game: { id: 16375 },",
+									"    software: { id: 6 },",
+									"    integrator: { id: 8 },",
+									"    player: {",
+									"        id: '444',",
+									"        casinoPlayerId: pm.collectionVariables.get('aleaPlayerId')",
+									"    },",
+									"    currency: 'CAD',",
+									"    casinoSessionId: pm.collectionVariables.get('casinoSessionId'),",
+									"    round: {",
+									"        id: roundId,",
+									"        integratorRoundId: roundId,",
+									"        status: 'IN_PROGRESS'",
+									"    },",
+									"    amount: 0.50",
+									"};",
+									"",
+									"// Create signature data: JSON string + secret (Alea API rule)",
+									"const payloadString = JSON.stringify(payload);",
+									"",
+									"// Dynamic secret selection based on brand",
+									"const brandName = pm.collectionVariables.get('brandName') || 'grandzbet';",
+									"let secretKey;",
+									"if (brandName === 'spacefortuna') {",
+									"    secretKey = pm.collectionVariables.get('aleaSecret'); // SpaceFortuna secret",
+									"} else {",
+									"    secretKey = pm.collectionVariables.get('aleaSecretGrandzbet'); // Grandzbet secret",
+									"}",
+									"",
+									"const signatureData = payloadString + secretKey;",
+									"",
+									"console.log('BET Transaction Signature Calculation:');",
+									"console.log('  Brand:', brandName);",
+									"console.log('  Transaction ID:', transactionId);",
+									"console.log('  Round ID:', roundId);",
+									"console.log('  Request body JSON:', payloadString);",
+									"console.log('  Secret key:', secretKey ? '[HIDDEN]' : '[MISSING]');",
+									"console.log('  Signature data length:', signatureData.length);",
+									"",
+									"// Calculate SHA-512 signature",
+									"const hash = CryptoJS.SHA512(signatureData).toString(CryptoJS.enc.Hex);",
+									"",
+									"pm.collectionVariables.set('aleaBetHash', hash);",
+									"pm.collectionVariables.set('aleaBetPayload', payloadString);",
+									"",
+									"console.log('  Generated BET signature:', hash);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const result = pm.response.json();",
+									"    console.log('BET Transaction successful:', result);",
+									"    console.log('Transaction ID:', result.id);",
+									"    console.log('Status:', result.status);",
+									"    console.log('Real Amount:', result.realAmount);",
+									"} else {",
+									"    console.log('BET Transaction failed:', pm.response.code);",
+									"    console.log('Error:', pm.response.text());",
+									"}",
+									"",
+									"pm.test('BET transaction processed', function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 403]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Digest",
+								"value": "SHA-512={{aleaBetHash}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{aleaBetPayload}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{aleaApiUrl}}/brandId/{{brandId}}/transactions",
+							"host": ["{{aleaApiUrl}}"],
+							"path": ["brandId", "{{brandId}}", "transactions"]
+						},
+						"description": "Place a BET transaction - used for zero out scenarios (reduces player balance)"
+					}
+				},
+				{
+					"name": "Process WIN Transaction",
+					"event": [
+						{
+							"listen": "pre-request",
+							"script": {
+								"exec": [
+									"// Generate transaction and round IDs",
+									"const timestamp = Date.now();",
+									"const transactionId = `win-${timestamp}-${Math.floor(Math.random() * 1000)}`;",
+									"const roundId = `round-${timestamp}-${Math.floor(Math.random() * 1000)}`;",
+									"",
+									"pm.collectionVariables.set('aleaWinTransactionId', transactionId);",
+									"pm.collectionVariables.set('aleaWinRoundId', roundId);",
+									"",
+									"// Create payload for signature calculation",
+									"const payload = {",
+									"    id: transactionId,",
+									"    integratorTransactionId: transactionId,",
+									"    type: 'WIN',",
+									"    requestedAt: new Date().toISOString(),",
+									"    game: { id: 16375 },",
+									"    software: { id: 6 },",
+									"    integrator: { id: 8 },",
+									"    player: {",
+									"        id: '444',",
+									"        casinoPlayerId: pm.collectionVariables.get('aleaPlayerId')",
+									"    },",
+									"    currency: 'CAD',",
+									"    casinoSessionId: pm.collectionVariables.get('casinoSessionId'),",
+									"    round: {",
+									"        id: roundId,",
+									"        integratorRoundId: roundId,",
+									"        status: 'COMPLETED'",
+									"    },",
+									"    amount: 1.00,",
+									"    win: { amount: 1.00 }",
+									"};",
+									"",
+									"// Calculate SHA-512 hash",
+									"const CryptoJS = require('crypto-js');",
+									"const payloadString = JSON.stringify(payload);",
+									"",
+									"// Dynamic secret selection based on brand",
+									"const brandName = pm.collectionVariables.get('brandName') || 'grandzbet';",
+									"let secretKey;",
+									"if (brandName === 'spacefortuna') {",
+									"    secretKey = pm.collectionVariables.get('aleaSecret'); // SpaceFortuna secret",
+									"} else {",
+									"    secretKey = pm.collectionVariables.get('aleaSecretGrandzbet'); // Grandzbet secret",
+									"}",
+									"",
+									"const hashData = payloadString + secretKey;",
+									"const hash = CryptoJS.SHA512(hashData).toString(CryptoJS.enc.Hex);",
+									"",
+									"pm.collectionVariables.set('aleaWinHash', hash);",
+									"pm.collectionVariables.set('aleaWinPayload', JSON.stringify(payload));",
+									"",
+									"console.log('WIN Transaction Signature Calculation:');",
+									"console.log('  Brand:', brandName);",
+									"",
+									"console.log('Generated WIN transaction ID:', transactionId);",
+									"console.log('Generated round ID:', roundId);",
+									"console.log('Generated hash:', hash);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const result = pm.response.json();",
+									"    console.log('WIN Transaction successful:', result);",
+									"    console.log('Transaction ID:', result.id);",
+									"    console.log('Status:', result.status);",
+									"    console.log('Real Amount:', result.realAmount);",
+									"} else {",
+									"    console.log('WIN Transaction failed:', pm.response.code);",
+									"    console.log('Error:', pm.response.text());",
+									"}",
+									"",
+									"pm.test('WIN transaction processed', function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 403]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Digest",
+								"value": "SHA-512={{aleaWinHash}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{aleaWinPayload}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{aleaApiUrl}}/brandId/{{brandId}}/transactions",
+							"host": ["{{aleaApiUrl}}"],
+							"path": ["brandId", "{{brandId}}", "transactions"]
+						},
+						"description": "Process a WIN transaction - used for wagering success scenarios (increases player balance)"
+					}
+				},
+				{
+					"name": "Test Session Authentication Endpoint",
+					"event": [
+						{
+							"listen": "pre-request",
+							"script": {
+								"exec": [
+									"// Calculate SHA-512 signature for session authentication",
+									"const CryptoJS = require('crypto-js');",
+									"const sessionId = pm.collectionVariables.get('casinoSessionId');",
+									"",
+									"// Dynamic secret selection based on brand",
+									"const brandName = pm.collectionVariables.get('brandName') || 'grandzbet';",
+									"let secretKey;",
+									"if (brandName === 'spacefortuna') {",
+									"    secretKey = pm.collectionVariables.get('aleaSecret'); // SpaceFortuna secret",
+									"} else {",
+									"    secretKey = pm.collectionVariables.get('aleaSecretGrandzbet'); // Grandzbet secret",
+									"}",
+									"",
+									"const signatureData = sessionId + secretKey;",
+									"const signature = CryptoJS.SHA512(signatureData).toString(CryptoJS.enc.Hex);",
+									"",
+									"pm.collectionVariables.set('aleaSessionSignature', signature);",
+									"console.log('Test Session Authentication:');",
+									"console.log('  Brand:', brandName);",
+									"console.log('  Session ID:', sessionId);",
+									"console.log('  Generated session signature:', signature);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const sessionDetails = pm.response.json();",
+									"    console.log('Session authentication successful:', sessionDetails);",
+									"    console.log('Country:', sessionDetails.country);",
+									"    console.log('Currency:', sessionDetails.currency);",
+									"    console.log('Casino Player ID:', sessionDetails.casinoPlayerId);",
+									"    console.log('Is Test:', sessionDetails.isTest);",
+									"} else if (pm.response.code === 403) {",
+									"    console.log('Expected 403 - Authentication endpoint not implemented by operator');",
+									"    const error = pm.response.json();",
+									"    console.log('Error:', error);",
+									"} else {",
+									"    console.log('Unexpected response:', pm.response.code, pm.response.text());",
+									"}",
+									"",
+									"pm.test('Session authentication endpoint called', function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 403, 404]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Digest",
+								"value": "SHA-512={{aleaSessionSignature}}"
+							}
+						],
+						"url": {
+							"raw": "{{aleaApiUrl}}/brandId/{{brandId}}/sessions/{{casinoSessionId}}",
+							"host": ["{{aleaApiUrl}}"],
+							"path": ["brandId", "{{brandId}}", "sessions", "{{casinoSessionId}}"]
+						},
+						"description": "Test the missing authentication endpoint that Alea expects operators to implement. This should return session details with casinoPlayerId validation."
+					}
+				}
+			]
+		}
+	]
+}

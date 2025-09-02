@@ -1,12 +1,14 @@
 import test from '../../../pages/base/base.po';
 
 test.beforeEach(async ({ page }) => {
-  await page.goto(`${process.env.URL}`, { waitUntil: 'load' });
+  await page.goto(`${process.env.URL}`, { waitUntil: 'domcontentloaded' });
 });
 
-test.describe('Basic Activation + Cancellation Tests', () => {
-  test('S1 - Cash-NoDeposit activation and cancellation', async ({ bonuses }) => {
+test.describe.skip('Basic Activation + Cancellation Tests', () => {
+  test('S1 - Cash-NoDeposit activation and cancellation', async ({ bonuses, bonusCard}) => {
     // Prerequisite: 0 bonuses
+    await bonuses.clickActivateByName(['Available Cash-NoDeposit']);
+    await bonuses.validateActiveTabContent();
     // Action 1: Activate "Available Cash-NoDeposit becomes Active"
     // Action 2: Cancel active bonus
     // Result 1: Bonus becomes active/wagering

@@ -30,4 +30,5 @@ export default extendConfig(baseConfig, {
 		timeout: 15 * 1000,
 	},
 		timeout: 60 * 1000,
+		workers: 2,
 });

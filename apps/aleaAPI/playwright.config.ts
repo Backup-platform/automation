@@ -14,7 +14,7 @@ export default extendConfig(baseConfig, {
 	projects: [
 		{
 			name: 'alea-api-tests',
-			testMatch: ['aleaTransactions.spec.ts', 'balance.spec.ts'],
+			testMatch: ['aleaTransactions.spec.ts', 'balance.spec.ts', 'aleaAuthDebug.spec.ts', 'aleaTransactionDirect.spec.ts', 'aleaFreshSession.spec.ts', 'aleaSessionValidation.spec.ts'],
 			use: {
 				baseURL: 'https://games.dev.inovadatabv.com/alea/',
 			},

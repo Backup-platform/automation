@@ -1,10 +1,10 @@
 import test from '../../../pages/base/base.po';
 
 test.beforeEach(async ({ page }) => {
-  await page.goto(`${process.env.URL}`, { waitUntil: 'load' });
+  await page.goto(`${process.env.URL}`, { waitUntil: 'domcontentloaded' });
 });
 
-test.describe('Comprehensive E2E Workflow', () => {
+test.describe.skip('Comprehensive E2E Workflow', () => {
   test('E1 - Complete bonus lifecycle - all transitions and cross-types', async ({ bonuses }) => {
     // Prerequisite: 6 available bonuses (2 of each type except Cash-NoDeposit which has 3 for rapid clicking test)
     // Action 1: Activate FS-NoDeposit

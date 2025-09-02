@@ -1,7 +1,7 @@
 import test from '../../../pages/base/base.po';
 
 test.beforeEach(async ({ page }) => {
-	await page.goto(`${process.env.URL}`, { waitUntil: "domcontentloaded" });
+	await page.goto(`https://stage.grandzbet7.com/profile?tab=personalInfo`, { waitUntil: "domcontentloaded" });
 });
 
 const oldPassword = `${process.env.PASS}`;
@@ -13,6 +13,7 @@ test("test fail then success password update", async ({ menuItems, personalInfo,
 	await test.step('Fill old password with the wrong password and fail the update', async () => {
 		await personalInfo.fillOldPassword(wrongOldPassword);
 		await personalInfo.fillNewPassword(oldPassword);
+		await personalInfo.fillConfirmPassword(oldPassword);
 		await personalInfo.clickUpdatePasswordButton();
 		await personalInfo.validatePasswordChangeFailureToast();
 	});
@@ -20,6 +21,7 @@ test("test fail then success password update", async ({ menuItems, personalInfo,
 	await test.step('Fill old password with the correct password and succeed the update', async () => {
         await personalInfo.fillOldPassword(oldPassword);
         await personalInfo.fillNewPassword(oldPassword);
+		await personalInfo.fillConfirmPassword(oldPassword);
         await personalInfo.clickUpdatePasswordButton();
         await personalInfo.validatePasswordChangeSuccessToast();
 	});

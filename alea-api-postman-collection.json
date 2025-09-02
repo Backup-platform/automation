@@ -1,0 +1,675 @@
+{
+  "info": {
+    "name": "Alea API - Casino Integration",
+    "description": "Complete Alea API collection for casino transactions and balance operations",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "noauth"
+  },
+  "variable": [
+    {
+      "key": "alea_base_url",
+      "value": "https://games.dev.inovadatabv.com/alea",
+      "type": "string"
+    },
+    {
+      "key": "alea_secret",
+      "value": "bK4pJGnoTmlktPup41ozgvc8JXUzPWht",
+      "type": "string"
+    },
+    {
+      "key": "casino_session_id",
+      "value": "26117e8f-8610-4b95-b90e-09861a87e303",
+      "type": "string"
+    },
+    {
+      "key": "player_id",
+      "value": "254171",
+      "type": "string"
+    },
+    {
+      "key": "currency",
+      "value": "CAD",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Balance Operations",
+      "description": "Get player balance operations",
+      "item": [
+        {
+          "name": "Get Player Balance",
+          "event": [
+            {
+              "listen": "pre-request",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Generate SHA-512 signature for Balance request according to Alea API rule:",
+                  "// SHA512(casinoSessionId + currency + gameId + integratorId + softwareId + secretApiKey)",
+                  "const CryptoJS = require('crypto-js');",
+                  "",
+                  "const casinoSessionId = pm.collectionVariables.get('casino_session_id');",
+                  "const currency = pm.collectionVariables.get('currency');",
+                  "const gameId = '913';",
+                  "const integratorId = '42';",
+                  "const softwareId = '42';",
+                  "const secretKey = pm.collectionVariables.get('alea_secret');",
+                  "",
+                  "// Create signature data in exact order specified by Alea API rule",
+                  "const signatureData = casinoSessionId + currency + gameId + integratorId + softwareId + secretKey;",
+                  "",
+                  "console.log('Balance Signature Calculation:');",
+                  "console.log('  casinoSessionId:', casinoSessionId);",
+                  "console.log('  currency:', currency);",
+                  "console.log('  gameId:', gameId);",
+                  "console.log('  integratorId:', integratorId);",
+                  "console.log('  softwareId:', softwareId);",
+                  "console.log('  secretKey:', secretKey ? '[HIDDEN]' : '[MISSING]');",
+                  "console.log('  Signature data (concatenated):', signatureData);",
+                  "",
+                  "const signature = CryptoJS.SHA512(signatureData).toString(CryptoJS.enc.Hex);",
+                  "",
+                  "pm.collectionVariables.set('balance_signature', signature);",
+                  "console.log('  Generated Balance signature:', signature);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Digest",
+                "value": "SHA-512={{balance_signature}}",
+                "description": "SHA512(casinoSessionId + currency + gameId + integratorId + softwareId + secretApiKey)",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{alea_base_url}}/brandId/1/players/{{player_id}}/balance?currency={{currency}}&casinoSessionId={{casino_session_id}}&gameId=913&softwareId=42&integratorId=42",
+              "host": ["{{alea_base_url}}"],
+              "path": ["brandId", "1", "players", "{{player_id}}", "balance"],
+              "query": [
+                {
+                  "key": "currency",
+                  "value": "{{currency}}",
+                  "description": "Player balance currency (ISO 4217)"
+                },
+                {
+                  "key": "casinoSessionId",
+                  "value": "{{casino_session_id}}",
+                  "description": "Session ID from game launch"
+                },
+                {
+                  "key": "gameId",
+                  "value": "913",
+                  "description": "Game ID for balance segregation"
+                },
+                {
+                  "key": "softwareId",
+                  "value": "42",
+                  "description": "Software provider ID"
+                },
+                {
+                  "key": "integratorId",
+                  "value": "42",
+                  "description": "Integrator/reseller ID"
+                }
+              ]
+            },
+            "description": "Get player balance with bonus/real money split.\n\n**Authentication:**\nDigest: SHA-512 = SHA512(casinoSessionId + currency + gameId + integratorId + softwareId + secretApiKey)\n\n**Example Response:**\n```json\n{\n  \"realBalance\": 1777.00,\n  \"bonusBalance\": 0\n}\n```"
+          },
+          "response": [
+            {
+              "name": "Successful Balance Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{alea_base_url}}/brandId/1/players/{{player_id}}/balance?currency={{currency}}&casinoSessionId={{casino_session_id}}&gameId=913&softwareId=42&integratorId=42",
+                  "host": ["{{alea_base_url}}"],
+                  "path": ["brandId", "1", "players", "{{player_id}}", "balance"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n  \"realBalance\": 75.00,\n  \"bonusBalance\": 45.00\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Transaction Operations",
+      "description": "Casino transaction operations (BET, WIN, BET_WIN, ROLLBACK)",
+      "item": [
+        {
+          "name": "Place Bet Transaction",
+          "event": [
+            {
+              "listen": "pre-request",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Generate SHA-512 signature for BET transaction according to Alea API rule:",
+                  "// SHA512(JSON.stringify(requestBody) + secretApiKey)",
+                  "const CryptoJS = require('crypto-js');",
+                  "",
+                  "// Get the request body",
+                  "const requestBody = {",
+                  "  \"id\": pm.variables.replaceIn('{{$randomUUID}}'),",
+                  "  \"integratorTransactionId\": pm.variables.replaceIn('{{$randomUUID}}'),",
+                  "  \"type\": \"BET\",",
+                  "  \"requestedAt\": pm.variables.replaceIn('{{$isoTimestamp}}'),",
+                  "  \"game\": {",
+                  "    \"id\": 12787",
+                  "  },",
+                  "  \"software\": {",
+                  "    \"id\": 33",
+                  "  },",
+                  "  \"integrator\": {",
+                  "    \"id\": 15",
+                  "  },",
+                  "  \"player\": {",
+                  "    \"id\": pm.variables.replaceIn('{{$randomUUID}}'),",
+                  "    \"casinoPlayerId\": pm.collectionVariables.get('player_id')",
+                  "  },",
+                  "  \"currency\": pm.collectionVariables.get('currency'),",
+                  "  \"casinoSessionId\": pm.collectionVariables.get('casino_session_id'),",
+                  "  \"round\": {",
+                  "    \"id\": pm.variables.replaceIn('{{$randomUUID}}'),",
+                  "    \"integratorRoundId\": pm.variables.replaceIn('{{$randomUUID}}'),",
+                  "    \"status\": \"IN_PROGRESS\"",
+                  "  },",
+                  "  \"amount\": 45.0",
+                  "};",
+                  "",
+                  "// Create signature data: JSON string + secret",
+                  "const jsonString = JSON.stringify(requestBody);",
+                  "const secretKey = pm.collectionVariables.get('alea_secret');",
+                  "const signatureData = jsonString + secretKey;",
+                  "",
+                  "console.log('BET Transaction Signature Calculation:');",
+                  "console.log('  Request body JSON:', jsonString);",
+                  "console.log('  Secret key:', secretKey ? '[HIDDEN]' : '[MISSING]');",
+                  "console.log('  Signature data length:', signatureData.length);",
+                  "",
+                  "// Calculate SHA-512 signature",
+                  "const signature = CryptoJS.SHA512(signatureData).toString(CryptoJS.enc.Hex);",
+                  "",
+                  "pm.collectionVariables.set('bet_signature', signature);",
+                  "console.log('  Generated BET signature:', signature);",
+                  "",
+                  "// Update the request body with the same data used for signature",
+                  "pm.request.body.raw = jsonString;"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Digest",
+                "value": "SHA-512={{bet_signature}}",
+                "description": "SHA512(JSON.stringify(requestBody) + secretApiKey)",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{$randomUUID}}\",\n  \"integratorTransactionId\": \"{{$randomUUID}}\",\n  \"type\": \"BET\",\n  \"requestedAt\": \"{{$isoTimestamp}}\",\n  \"game\": {\n    \"id\": 12787\n  },\n  \"software\": {\n    \"id\": 33\n  },\n  \"integrator\": {\n    \"id\": 15\n  },\n  \"player\": {\n    \"id\": \"{{$randomUUID}}\",\n    \"casinoPlayerId\": \"{{player_id}}\"\n  },\n  \"currency\": \"{{currency}}\",\n  \"casinoSessionId\": \"{{casino_session_id}}\",\n  \"round\": {\n    \"id\": \"{{$randomUUID}}\",\n    \"integratorRoundId\": \"{{$randomUUID}}\",\n    \"status\": \"IN_PROGRESS\"\n  },\n  \"amount\": 45.0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{alea_base_url}}/transactions",
+              "host": ["{{alea_base_url}}"],
+              "path": ["transactions"]
+            },
+            "description": "Place a bet transaction to deduct money from player balance.\n\n**Authentication:**\nDigest: SHA-512 = SHA512(JSON.stringify(requestBody) + secretApiKey)\n\n**Key Points:**\n- Amount is at root level (not nested in bet object)\n- Player ID should be UUID format\n- Round status should be IN_PROGRESS for bets\n- Secret is NOT included in request body"
+          },
+          "response": [
+            {
+              "name": "Successful Bet Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"bet-example-123\",\n  \"integratorTransactionId\": \"bet-example-123\",\n  \"type\": \"BET\",\n  \"amount\": 45.0\n}"
+                },
+                "url": {
+                  "raw": "{{alea_base_url}}/transactions",
+                  "host": ["{{alea_base_url}}"],
+                  "path": ["transactions"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n  \"status\": \"SUCCESS\",\n  \"id\": \"bet-example-123\",\n  \"realAmount\": 45.0,\n  \"isAlreadyProcessed\": false\n}"
+            }
+          ]
+        },
+        {
+          "name": "Process Win Transaction",
+          "event": [
+            {
+              "listen": "pre-request",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Generate SHA-512 signature for WIN transaction according to Alea API rule:",
+                  "// SHA512(JSON.stringify(requestBody) + secretApiKey)",
+                  "const CryptoJS = require('crypto-js');",
+                  "",
+                  "// Get the request body",
+                  "const requestBody = {",
+                  "  \"id\": pm.variables.replaceIn('{{$randomUUID}}'),",
+                  "  \"integratorTransactionId\": pm.variables.replaceIn('{{$randomUUID}}'),",
+                  "  \"type\": \"WIN\",",
+                  "  \"requestedAt\": pm.variables.replaceIn('{{$isoTimestamp}}'),",
+                  "  \"game\": {",
+                  "    \"id\": 12787",
+                  "  },",
+                  "  \"software\": {",
+                  "    \"id\": 33",
+                  "  },",
+                  "  \"integrator\": {",
+                  "    \"id\": 15",
+                  "  },",
+                  "  \"player\": {",
+                  "    \"id\": pm.variables.replaceIn('{{$randomUUID}}'),",
+                  "    \"casinoPlayerId\": pm.collectionVariables.get('player_id')",
+                  "  },",
+                  "  \"currency\": pm.collectionVariables.get('currency'),",
+                  "  \"casinoSessionId\": pm.collectionVariables.get('casino_session_id'),",
+                  "  \"round\": {",
+                  "    \"id\": pm.variables.replaceIn('{{$randomUUID}}'),",
+                  "    \"integratorRoundId\": pm.variables.replaceIn('{{$randomUUID}}'),",
+                  "    \"status\": \"COMPLETED\"",
+                  "  },",
+                  "  \"amount\": 100.0",
+                  "};",
+                  "",
+                  "// Create signature data: JSON string + secret",
+                  "const jsonString = JSON.stringify(requestBody);",
+                  "const secretKey = pm.collectionVariables.get('alea_secret');",
+                  "const signatureData = jsonString + secretKey;",
+                  "",
+                  "console.log('WIN Transaction Signature Calculation:');",
+                  "console.log('  Request body JSON:', jsonString);",
+                  "console.log('  Secret key:', secretKey ? '[HIDDEN]' : '[MISSING]');",
+                  "console.log('  Signature data length:', signatureData.length);",
+                  "",
+                  "// Calculate SHA-512 signature",
+                  "const signature = CryptoJS.SHA512(signatureData).toString(CryptoJS.enc.Hex);",
+                  "",
+                  "pm.collectionVariables.set('win_signature', signature);",
+                  "console.log('  Generated WIN signature:', signature);",
+                  "",
+                  "// Update the request body with the same data used for signature",
+                  "pm.request.body.raw = jsonString;"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Digest",
+                "value": "SHA-512={{win_signature}}",
+                "description": "SHA512(JSON.stringify(requestBody) + secretApiKey)",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{$randomUUID}}\",\n  \"integratorTransactionId\": \"{{$randomUUID}}\",\n  \"type\": \"WIN\",\n  \"requestedAt\": \"{{$isoTimestamp}}\",\n  \"game\": {\n    \"id\": 12787\n  },\n  \"software\": {\n    \"id\": 33\n  },\n  \"integrator\": {\n    \"id\": 15\n  },\n  \"player\": {\n    \"id\": \"{{$randomUUID}}\",\n    \"casinoPlayerId\": \"{{player_id}}\"\n  },\n  \"currency\": \"{{currency}}\",\n  \"casinoSessionId\": \"{{casino_session_id}}\",\n  \"round\": {\n    \"id\": \"{{$randomUUID}}\",\n    \"integratorRoundId\": \"{{$randomUUID}}\",\n    \"status\": \"COMPLETED\"\n  },\n  \"amount\": 100.0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{alea_base_url}}/transactions",
+              "host": ["{{alea_base_url}}"],
+              "path": ["transactions"]
+            },
+            "description": "Process a win transaction to add money to player balance.\n\n**Authentication:**\nDigest: SHA-512 = SHA512(JSON.stringify(requestBody) + secretApiKey)\n\n**Key Points:**\n- Round status should be COMPLETED for wins\n- Amount represents the win amount\n- Can be used for bonus wagering scenarios"
+          },
+          "response": []
+        },
+        {
+          "name": "Bet and Win Combined Transaction",
+          "event": [
+            {
+              "listen": "pre-request",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Generate SHA-512 signature for BET_WIN transaction according to Alea API rule:",
+                  "// SHA512(JSON.stringify(requestBody) + secretApiKey)",
+                  "const CryptoJS = require('crypto-js');",
+                  "",
+                  "// Get the request body",
+                  "const requestBody = {",
+                  "  \"id\": pm.variables.replaceIn('{{$randomUUID}}'),",
+                  "  \"integratorTransactionId\": pm.variables.replaceIn('{{$randomUUID}}'),",
+                  "  \"type\": \"BET_WIN\",",
+                  "  \"requestedAt\": pm.variables.replaceIn('{{$isoTimestamp}}'),",
+                  "  \"game\": {",
+                  "    \"id\": 12787",
+                  "  },",
+                  "  \"software\": {",
+                  "    \"id\": 33",
+                  "  },",
+                  "  \"integrator\": {",
+                  "    \"id\": 15",
+                  "  },",
+                  "  \"player\": {",
+                  "    \"id\": pm.variables.replaceIn('{{$randomUUID}}'),",
+                  "    \"casinoPlayerId\": pm.collectionVariables.get('player_id')",
+                  "  },",
+                  "  \"currency\": pm.collectionVariables.get('currency'),",
+                  "  \"casinoSessionId\": pm.collectionVariables.get('casino_session_id'),",
+                  "  \"round\": {",
+                  "    \"id\": pm.variables.replaceIn('{{$randomUUID}}'),",
+                  "    \"integratorRoundId\": pm.variables.replaceIn('{{$randomUUID}}'),",
+                  "    \"status\": \"COMPLETED\"",
+                  "  },",
+                  "  \"amount\": 50.0,",
+                  "  \"bet\": {",
+                  "    \"amount\": 50.0",
+                  "  },",
+                  "  \"win\": {",
+                  "    \"amount\": 75.0",
+                  "  }",
+                  "};",
+                  "",
+                  "// Create signature data: JSON string + secret",
+                  "const jsonString = JSON.stringify(requestBody);",
+                  "const secretKey = pm.collectionVariables.get('alea_secret');",
+                  "const signatureData = jsonString + secretKey;",
+                  "",
+                  "console.log('BET_WIN Transaction Signature Calculation:');",
+                  "console.log('  Request body JSON:', jsonString);",
+                  "console.log('  Secret key:', secretKey ? '[HIDDEN]' : '[MISSING]');",
+                  "console.log('  Signature data length:', signatureData.length);",
+                  "",
+                  "// Calculate SHA-512 signature",
+                  "const signature = CryptoJS.SHA512(signatureData).toString(CryptoJS.enc.Hex);",
+                  "",
+                  "pm.collectionVariables.set('betwin_signature', signature);",
+                  "console.log('  Generated BET_WIN signature:', signature);",
+                  "",
+                  "// Update the request body with the same data used for signature",
+                  "pm.request.body.raw = jsonString;"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Digest",
+                "value": "SHA-512={{betwin_signature}}",
+                "description": "SHA512(JSON.stringify(requestBody) + secretApiKey)",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{$randomUUID}}\",\n  \"integratorTransactionId\": \"{{$randomUUID}}\",\n  \"type\": \"BET_WIN\",\n  \"requestedAt\": \"{{$isoTimestamp}}\",\n  \"game\": {\n    \"id\": 12787\n  },\n  \"software\": {\n    \"id\": 33\n  },\n  \"integrator\": {\n    \"id\": 15\n  },\n  \"player\": {\n    \"id\": \"{{$randomUUID}}\",\n    \"casinoPlayerId\": \"{{player_id}}\"\n  },\n  \"currency\": \"{{currency}}\",\n  \"casinoSessionId\": \"{{casino_session_id}}\",\n  \"round\": {\n    \"id\": \"{{$randomUUID}}\",\n    \"integratorRoundId\": \"{{$randomUUID}}\",\n    \"status\": \"COMPLETED\"\n  },\n  \"amount\": 50.0,\n  \"bet\": {\n    \"amount\": 50.0\n  },\n  \"win\": {\n    \"amount\": 75.0\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{alea_base_url}}/transactions",
+              "host": ["{{alea_base_url}}"],
+              "path": ["transactions"]
+            },
+            "description": "Combined bet and win transaction in a single request.\n\n**Authentication:**\nDigest: SHA-512 = SHA512(JSON.stringify(requestBody) + secretApiKey)\n\n**Key Points:**\n- Contains both bet and win amounts\n- Round status should be COMPLETED\n- Net effect: win amount - bet amount"
+          },
+          "response": []
+        },
+        {
+          "name": "Rollback Transaction",
+          "event": [
+            {
+              "listen": "pre-request",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Generate SHA-512 signature for ROLLBACK transaction according to Alea API rule:",
+                  "// SHA512(JSON.stringify(requestBody) + secretApiKey)",
+                  "const CryptoJS = require('crypto-js');",
+                  "",
+                  "// Get the request body",
+                  "const requestBody = {",
+                  "  \"id\": pm.variables.replaceIn('{{$randomUUID}}'),",
+                  "  \"integratorTransactionId\": pm.variables.replaceIn('{{$randomUUID}}'),",
+                  "  \"type\": \"ROLLBACK\",",
+                  "  \"requestedAt\": pm.variables.replaceIn('{{$isoTimestamp}}'),",
+                  "  \"game\": {",
+                  "    \"id\": 12787",
+                  "  },",
+                  "  \"software\": {",
+                  "    \"id\": 33",
+                  "  },",
+                  "  \"integrator\": {",
+                  "    \"id\": 15",
+                  "  },",
+                  "  \"player\": {",
+                  "    \"id\": pm.variables.replaceIn('{{$randomUUID}}'),",
+                  "    \"casinoPlayerId\": pm.collectionVariables.get('player_id')",
+                  "  },",
+                  "  \"currency\": pm.collectionVariables.get('currency'),",
+                  "  \"casinoSessionId\": pm.collectionVariables.get('casino_session_id'),",
+                  "  \"originalRequestType\": \"BET\",",
+                  "  \"originalAmount\": 45.0,",
+                  "  \"round\": {",
+                  "    \"id\": pm.variables.replaceIn('{{$randomUUID}}'),",
+                  "    \"integratorRoundId\": pm.variables.replaceIn('{{$randomUUID}}'),",
+                  "    \"status\": \"COMPLETED\"",
+                  "  }",
+                  "};",
+                  "",
+                  "// Create signature data: JSON string + secret",
+                  "const jsonString = JSON.stringify(requestBody);",
+                  "const secretKey = pm.collectionVariables.get('alea_secret');",
+                  "const signatureData = jsonString + secretKey;",
+                  "",
+                  "console.log('ROLLBACK Transaction Signature Calculation:');",
+                  "console.log('  Request body JSON:', jsonString);",
+                  "console.log('  Secret key:', secretKey ? '[HIDDEN]' : '[MISSING]');",
+                  "console.log('  Signature data length:', signatureData.length);",
+                  "",
+                  "// Calculate SHA-512 signature",
+                  "const signature = CryptoJS.SHA512(signatureData).toString(CryptoJS.enc.Hex);",
+                  "",
+                  "pm.collectionVariables.set('rollback_signature', signature);",
+                  "console.log('  Generated ROLLBACK signature:', signature);",
+                  "",
+                  "// Update the request body with the same data used for signature",
+                  "pm.request.body.raw = jsonString;"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Digest",
+                "value": "SHA-512={{rollback_signature}}",
+                "description": "SHA512(JSON.stringify(requestBody) + secretApiKey)",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{$randomUUID}}\",\n  \"integratorTransactionId\": \"{{$randomUUID}}\",\n  \"type\": \"ROLLBACK\",\n  \"requestedAt\": \"{{$isoTimestamp}}\",\n  \"game\": {\n    \"id\": 12787\n  },\n  \"software\": {\n    \"id\": 33\n  },\n  \"integrator\": {\n    \"id\": 15\n  },\n  \"player\": {\n    \"id\": \"{{$randomUUID}}\",\n    \"casinoPlayerId\": \"{{player_id}}\"\n  },\n  \"currency\": \"{{currency}}\",\n  \"casinoSessionId\": \"{{casino_session_id}}\",\n  \"originalRequestType\": \"BET\",\n  \"originalAmount\": 45.0,\n  \"round\": {\n    \"id\": \"{{$randomUUID}}\",\n    \"integratorRoundId\": \"{{$randomUUID}}\",\n    \"status\": \"COMPLETED\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{alea_base_url}}/transactions",
+              "host": ["{{alea_base_url}}"],
+              "path": ["transactions"]
+            },
+            "description": "Rollback a previous transaction.\n\n**Authentication:**\nDigest: SHA-512 = SHA512(JSON.stringify(requestBody) + secretApiKey)\n\n**Key Points:**\n- originalRequestType: Type of transaction being rolled back\n- originalAmount: Amount of the original transaction\n- Used for error correction and reconciliation"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Authentication Examples",
+      "description": "Examples of authentication signature calculation",
+      "item": [
+        {
+          "name": "Balance Signature Calculation",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://httpbin.org/get",
+              "protocol": "https",
+              "host": ["httpbin", "org"],
+              "path": ["get"]
+            },
+            "description": "**Balance Authentication Signature:**\n\n```javascript\n// Parameters in order:\nconst casinoSessionId = '26117e8f-8610-4b95-b90e-09861a87e303';\nconst currency = 'CAD';\nconst gameId = '913';\nconst integratorId = '42';\nconst softwareId = '42';\nconst secretApiKey = 'bK4pJGnoTmlktPup41ozgvc8JXUzPWht';\n\n// Concatenate in exact order:\nconst rawString = casinoSessionId + currency + gameId + integratorId + softwareId + secretApiKey;\n\n// Calculate SHA-512 hash:\nconst signature = SHA512(rawString);\n\n// Use in header:\n// Digest: SHA-512={signature}\n```\n\n**Example Raw String:**\n`26117e8f-8610-4b95-b90e-09861a87e303CAD913424242bK4pJGnoTmlktPup41ozgvc8JXUzPWht`"
+          },
+          "response": []
+        },
+        {
+          "name": "Transaction Signature Calculation",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"example\": \"This is just for documentation\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://httpbin.org/post",
+              "protocol": "https",
+              "host": ["httpbin", "org"],
+              "path": ["post"]
+            },
+            "description": "**Transaction Authentication Signature:**\n\n```javascript\n// 1. Create the request body (WITHOUT secret):\nconst requestBody = {\n  \"id\": \"bet-example-123\",\n  \"integratorTransactionId\": \"bet-example-123\",\n  \"type\": \"BET\",\n  \"requestedAt\": \"2025-01-07T13:02:24Z\",\n  \"game\": { \"id\": 12787 },\n  \"software\": { \"id\": 33 },\n  \"integrator\": { \"id\": 15 },\n  \"player\": {\n    \"id\": \"69a26cc0-5826-3755-8d5e-985ae91e0b1d\",\n    \"casinoPlayerId\": \"235759\"\n  },\n  \"currency\": \"EUR\",\n  \"casinoSessionId\": \"bc07c213-909a-4917-bf03-0d5773b11454\",\n  \"round\": {\n    \"id\": \"a41b66a8-4d2d-4715-9e49-eb2a91b2da70\",\n    \"integratorRoundId\": \"a41b66a8-4d2d-4715-9e49-eb2a91b2da70\",\n    \"status\": \"IN_PROGRESS\"\n  },\n  \"amount\": 1.5\n};\n\n// 2. Convert to JSON string:\nconst jsonString = JSON.stringify(requestBody);\n\n// 3. Append secret:\nconst secretApiKey = 'bK4pJGnoTmlktPup41ozgvc8JXUzPWht';\nconst rawString = jsonString + secretApiKey;\n\n// 4. Calculate SHA-512 hash:\nconst signature = SHA512(rawString);\n\n// 5. Use in header:\n// Digest: SHA-512={signature}\n```\n\n**IMPORTANT:** The secret is NOT included in the request body!"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Pre-request script for signature calculation",
+          "// Note: This is a template - actual SHA-512 calculation needs to be implemented",
+          "",
+          "// For Balance requests:",
+          "// pm.environment.set('balance_signature', calculateBalanceSignature());",
+          "",
+          "// For Transaction requests:",
+          "// pm.environment.set('bet_signature', calculateTransactionSignature(pm.request.body.raw));",
+          "",
+          "console.log('⚠️  Remember to calculate proper SHA-512 signatures for authentication!');"
+        ]
+      }
+    }
+  ]
+}

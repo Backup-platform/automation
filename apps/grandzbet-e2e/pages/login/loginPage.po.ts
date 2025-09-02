@@ -60,6 +60,33 @@ export class LoginPage {
         }[inputField](softAssert);
     };
 
+        public validateLoginError2 = async (inputField: 'email' | 'password' | 'credentials' | 'all' | 'emailAndPass', softAssert = false) => {
+        await { 
+            email: this.validateEmailError, 
+            password: this.validatePasswordError,
+            credentials: this.validateInvalidCredentialsError,
+            all: async (softAssert = false) => {
+                await this.validateEmailError(softAssert);
+                await this.validatePasswordError(softAssert);
+                await this.validateInvalidCredentialsError(softAssert);
+            },
+            emailAndPass: async (softAssert = false) => {
+                await this.validateEmailError(softAssert);
+                await this.validatePasswordError(softAssert);
+            }
+        }[inputField](softAssert);
+    };
+
+    public validateLoginError3 = async (inputFields: Array<'email' | 'password' | 'credentials'>, softAssert = false) => {
+        for (const errorType of inputFields) {
+            await {
+                email: this.validateEmailError,
+                password: this.validatePasswordError,
+                credentials: this.validateInvalidCredentialsError
+            }[errorType](softAssert);
+        }
+    };
+
     @step('Validate Login page elements are visible, enabled and editable')
     public async validatePageElements(softAssert= false): Promise<void> {
         await this.validatePageElementsVisible(softAssert);

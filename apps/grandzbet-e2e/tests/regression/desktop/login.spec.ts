@@ -4,7 +4,7 @@ import { MenuItems } from '../../../pages/menu/menuItems.po';
 import { NavigationItems } from '../../../pages/menu/navigationItems.po';
 
 test.beforeEach(async ({ page }) => {
-  await page.goto(`${process.env.URL}`, { waitUntil: 'load' });
+  await page.goto(`${process.env.URL}`, { waitUntil: 'domcontentloaded' });
 });
 
 test.describe('Login Page Regression Tests - Desktop', () => {
@@ -20,7 +20,7 @@ test.describe('Login Page Regression Tests - Desktop', () => {
       scenario: string;
       username: string;
       password: string;
-      error: 'email' | 'password' | 'credentials';
+      error: 'email' | 'password' | 'credentials' | 'all' | 'emailAndPass';
     }> = [
       {
         scenario: `Empty password`,
@@ -52,12 +52,12 @@ test.describe('Login Page Regression Tests - Desktop', () => {
         password: `${process.env.PASS}`,
         error: 'email',
       },
-      //   { TODO: figure out how to handle this case
-      //     scenario: `Empty both`,
-      //     username: '',
-      //     password: '',
-      //     error: 'credentials',
-      //   }
+        {
+          scenario: `Empty both`,
+          username: '',
+          password: '',
+          error: 'emailAndPass',
+        }
     ];
     for (const fields of wrongCredentials) {
       test(`Validate ${fields.scenario} tab`, async ({
@@ -66,7 +66,7 @@ test.describe('Login Page Regression Tests - Desktop', () => {
       }) => {
         await menuItems.clickLogin();
         await loginPage.actionLogin(fields.username, fields.password);
-        await loginPage.validateLoginError(fields.error);
+        await loginPage.validateLoginError2(fields.error, true);
       });
     }
   });

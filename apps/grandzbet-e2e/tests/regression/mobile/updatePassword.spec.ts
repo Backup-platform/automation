@@ -1,7 +1,7 @@
 import test from '../../../pages/base/base.po';
 
 test.beforeEach(async ({ page, personalInfo }) => {
-	await page.goto(`${process.env.URL}`, { waitUntil: "domcontentloaded" });
+	await page.goto(`https://stage.grandzbet7.com/profile?tab=personalInfo`, { waitUntil: "domcontentloaded" });
   	await personalInfo.navigateToPage();
 });
 

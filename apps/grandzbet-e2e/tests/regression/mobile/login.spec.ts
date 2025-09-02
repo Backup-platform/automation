@@ -4,7 +4,7 @@ import { MenuItems } from '../../../pages/menu/menuItems.po';
 import { NavigationItems } from '../../../pages/menu/navigationItems.po';
 
 test.beforeEach(async ({ page }) => {
-	await page.goto(`${process.env.URL}`, { waitUntil: "load" });
+	await page.goto(`${process.env.URL}`, { waitUntil: 'domcontentloaded' });
 });
 
 test.describe("Login Page Regression Tests - Mobile", () => {

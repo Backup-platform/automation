@@ -2,7 +2,7 @@ import test from "../../../pages/base/base.po";
 import path from 'path';
 
 test.beforeEach(async ({ page, menuItems }) => {
-    await page.goto(`${process.env.URL}`);
+    await page.goto(`${process.env.URL}` , { waitUntil: 'domcontentloaded' });
     await menuItems.clickRegister();
 });
 

@@ -1,4 +1,5 @@
-import { test as base, Page } from '@playwright/test';
+import { Page } from '@playwright/test';
+import { apiTest } from '@sbt-monorepo/page-objects';
 import { LoginPage } from '../login/loginPage.po';
 import { MenuItems } from '../menu/menuItems.po';
 import { NavigationItems } from '../menu/navigationItems.po';
@@ -48,7 +49,7 @@ function createPageFixture<T>(PageObject: new (page: Page) => T) {
 	};
 }
 
-const test = base.extend<pages>({
+const test = apiTest.extend<pages>({
 	loginPage: createPageFixture(LoginPage),
 	menuItems: createPageFixture(MenuItems),
 	navigationItems: createPageFixture(NavigationItems),

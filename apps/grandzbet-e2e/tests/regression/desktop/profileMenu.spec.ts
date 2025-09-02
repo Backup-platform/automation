@@ -2,7 +2,7 @@ import test from '../../../pages/base/base.po';
 import { assertUrl } from '@test-utils/navigation-helpers';
 
 test.beforeEach(async ({ page }) => {
-	await page.goto(`${process.env.URL}`, { waitUntil: "load" });
+	await page.goto(`${process.env.URL}`, { waitUntil: 'domcontentloaded'});
 });
 test.describe('Regression', () => {
 

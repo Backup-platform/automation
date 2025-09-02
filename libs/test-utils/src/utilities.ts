@@ -166,39 +166,166 @@ export async function iterateElements(
 }
 
 /**
- * Enhanced attribute-based element finder with flexible matching.
- * Finds elements by attribute values with support for multiple match patterns.
+ * Search criteria for element finding with discriminated union types
+ */
+type MatchType = 'contains' | 'equals' | 'startsWith' | 'endsWith';
+
+type ElementSearchCriteria = 
+    | { searchType: 'attribute'; attributeName: string; attributeValue: string | RegExp; matchType?: MatchType }
+    | { searchType: 'text'; textContent: string | RegExp; matchType?: MatchType }
+    | { searchType: 'callback'; getTextCallback: (index: number) => Promise<string>; searchText: string; matchType?: MatchType };
+
+/**
+ * Unified element finder that can search by attribute, text content, or custom callback.
+ * Uses strategy pattern with discriminated union for type safety and clean API.
  * 
- * @param locator - Playwright locator for elements to search
- * @param attributeName - Name of the attribute to match against
- * @param attributeValues - Values to match (string, array, or pattern)
+ * @param locator - CompositeLocator for elements to search (or total count for callback strategy)
+ * @param criteria - Search criteria with strategy-specific parameters
  * @returns Array of indices for matching elements
  */
+export async function findElementIndices(
+    locator: CompositeLocator | number,
+    criteria: ElementSearchCriteria
+): Promise<number[]> {
+    switch (criteria.searchType) {
+        case 'attribute':
+            return await findByAttribute(locator as CompositeLocator, criteria);
+        case 'text':
+            return await findByText(locator as CompositeLocator, criteria);
+        case 'callback':
+            return await findByCallback(locator as number, criteria);
+        default:
+            throw new Error('Invalid search type');
+    }
+}
+
+/**
+ * Find first element by any search strategy (convenience function).
+ * 
+ * @param locator - CompositeLocator for elements to search (or total count for callback strategy)
+ * @param criteria - Search criteria with strategy-specific parameters
+ * @returns Promise resolving to first matching index or null if none found
+ */
+export async function findFirstElement(
+    locator: CompositeLocator | number,
+    criteria: ElementSearchCriteria
+): Promise<number | null> {
+    const indices = await findElementIndices(locator, criteria);
+    return indices.length > 0 ? indices[0] : null;
+}
+
+/**
+ * Core generic element finding function that handles the common algorithm.
+ * Eliminates code duplication across different search strategies.
+ * 
+ * @param count - Number of elements to iterate through
+ * @param valueExtractor - Function that extracts the value to match from each element
+ * @param expectedValue - The value to search for
+ * @param matchType - How to match the values
+ * @returns Array of indices for matching elements
+ */
+async function findElementsByValueExtractor(
+    count: number,
+    valueExtractor: (index: number) => Promise<string | null>,
+    expectedValue: string | RegExp,
+    matchType: MatchType
+): Promise<number[]> {
+    const expectedValueStr = expectedValue instanceof RegExp ? expectedValue.source : expectedValue;
+    const stepName = `Find elements by ${matchType}: "${expectedValueStr}"`;
+    
+    return await test.step(stepName, async () => {
+        const indices: number[] = [];
+        
+        for (let i = 0; i < count; i++) {
+            const extractedValue = await valueExtractor(i);
+            
+            if (extractedValue && matchesValue(extractedValue, expectedValue, matchType)) {
+                indices.push(i);
+            }
+        }
+        
+        return indices;
+    });
+}
+
+// Strategy implementations - now thin wrappers around the core function
+async function findByAttribute(
+    compositeLocator: CompositeLocator,
+    criteria: Extract<ElementSearchCriteria, { searchType: 'attribute' }>
+): Promise<number[]> {
+    const { attributeName, attributeValue, matchType = 'contains' } = criteria;
+    const locator = compositeLocator.locator();
+    const count = await locator.count();
+    
+    return await test.step(`Search ${compositeLocator.name} by attribute: ${attributeName}`, async () => {
+        return await findElementsByValueExtractor(
+            count,
+            async (index: number) => {
+                const element = locator.nth(index);
+                return await element.getAttribute(attributeName);
+            },
+            attributeValue,
+            matchType
+        );
+    });
+}
+
+async function findByText(
+    compositeLocator: CompositeLocator,
+    criteria: Extract<ElementSearchCriteria, { searchType: 'text' }>
+): Promise<number[]> {
+    const { textContent, matchType = 'contains' } = criteria;
+    const locator = compositeLocator.locator();
+    const count = await locator.count();
+    
+    return await test.step(`Search ${compositeLocator.name} by text content`, async () => {
+        return await findElementsByValueExtractor(
+            count,
+            async (index: number) => {
+                const element = locator.nth(index);
+                return await element.textContent();
+            },
+            textContent,
+            matchType
+        );
+    });
+}
+
+async function findByCallback(
+    totalCount: number,
+    criteria: Extract<ElementSearchCriteria, { searchType: 'callback' }>
+): Promise<number[]> {
+    const { getTextCallback, searchText, matchType = 'contains' } = criteria;
+    
+    return await test.step(`Search elements by callback function`, async () => {
+        return await findElementsByValueExtractor(
+            totalCount,
+            getTextCallback,
+            searchText,
+            matchType
+        );
+    });
+}
+
+/**
+ * @deprecated Use findElementIndices with searchType: 'attribute' instead
+ * Kept for backward compatibility
+ */
 export async function getElementIndices(
-    locator: Locator,
+    compositeLocator: CompositeLocator,
     criteria: {
         attributeName: string;
         attributeValue: string | RegExp;
-        matchType?: 'contains' | 'equals' | 'startsWith' | 'endsWith';
+        matchType?: MatchType;
     }
 ): Promise<number[]> {
-    const { attributeName, attributeValue, matchType = 'contains' } = criteria;
-    const count = await locator.count();
-    const indices: number[] = [];
-    
-    for (let i = 0; i < count; i++) {
-        const element = locator.nth(i);
-        const actualValue = await element.getAttribute(attributeName);
-        
-        if (actualValue && matchesValue(actualValue, attributeValue, matchType)) {
-            indices.push(i);
-        }
-    }
-    
-    return indices;
+    return await findElementIndices(compositeLocator, {
+        searchType: 'attribute',
+        ...criteria
+    });
 }
 
-function matchesValue(actual: string, expected: string | RegExp, matchType: string): boolean {
+function matchesValue(actual: string, expected: string | RegExp, matchType: MatchType): boolean {
     if (expected instanceof RegExp) {
         return expected.test(actual);
     }
@@ -281,8 +408,6 @@ export async function fillIfDefined(
         { stepDescription, logWhenSkipped: options.logWhenSkipped }
     );
 }
-
-
 
 /**
  * Export compositeLocator from core-types for convenience
