@@ -31,13 +31,32 @@ export {
     type BonusResponse,
     type ProfileBonus,
     type UserBonus,
-    type UserBonusesResponse
+    type UserBonusesResponse,
+    type MoneyTransferInput,
+    type WalletInfo
 } from './api/bonus/bonusApi';
 
 export { 
     BonusApiFactory,
     type TestEnvironmentConfig 
 } from './api/bonus/bonusApiFactory';
+
+// =============================================================================
+// PaymentIQ API Utilities
+// =============================================================================
+
+/**
+ * PaymentIQ API functionality for deposit bonus claiming
+ */
+export {
+    PaymentIqApiClient,
+    type PaymentIqApiConfig,
+    type AuthorizeRequestDTO,
+    type TransferRequestDTO,
+    type AuthorizeAttributes,
+    type TransferAttributes,
+    type PaymentResponse
+} from './api/payment/paymentIqApi';
 
 // =============================================================================
 // Alea API Utilities

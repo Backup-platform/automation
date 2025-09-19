@@ -2,6 +2,7 @@ import { test as base, APIRequestContext } from '@playwright/test';
 import { BonusApiFactory } from '../bonus/bonusApiFactory';
 import type { BonusApiClient } from '../bonus/bonusApi';
 import type { AleaApiClient } from '../alea/aleaApi';
+import { PaymentIqApiClient } from '../payment/paymentIqApi';
 
 /**
  * Test data interface for bonus operations
@@ -21,33 +22,21 @@ export interface TestData {
 export type ApiClients = {
   bonusApi: BonusApiClient;
   aleaApi: AleaApiClient;
+  paymentIqApi: PaymentIqApiClient;
   testData: TestData;
 }
 
 /**
- * Creates a BonusApiClient fixture for stage environment
- * Uses environment variables for credentials or defaults
+ * Extended test with API client fixtures
+ * Use this as a base for tests that need API clients
  */
-function createBonusApiFixture() {
-  return async (
-    { request }: { request: APIRequestContext },
-    use: (fixture: BonusApiClient) => Promise<void>
-  ): Promise<void> => {
+export const apiTest = base.extend<ApiClients>({
+  bonusApi: async ({ request }, use) => {
     const bonusApi = BonusApiFactory.createStageClient(request);
     await use(bonusApi);
-  };
-}
+  },
 
-/**
- * Creates an AleaApiClient fixture with active session
- * Uses environment variables for credentials with sensible defaults
- */
-function createAleaApiFixture() {
-  return async (
-    { request }: { request: APIRequestContext },
-    use: (fixture: AleaApiClient) => Promise<void>
-  ): Promise<void> => {
-    // Use environment variables or default test credentials
+  aleaApi: async ({ request }, use) => {
     const username = process.env.USER || 'mpetrov15@sbtsolution.com';
     const password = process.env.PASS || 'Mpetrov15@sbtsolution.com';
     
@@ -58,31 +47,23 @@ function createAleaApiFixture() {
       password
     );
     await use(aleaApi);
-  };
-}
+  },
 
-/**
- * Creates a TestData fixture with default test data
- * Provides consistent test data across all tests
- */
-function createTestDataFixture() {
-  return async (
-    { request: _request }: { request: APIRequestContext },
-    use: (fixture: TestData) => Promise<void>
-  ): Promise<void> => {
+  paymentIqApi: async ({ request }, use) => {
+    const config = {
+      baseUrl: 'https://stage-payments.spacefortuna.com',
+      brandId: process.env.PAYMENTIQ_MERCHANT_ID || '100471006', // Use merchant ID as brand ID
+      merchantId: process.env.PAYMENTIQ_MERCHANT_ID || '100471006'
+    };
+    
+    const paymentIqApi = new PaymentIqApiClient(request, config);
+    await use(paymentIqApi);
+  },
+
+  testData: async ({ request }, use) => {
     const testData = BonusApiFactory.getDefaultTestData();
     await use(testData);
-  };
-}
-
-/**
- * Extended test with API client fixtures
- * Use this as a base for tests that need API clients
- */
-export const apiTest = base.extend<ApiClients>({
-  bonusApi: createBonusApiFixture(),
-  aleaApi: createAleaApiFixture(),
-  testData: createTestDataFixture()
+  },
 });
 
 /**

@@ -1,4 +1,6 @@
 import { APIRequestContext } from '@playwright/test';
+import type { AleaApiClient } from '../alea/aleaApi';
+import type { PaymentIqApiClient } from '../payment/paymentIqApi';
 
 export interface BonusApiConfig {
   baseUrl: string;
@@ -22,6 +24,20 @@ export interface BonusData {
   profileBonusId: string;
   currency: string;
   comment?: string;
+}
+
+export interface MoneyTransferInput {
+  amount: number;
+  currency: string;
+  deposit: boolean;
+  reason: string;
+  comment: string;
+}
+
+export interface WalletInfo {
+  balance: number;
+  currency: string;
+  id: number;
 }
 
 export interface BonusResponse {
@@ -680,7 +696,15 @@ export class BonusApiClient {
     }
 
     const result = await response.json();
-    return result.data.cancelBonus;
+    
+    // Handle different response structures
+    if (result.data && result.data.cancelBonus) {
+      return result.data.cancelBonus;
+    } else if (result.errors) {
+      return { success: false, message: `GraphQL errors: ${JSON.stringify(result.errors)}` };
+    } else {
+      return { success: false, message: `Unexpected response: ${JSON.stringify(result)}` };
+    }
   }
 
   /**
@@ -738,7 +762,6 @@ export class BonusApiClient {
     if (bonuses.issuedBonuses) allBonuses.push(...bonuses.issuedBonuses);
 
     if (allBonuses.length === 0) {
-      console.log('No bonuses found for validation');
       return true; // No bonuses to validate is considered valid
     }
 
@@ -751,14 +774,6 @@ export class BonusApiClient {
       firstBonus.profileBonus.status &&
       firstBonus.profileBonus.bonusModel
     );
-
-    console.log('Bonus structure validation:', {
-      bonusId: firstBonus.bonusId,
-      status: firstBonus.profileBonus.status,
-      canCancel: firstBonus.canCancel,
-      hasCmsBonus: !!firstBonus.cmsBonus,
-      isValid: hasRequiredFields
-    });
 
     return hasRequiredFields;
   }
@@ -833,37 +848,155 @@ export class BonusApiClient {
   async setupBonusQueue(
     testData: { profileId: number; currency: string }, 
     bonusSetup: Array<{ bonusId: number; amount: number; comment: string }>,
-    waitTime = 1000
+    waitTime?: number
+  ): Promise<void>;
+
+  /**
+   * Setup a queue of bonuses with specific initial statuses
+   * @param testData - Base test data (profileId, currency, etc.)
+   * @param bonusSetup - Array of bonus configurations with initial status
+   * @param waitTime - Wait time between operations (default: 1000ms)
+   */
+  async setupBonusQueue(
+    testData: { profileId: number; currency: string }, 
+    bonusSetup: Array<{ bonusId: number; amount: number; comment: string; initialStatus?: 'wagering' | 'pending' | 'available' }>,
+    waitTime?: number
+  ): Promise<void>;
+
+  /**
+   * Setup a queue of bonuses with enhanced deposit bonus claiming support
+   * @param testData - Base test data (profileId, currency, etc.)
+   * @param bonusSetup - Array of bonus configurations with bonus type and requirement metadata
+   * @param aleaApi - AleaApi client for session management and deposit bonus claiming
+   * @param paymentIqApi - PaymentIQ API client for deposit bonus claiming
+   * @param waitTime - Wait time between operations (default: 1000ms)
+   */
+  async setupBonusQueue(
+    testData: { profileId: number; currency: string }, 
+    bonusSetup: Array<{ 
+      bonusId: number; 
+      amount: number; 
+      comment: string; 
+      initialStatus?: 'wagering' | 'pending' | 'available';
+      bonusRequirement?: 'deposit' | 'no_deposit';
+      bonusType?: 'cash' | 'free_spins';
+    }>,
+    aleaApi?: AleaApiClient,
+    paymentIqApi?: PaymentIqApiClient,
+    waitTime?: number
+  ): Promise<void>;
+
+  async setupBonusQueue(
+    testData: { profileId: number; currency: string }, 
+    bonusSetup: Array<{ 
+      bonusId: number; 
+      amount: number; 
+      comment: string; 
+      initialStatus?: 'wagering' | 'pending' | 'available';
+      bonusRequirement?: 'deposit' | 'no_deposit';
+      bonusType?: 'cash' | 'free_spins';
+    }>,
+    aleaApiOrWaitTime?: AleaApiClient | number,
+    paymentIqApi?: PaymentIqApiClient,
+    waitTime?: number
   ): Promise<void> {
-    // Grant all bonuses first
-    for (const bonus of bonusSetup) {
-      await this.grantBonus({
-        bonusId: bonus.bonusId,
-        profileId: testData.profileId,
-        bonusAmount: bonus.amount,
-        comment: bonus.comment
-      });
-      await new Promise(resolve => setTimeout(resolve, waitTime));
+    // Handle parameter overloading - if third parameter is a number, it's the old signature
+    let aleaApi: AleaApiClient | undefined;
+    let actualWaitTime = 500;
+    
+    if (typeof aleaApiOrWaitTime === 'number') {
+      // Old signature: setupBonusQueue(testData, bonusSetup, waitTime)
+      actualWaitTime = aleaApiOrWaitTime;
+    } else {
+      // New signature: setupBonusQueue(testData, bonusSetup, aleaApi, paymentIqApi, waitTime)
+      aleaApi = aleaApiOrWaitTime;
+      actualWaitTime = waitTime || 500;
     }
-    
-    // Fetch granted bonuses and claim them in order
-    const allBonuses = await this.fetchAllUserBonuses();
-    const grantedBonuses = allBonuses.issuedBonuses?.filter((bonus: UserBonus) => 
-      bonusSetup.some(setup => setup.bonusId === bonus.profileBonus.bonusId)
-    ) || [];
-    
-    const remainingBonuses = [...grantedBonuses];
-    
-    for (const setupBonus of bonusSetup) {
-      const bonusIndex = remainingBonuses.findIndex((b: UserBonus) => b.profileBonus.bonusId === setupBonus.bonusId);
       
-      if (bonusIndex !== -1) {
-        const bonus = remainingBonuses[bonusIndex];
-        await this.claimProfileBonus(bonus.profileBonus.id, testData.currency);
-        remainingBonuses.splice(bonusIndex, 1);
-        await new Promise(resolve => setTimeout(resolve, waitTime));
+      // Grant all bonuses first
+      for (let i = 0; i < bonusSetup.length; i++) {
+        const bonus = bonusSetup[i];
+        
+        await this.grantBonus({
+          bonusId: bonus.bonusId,
+          profileId: testData.profileId,
+          bonusAmount: bonus.amount,
+          comment: bonus.comment
+        });
+        
+        await new Promise(resolve => setTimeout(resolve, actualWaitTime));
       }
-    }
+      
+      // Separate bonuses to be claimed vs those that should stay available
+      const bonusesToClaim = bonusSetup.filter(bonus => 
+        !bonus.initialStatus || bonus.initialStatus === 'wagering' || bonus.initialStatus === 'pending'
+      );
+      
+      // If no initialStatus specified, claim all bonuses (backward compatibility)
+      // If initialStatus specified, only claim non-available bonuses
+      if (bonusesToClaim.length > 0) {
+        
+        // Fetch granted bonuses and claim them in SETUP ORDER (not API return order)
+        const allBonuses = await this.fetchAllUserBonuses();
+        const grantedBonuses = allBonuses.issuedBonuses?.filter((bonus: UserBonus) => 
+          bonusesToClaim.some(setup => setup.bonusId === bonus.profileBonus.bonusId)
+        ) || [];
+        
+        // CRITICAL FIX: Claim bonuses in SETUP ORDER, not in API return order
+        // This ensures the first bonus in our setup becomes active, second becomes pending, etc.
+        for (let i = 0; i < bonusesToClaim.length; i++) {
+          const setupBonus = bonusesToClaim[i];
+          
+          // Find the EXACT matching bonus from granted bonuses (both bonusId AND amount must match)
+          const matchingBonus = grantedBonuses.find((b: UserBonus) => {
+            const bonusIdMatches = b.profileBonus.bonusId === setupBonus.bonusId;
+            const fixedMatches = b.profileBonus.fixedBonusAmount === setupBonus.amount;
+            const initialMatches = b.profileBonus.initialBonusAmount === setupBonus.amount;
+            const amountMatches = fixedMatches || initialMatches;
+            
+            return bonusIdMatches && amountMatches;
+          });
+          
+          if (matchingBonus) {
+            
+            // Check if this is a deposit bonus and we have the required APIs for PaymentIQ claiming
+            const isDepositBonus = setupBonus.bonusRequirement === 'deposit';
+            const canUsePaymentIQ = isDepositBonus && !!aleaApi && !!paymentIqApi;
+            
+            try {
+              if (canUsePaymentIQ) {
+                // Use PaymentIQ API for deposit bonus claiming (type-safe)
+                if (paymentIqApi && aleaApi) {
+                  await paymentIqApi.claimDepositBonus(aleaApi, {
+                    userId: testData.profileId.toString(),
+                    profileBonusId: matchingBonus.profileBonus.id.toString(),
+                    txAmount: setupBonus.amount.toString() + '.00',
+                    txAmountCy: testData.currency || 'EUR'
+                  });
+                }
+              } else {
+                // Use standard claiming method
+                await this.performStandardClaimingOperation(matchingBonus, setupBonus, testData);
+              }
+            } catch (claimingError) {
+              if (canUsePaymentIQ) {
+                // Fall back to standard claiming if PaymentIQ fails
+                await this.performStandardClaimingOperation(matchingBonus, setupBonus, testData);
+              } else {
+                throw claimingError;
+              }
+            }
+            
+            // Remove claimed bonus from the list to avoid duplicate claiming
+            const index = grantedBonuses.indexOf(matchingBonus);
+            grantedBonuses.splice(index, 1);
+            
+            await new Promise(resolve => setTimeout(resolve, actualWaitTime));
+          }
+        }
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 2000));
   }
 
   /**
@@ -902,7 +1035,156 @@ export class BonusApiClient {
     
     if (firstBonus) {
       await this.claimProfileBonus(firstBonus.profileBonus.id, testData.currency);
-      await new Promise(resolve => setTimeout(resolve, waitTime));
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
+  }
+
+  /**
+   * Private helper method to perform standard bonus claiming with timeout
+   * @param matchingBonus - The matching bonus from the API
+   * @param setupBonus - The setup bonus configuration
+   * @param testData - Test data containing currency info
+   */
+  private async performStandardClaimingOperation(
+    matchingBonus: UserBonus, 
+    setupBonus: { bonusId: number; amount: number; comment: string }, 
+    testData: { currency: string }
+  ): Promise<void> {
+    // Add timeout to claiming process
+    const claimPromise = this.claimProfileBonus(matchingBonus.profileBonus.id, testData.currency);
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error(`Claiming timeout after 2.5 seconds for bonus ${setupBonus.bonusId}`)), 2500)
+    );
+    
+    await Promise.race([claimPromise, timeoutPromise]);
+  }
+
+  /**
+   * Transfer money from user's wallet (add or remove balance)
+   * Uses backoffice GraphQL API
+   */
+  async transferMoney(walletId: number, amount: number, currency = 'CAD', deposit = false, reason = 'OTHER', comment = 'Testing'): Promise<WalletInfo> {
+    if (!this.tokens.backofficeToken) {
+      await this.getBackOfficeToken();
+    }
+
+    const query = `
+      mutation TransferMoney($password: [Int!]!, $transfer: MoneyTransferInput!, $walletId: BigInteger!) {
+        updateBalance(transfer: $transfer, walletId: $walletId, password: $password) {
+          balance
+          currency
+          id
+        }
+      }
+    `;
+
+    // Password array - "Testpass123!" converted to ASCII codes
+    const password = [84, 101, 115, 116, 112, 97, 115, 115, 49, 50, 51, 33];
+
+    const variables = {
+      transfer: {
+        amount,
+        currency,
+        deposit,
+        reason,
+        comment
+      },
+      walletId,
+      password
+    };
+
+    const response = await this.request.post(`${this.config.backofficeUrl}/graphql`, {
+      headers: {
+        'Authorization': `Bearer ${this.tokens.backofficeToken}`,
+        'Content-Type': 'application/json'
+      },
+      data: {
+        operationName: 'TransferMoney',
+        variables,
+        query
+      }
+    });
+
+    if (!response.ok()) {
+      throw new Error(`Failed to transfer money: ${response.status()}`);
+    }
+
+    const result = await response.json();
+    
+    if (result.errors) {
+      throw new Error(`GraphQL errors in transfer money: ${JSON.stringify(result.errors)}`);
+    }
+    
+    if (!result.data || !result.data.updateBalance) {
+      throw new Error(`Unexpected transfer money response structure: ${JSON.stringify(result)}`);
+    }
+    
+    return result.data.updateBalance;
+  }
+
+  /**
+   * Get user wallet information
+   * Uses backoffice GraphQL API
+   */
+  async getWallets(profileId: number): Promise<WalletInfo[]> {
+    if (!this.tokens.backofficeToken) {
+      await this.getBackOfficeToken();
+    }
+
+    const query = `
+      query getWallets($profileId: BigInteger!) {
+        wallets(profileId: $profileId) {
+          balance
+          currency
+          id
+        }
+      }
+    `;
+
+    const variables = {
+      profileId
+    };
+
+    const response = await this.request.post(`${this.config.backofficeUrl}/graphql`, {
+      headers: {
+        'Authorization': `Bearer ${this.tokens.backofficeToken}`,
+        'Content-Type': 'application/json'
+      },
+      data: {
+        operationName: 'getWallets',
+        variables,
+        query
+      }
+    });
+
+    if (!response.ok()) {
+      throw new Error(`Failed to get wallets: ${response.status()}`);
+    }
+
+    const result = await response.json();
+    
+    if (result.errors) {
+      throw new Error(`GraphQL errors in get wallets: ${JSON.stringify(result.errors)}`);
+    }
+    
+    if (!result.data || !result.data.wallets) {
+      throw new Error(`Unexpected get wallets response structure: ${JSON.stringify(result)}`);
+    }
+    
+    return result.data.wallets;
+  }
+
+  /**
+   * Remove money from user's wallet - convenience method
+   */
+  async removeMoney(walletId: number, amount: number, currency = 'CAD', comment = 'Testing - Remove money'): Promise<WalletInfo> {
+    return this.transferMoney(walletId, amount, currency, false, 'OTHER', comment);
+  }
+
+  /**
+   * Add money to user's wallet - convenience method
+   */
+  async addMoney(walletId: number, amount: number, currency = 'CAD', comment = 'Testing - Add money'): Promise<WalletInfo> {
+    return this.transferMoney(walletId, amount, currency, true, 'PLAYER_DEPOSIT', comment);
   }
 }

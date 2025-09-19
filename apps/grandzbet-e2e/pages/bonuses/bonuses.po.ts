@@ -4,11 +4,11 @@ import { clickElement } from '@test-utils/interactions';
 import { assertVisible } from '@test-utils/assertions';
 import { compositeLocator } from '@test-utils/core-types';
 import { BonusCard } from './bonusCard.po';
-import { validateAttributes, validateOnlyOneElementActiveGroup, findFirstElement } from '@test-utils';
+import { validateAttributesContaining, validateOnlyOneElementActiveGroup, findFirstElement } from '@test-utils';
 import { MenuItems } from '../menu/menuItems.po';
 import { ProfileMenu } from '../menu/profileMenu.po';
 
-type BonusTab = 'all' | 'active' | 'pending' | 'available';
+type BonusTab = 'active' | 'pending' | 'available';
 type BonusCardStatus = 'wagering' | 'pending' | 'available';
 
 export class Bonuses {
@@ -27,11 +27,11 @@ export class Bonuses {
     // Base selectors - complete paths without chaining (container and navigation only)
     private readonly containerSelector = '#profile-myBonuses';
     
-    private readonly activeTabAttribute = 'text-primary'; // Class indicating active tab
-    private readonly inactiveTabAttribute = 'text-greyMain'; // Class indicating inactive tab
+    private readonly activeTabAttribute = 'bg-secondary-primary'; // Class indicating active tab
+    private readonly inactiveTabAttribute = 'text-white'; // Base text color for inactive tabs
     
-    // Common tab selector (all tabs, no color class)
-    private readonly tabSelector = '#profile-myBonuses span.font-rubik.text-base.font-semibold';
+    // Tab selector for the new button-based tabs
+    private readonly tabSelector = '#profile-myBonuses div.flex.gap-4 button';
 
     // Container
     private readonly bonusesContainer = compositeLocator(() => this.page.locator(this.containerSelector), 'My Bonuses container');
@@ -39,17 +39,15 @@ export class Bonuses {
     // Header elements
     private readonly pageTitle = compositeLocator(() => this.page.locator('#profile-myBonuses h3.font-roboto.text-2xl.font-bold'), 'My Bonuses title');
 
-    // Filter tabs (order: All, Pending, Active, Available)
-    private readonly allTabButton = compositeLocator(() => this.page.locator(this.tabSelector).nth(0), 'All tab');
-    private readonly pendingTabButton = compositeLocator(() => this.page.locator(this.tabSelector).nth(1), 'Pending tab');
-    private readonly activeTabButton = compositeLocator(() => this.page.locator(this.tabSelector).nth(2), 'Active tab');
-    private readonly availableTabButton = compositeLocator(() => this.page.locator(this.tabSelector).nth(3), 'Available tab');
+    // Filter tabs (order: Available, Active, Pending - no "All" tab anymore)
+    private readonly availableTabButton = compositeLocator(() => this.page.locator(this.tabSelector).nth(0), 'Available tab');
+    private readonly activeTabButton = compositeLocator(() => this.page.locator(this.tabSelector).nth(1), 'Active tab');
+    private readonly pendingTabButton = compositeLocator(() => this.page.locator(this.tabSelector).nth(2), 'Pending tab');
 
     private readonly bonusTabs = [
-            this.allTabButton, 
-            this.pendingTabButton, 
-            this.activeTabButton,
-            this.availableTabButton
+            this.availableTabButton,
+            this.activeTabButton, 
+            this.pendingTabButton
     ];  
 
     // Actions
@@ -57,53 +55,39 @@ export class Bonuses {
     public async navigateToMyBonuses(): Promise<void> {
         await this.menuItems.clickMyProfileButton();
         await this.profileMenu.clickMyBonusesButton();
-        await this.page.waitForTimeout(10000);
     }
 
-    public clickAllTab = async (softAssert = false) => {
-        await clickElement(this.allTabButton);
+    public clickAvailableTab = async (softAssert = false) => {
+        await clickElement(this.availableTabButton);
         await validateOnlyOneElementActiveGroup(this.bonusTabs, 0,
-            { class: this.activeTabAttribute }, softAssert, 'All tab');
-        await validateAttributes(this.pendingTabButton, { class: this.inactiveTabAttribute }, softAssert);
-        await validateAttributes(this.activeTabButton, { class: this.inactiveTabAttribute }, softAssert);
-        await validateAttributes(this.availableTabButton, { class: this.inactiveTabAttribute }, softAssert);
-    };
-
-    public clickPendingTab = async (softAssert = false) => {
-        await clickElement(this.pendingTabButton);
-        await validateOnlyOneElementActiveGroup(this.bonusTabs, 1,
-            { class: this.activeTabAttribute }, softAssert, 'Pending tab');
-        await validateAttributes(this.allTabButton, { class: this.inactiveTabAttribute }, softAssert);
-        await validateAttributes(this.activeTabButton, { class: this.inactiveTabAttribute }, softAssert);
-        await validateAttributes(this.availableTabButton, { class: this.inactiveTabAttribute }, softAssert);
+            { class: this.activeTabAttribute }, softAssert, 'Available tab');
+        await validateAttributesContaining(this.activeTabButton, { class: this.inactiveTabAttribute }, softAssert);
+        await validateAttributesContaining(this.pendingTabButton, { class: this.inactiveTabAttribute }, softAssert);
     };
 
     public clickActiveTab = async (softAssert = false) => {
         await clickElement(this.activeTabButton);
-        await validateOnlyOneElementActiveGroup(this.bonusTabs, 2,
+        await validateOnlyOneElementActiveGroup(this.bonusTabs, 1,
             { class: this.activeTabAttribute }, softAssert, 'Active tab');
-        await validateAttributes(this.allTabButton, { class: this.inactiveTabAttribute }, softAssert);
-        await validateAttributes(this.pendingTabButton, { class: this.inactiveTabAttribute }, softAssert);
-        await validateAttributes(this.availableTabButton, { class: this.inactiveTabAttribute }, softAssert);
+        await validateAttributesContaining(this.availableTabButton, { class: this.inactiveTabAttribute }, softAssert);
+        await validateAttributesContaining(this.pendingTabButton, { class: this.inactiveTabAttribute }, softAssert);
     };
 
-    public clickAvailableTab = async (softAssert = false) => {
-        await clickElement(this.availableTabButton);
-        await validateOnlyOneElementActiveGroup(this.bonusTabs, 3,
-            { class: this.activeTabAttribute }, softAssert, 'Available tab');
-        await validateAttributes(this.allTabButton, { class: this.inactiveTabAttribute }, softAssert);
-        await validateAttributes(this.pendingTabButton, { class: this.inactiveTabAttribute }, softAssert);
-        await validateAttributes(this.activeTabButton, { class: this.inactiveTabAttribute }, softAssert);
+    public clickPendingTab = async (softAssert = false) => {
+        await clickElement(this.pendingTabButton);
+        await validateOnlyOneElementActiveGroup(this.bonusTabs, 2,
+            { class: this.activeTabAttribute }, softAssert, 'Pending tab');
+        await validateAttributesContaining(this.availableTabButton, { class: this.inactiveTabAttribute }, softAssert);
+        await validateAttributesContaining(this.activeTabButton, { class: this.inactiveTabAttribute }, softAssert);
     };
 
     @step('Validate My Bonuses page navigation elements are visible')
     public async validatePageElementsVisible(softAssert = false): Promise<void> {
         await assertVisible(this.bonusesContainer, softAssert);
         await assertVisible(this.pageTitle, softAssert);
-        await assertVisible(this.allTabButton, softAssert);
-        await assertVisible(this.pendingTabButton, softAssert);
-        await assertVisible(this.activeTabButton, softAssert);
         await assertVisible(this.availableTabButton, softAssert);
+        await assertVisible(this.activeTabButton, softAssert);
+        await assertVisible(this.pendingTabButton, softAssert);
     }
 
     @step('Validate All tab content - bonus cards and details')
@@ -228,6 +212,7 @@ export class Bonuses {
         );
     }
 
+    @step('Click activate on bonus cards by name')
     public async clickActivateByName(bonusNames: string[]): Promise<void> {
         // Use the unified findFirstElement to find cards by any of the provided names
         let cardIndex: number | null = null;
@@ -280,6 +265,63 @@ export class Bonuses {
         });
     }
 
+    @step('Cancel bonus by name with confirmation')
+    public async cancelBonusByName(bonusName: string, confirmCancel = true): Promise<void> {
+        // 1. Find the bonus card by name
+        const cardIndex = await this.findCardByText(bonusName, 'wagering');
+        
+        if (cardIndex === null) {
+            throw new Error(`Could not find active bonus card with name: "${bonusName}"`);
+        }
+        
+        // 2. Click the cancel button to open the dialog
+        await this.bonusCard.clickCancelBonusButton(cardIndex);
+        
+        // 3. Validate the cancel confirmation dialog appears
+        await this.bonusCard.validateCancelDialog();
+        
+        // 4. Either confirm or cancel the cancellation
+        if (confirmCancel) {
+            await this.bonusCard.clickCancelDialogYes();
+            
+            // Wait for system to process the cancellation
+            await this.page.waitForTimeout(2000);
+            
+            // Validate dialog closes
+            await this.bonusCard.validateCancelDialogNotVisible();
+        } else {
+            await this.bonusCard.clickCancelDialogNo();
+            
+            // Validate dialog closes
+            await this.bonusCard.validateCancelDialogNotVisible();
+        }
+    }
+
+    @step('Cancel bonus by index with confirmation')
+    public async cancelBonusByIndex(cardIndex: number, confirmCancel = true): Promise<void> {
+        // 1. Click the cancel button to open the dialog
+        await this.bonusCard.clickCancelBonusButton(cardIndex);
+        
+        // 2. Validate the cancel confirmation dialog appears
+        await this.bonusCard.validateCancelDialog();
+        
+        // 3. Either confirm or cancel the cancellation
+        if (confirmCancel) {
+            await this.bonusCard.clickCancelDialogYes();
+            
+            // Wait for system to process the cancellation
+            await this.page.waitForTimeout(2000);
+            
+            // Validate dialog closes
+            await this.bonusCard.validateCancelDialogNotVisible();
+        } else {
+            await this.bonusCard.clickCancelDialogNo();
+            
+            // Validate dialog closes
+            await this.bonusCard.validateCancelDialogNotVisible();
+        }
+    }
+
     @step('Validate all active cards basic elements')
     public async validateActiveCardsBasics(softAssert = false): Promise<void> {
         await this.performActionOnCardsByStatus('wagering', async (i) => {
@@ -306,7 +348,6 @@ export class Bonuses {
     private async navigateToTab(tabToNavigate: BonusTab): Promise<void> {
         await test.step(`Navigate to ${tabToNavigate} tab`, async () => {
             const tabActions = {
-                all: this.clickAllTab,
                 active: this.clickActiveTab,
                 pending: this.clickPendingTab,
                 available: this.clickAvailableTab
@@ -330,19 +371,67 @@ export class Bonuses {
         });
     }
 
-    @step('Find card index by partial title/subtitle match')
-    public async findCardByText(searchText: string): Promise<number | null> {
-        // Use the unified findFirstElement with callback strategy for combined title/subtitle search
-        return await findFirstElement(this.bonusCard.bonusCards, {
-            searchType: 'callback',
-            getTextCallback: async (index: number) => {
-                const title = await this.bonusCard.getCardText(index, 'title');
-                const subtitle = await this.bonusCard.getCardText(index, 'subtitle');
-                return `${title} ${subtitle}`; // Combine both for searching
-            },
-            searchText,
-            matchType: 'contains'
-        });
+    @step('Find card index by partial title/subtitle match and status')
+    public async findCardByText(searchText: string, expectedStatus?: 'wagering' | 'pending' | 'available'): Promise<number | null> {
+        const cardCount = await this.bonusCard.getCardCount();
+        
+        if (cardCount === 0) {
+            return null;
+        }
+        
+        // Debug: Log all cards when searching
+        if (expectedStatus) {
+            console.log(`\n🔍 Searching for: "${searchText}" with status: "${expectedStatus}"`);
+            console.log(`📊 Total cards found: ${cardCount}`);
+            
+            for (let j = 0; j < cardCount; j++) {
+                try {
+                    const cardTitle = await this.bonusCard.cardTitle(j).locator().textContent();
+                    const statusText = await this.bonusCard.bonusStatus(j).locator().textContent();
+                    console.log(`  Card ${j}: "${cardTitle}" - Status: "${statusText}"`);
+                } catch {
+                    console.log(`  Card ${j}: Error reading card`);
+                }
+            }
+        }
+        
+        // Search the full text content of each card
+        for (let i = 0; i < cardCount; i++) {
+            try {
+                const cardText = await this.bonusCard.bonusCards.locator().nth(i).textContent();
+                if (cardText && cardText.includes(searchText)) {
+                    // If no expected status specified, return first match (backward compatibility)
+                    if (!expectedStatus) {
+                        return i;
+                    }
+                    
+                    // Check if the card's status matches the expected status
+                    const statusElement = this.bonusCard.bonusStatus(i);
+                    const statusText = await statusElement.locator().textContent();
+                    
+                    if (statusText) {
+                        const normalizedStatus = statusText.toLowerCase().trim();
+                        const normalizedExpected = expectedStatus.toLowerCase().trim();
+                        
+                        // Handle status text matching with different variations
+                        const statusMatches = 
+                            normalizedStatus.includes(normalizedExpected) ||
+                            (normalizedExpected === 'wagering' && normalizedStatus.includes('wagering')) ||
+                            (normalizedExpected === 'pending' && normalizedStatus.includes('pending')) ||
+                            (normalizedExpected === 'available' && normalizedStatus.includes('available'));
+                        
+                        if (statusMatches) {
+                            return i;
+                        }
+                    }
+                }
+            } catch {
+                // Skip cards that can't be read
+                continue;
+            }
+        }
+        
+        return null;
     }
 
     @step('Validate bonus exists by name/text')
@@ -390,9 +479,7 @@ export class Bonuses {
     public async validateBonusSetup(
         tabToNavigate: BonusTab, 
         expectedBonuses: Array<{ comment: string; expectedStatus: BonusCardStatus }>
-    ): Promise<Array<{ index: number; name: string; status: BonusCardStatus }>> {
-        const validatedBonuses: Array<{ index: number; name: string; status: BonusCardStatus }> = [];
-        
+    ): Promise<void> {
         await test.step('Validate bonus setup', async () => {
             // Step 1: Navigate to specified tab
             await this.navigateToTab(tabToNavigate);
@@ -402,11 +489,11 @@ export class Bonuses {
             
             // Step 3: Validate each individual bonus exists and has correct elements
             for (const expectedBonus of expectedBonuses) {
-                // Search for the card
-                const cardIndex = await this.findCardByText(expectedBonus.comment);
+                // Search for the card using both text and expected status for disambiguation
+                const cardIndex = await this.findCardByText(expectedBonus.comment, expectedBonus.expectedStatus);
                 
                 // Hard assertion - setup must be correct
-                await expect(cardIndex, `Bonus containing "${expectedBonus.comment}" should exist but was not found`).not.toBeNull();
+                await expect(cardIndex, `Bonus containing "${expectedBonus.comment}" with status "${expectedBonus.expectedStatus}" should exist but was not found`).not.toBeNull();
                 
                 // At this point cardIndex is guaranteed to be non-null (hard assertion passed)
                 const validCardIndex = cardIndex as number;
@@ -422,17 +509,8 @@ export class Bonuses {
                 } as const;
 
                 await statusValidations[expectedBonus.expectedStatus]();
-                
-                // Store the validated bonus info for potential reuse
-                validatedBonuses.push({
-                    index: validCardIndex,
-                    name: expectedBonus.comment,
-                    status: expectedBonus.expectedStatus
-                });
             }
         });
-        
-        return validatedBonuses;
     }
 
     @step('Validate multiple bonuses exist with specific statuses')
@@ -472,24 +550,36 @@ export class Bonuses {
         await this.validateBonusStatusByName(pendingBonus.comment, 'wagering', softAssert);
     }
 
-    @step('Validate bonus queue after zero out action')
-    public async validateBonusQueueAfterZeroOut(
-        expectedTotalCount: number,
-        removedBonusName: string,
-        newActiveBonusName: string,
-        softAssert = false
+    @step('Validate complete bonus setup across all tabs (replacement for All tab)')
+    public async validateBonusSetupAcrossAllTabs(
+        expectedBonuses: Array<{ comment: string; expectedStatus: BonusCardStatus }>
     ): Promise<void> {
-        await test.step('Validate post zero-out bonus queue state', async () => {
-            // Already on the correct tab from previous navigation, no need to navigate again
-            
-            // Step 1: Validate total count decreased by 1
-            await this.validateCardCount(expectedTotalCount);
-            
-            // Step 2: Validate originally active bonus is gone
-            await this.validateBonusNotExists(removedBonusName, softAssert);
-            
-            // Step 3: Validate originally pending bonus is now active
-            await this.validateBonusStatusByName(newActiveBonusName, 'wagering', softAssert);
+        await test.step('Validate bonus setup across all tabs', async () => {
+            // Group expected bonuses by their status to know which tab to check
+            const bonusesByTab = {
+                available: expectedBonuses.filter(b => b.expectedStatus === 'available'),
+                active: expectedBonuses.filter(b => b.expectedStatus === 'wagering'),
+                pending: expectedBonuses.filter(b => b.expectedStatus === 'pending')
+            };
+
+            // Validate bonuses in each tab
+            for (const [tabName, bonusesInTab] of Object.entries(bonusesByTab)) {
+                if (bonusesInTab.length > 0) {
+                    await this.validateBonusSetup(tabName as BonusTab, bonusesInTab);
+                }
+            }
+
+            // Also validate total count across all tabs
+            let totalFoundBonuses = 0;
+            for (const tab of ['available', 'active', 'pending'] as const) {
+                await this.navigateToTab(tab);
+                const cardCount = await this.bonusCard.getCardCount();
+                totalFoundBonuses += cardCount;
+            }
+
+            await expect(totalFoundBonuses, 
+                `Expected ${expectedBonuses.length} bonuses total across all tabs, but found ${totalFoundBonuses}`
+            ).toBe(expectedBonuses.length);
         });
     }
 }

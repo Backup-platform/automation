@@ -24,6 +24,20 @@ export interface BonusData {
   comment?: string;
 }
 
+export interface MoneyTransferInput {
+  amount: number;
+  currency: string;
+  deposit: boolean;
+  reason: string;
+  comment: string;
+}
+
+export interface WalletInfo {
+  balance: number;
+  currency: string;
+  id: number;
+}
+
 export interface BonusResponse {
   status: string;
   message: string;
@@ -833,6 +847,24 @@ export class BonusApiClient {
   async setupBonusQueue(
     testData: { profileId: number; currency: string }, 
     bonusSetup: Array<{ bonusId: number; amount: number; comment: string }>,
+    waitTime?: number
+  ): Promise<void>;
+
+  /**
+   * Setup a queue of bonuses with specific initial statuses
+   * @param testData - Base test data (profileId, currency, etc.)
+   * @param bonusSetup - Array of bonus configurations with initial status
+   * @param waitTime - Wait time between operations (default: 1000ms)
+   */
+  async setupBonusQueue(
+    testData: { profileId: number; currency: string }, 
+    bonusSetup: Array<{ bonusId: number; amount: number; comment: string; initialStatus?: 'wagering' | 'pending' | 'available' }>,
+    waitTime?: number
+  ): Promise<void>;
+
+  async setupBonusQueue(
+    testData: { profileId: number; currency: string }, 
+    bonusSetup: Array<{ bonusId: number; amount: number; comment: string; initialStatus?: 'wagering' | 'pending' | 'available' }>,
     waitTime = 1000
   ): Promise<void> {
     // Grant all bonuses first
@@ -846,22 +878,38 @@ export class BonusApiClient {
       await new Promise(resolve => setTimeout(resolve, waitTime));
     }
     
-    // Fetch granted bonuses and claim them in order
-    const allBonuses = await this.fetchAllUserBonuses();
-    const grantedBonuses = allBonuses.issuedBonuses?.filter((bonus: UserBonus) => 
-      bonusSetup.some(setup => setup.bonusId === bonus.profileBonus.bonusId)
-    ) || [];
+    // Separate bonuses to be claimed vs those that should stay available
+    const bonusesToClaim = bonusSetup.filter(bonus => 
+      !bonus.initialStatus || bonus.initialStatus === 'wagering' || bonus.initialStatus === 'pending'
+    );
     
-    const remainingBonuses = [...grantedBonuses];
-    
-    for (const setupBonus of bonusSetup) {
-      const bonusIndex = remainingBonuses.findIndex((b: UserBonus) => b.profileBonus.bonusId === setupBonus.bonusId);
+    // If no initialStatus specified, claim all bonuses (backward compatibility)
+    // If initialStatus specified, only claim non-available bonuses
+    if (bonusesToClaim.length > 0) {
+      // Fetch granted bonuses and claim them in SETUP ORDER (not API return order)
+      const allBonuses = await this.fetchAllUserBonuses();
+      const grantedBonuses = allBonuses.issuedBonuses?.filter((bonus: UserBonus) => 
+        bonusesToClaim.some(setup => setup.bonusId === bonus.profileBonus.bonusId)
+      ) || [];
       
-      if (bonusIndex !== -1) {
-        const bonus = remainingBonuses[bonusIndex];
-        await this.claimProfileBonus(bonus.profileBonus.id, testData.currency);
-        remainingBonuses.splice(bonusIndex, 1);
-        await new Promise(resolve => setTimeout(resolve, waitTime));
+      // CRITICAL FIX: Claim bonuses in SETUP ORDER, not in API return order
+      // This ensures the first bonus in our setup becomes active, second becomes pending, etc.
+      for (const setupBonus of bonusesToClaim) {
+        // Find the matching bonus from granted bonuses
+        const matchingBonus = grantedBonuses.find((b: UserBonus) => 
+          b.profileBonus.bonusId === setupBonus.bonusId && 
+          (b.profileBonus.fixedBonusAmount === setupBonus.amount || b.profileBonus.initialBonusAmount === setupBonus.amount)
+        );
+        
+        if (matchingBonus) {
+          await this.claimProfileBonus(matchingBonus.profileBonus.id, testData.currency);
+          
+          // Remove claimed bonus from the list to avoid duplicate claiming
+          const index = grantedBonuses.indexOf(matchingBonus);
+          grantedBonuses.splice(index, 1);
+          
+          await new Promise(resolve => setTimeout(resolve, waitTime));
+        }
       }
     }
   }
@@ -904,5 +952,134 @@ export class BonusApiClient {
       await this.claimProfileBonus(firstBonus.profileBonus.id, testData.currency);
       await new Promise(resolve => setTimeout(resolve, waitTime));
     }
+  }
+
+  /**
+   * Transfer money from user's wallet (add or remove balance)
+   * Uses backoffice GraphQL API
+   */
+  async transferMoney(walletId: number, amount: number, currency = 'CAD', deposit = false, reason = 'OTHER', comment = 'Testing'): Promise<WalletInfo> {
+    if (!this.tokens.backofficeToken) {
+      await this.getBackOfficeToken();
+    }
+
+    const query = `
+      mutation TransferMoney($password: [Int!]!, $transfer: MoneyTransferInput!, $walletId: BigInteger!) {
+        updateBalance(transfer: $transfer, walletId: $walletId, password: $password) {
+          balance
+          currency
+          id
+        }
+      }
+    `;
+
+    // Password array from the HAR file - "Backbeatpro2!" converted to ASCII codes
+    const password = [66, 97, 99, 107, 98, 101, 97, 116, 112, 114, 111, 50, 33];
+
+    const variables = {
+      transfer: {
+        amount,
+        currency,
+        deposit,
+        reason,
+        comment
+      },
+      walletId,
+      password
+    };
+
+    const response = await this.request.post(`${this.config.backofficeUrl}/graphql`, {
+      headers: {
+        'Authorization': `Bearer ${this.tokens.backofficeToken}`,
+        'Content-Type': 'application/json'
+      },
+      data: {
+        operationName: 'TransferMoney',
+        variables,
+        query
+      }
+    });
+
+    if (!response.ok()) {
+      throw new Error(`Failed to transfer money: ${response.status()}`);
+    }
+
+    const result = await response.json();
+    
+    if (result.errors) {
+      throw new Error(`GraphQL errors in transfer money: ${JSON.stringify(result.errors)}`);
+    }
+    
+    if (!result.data || !result.data.updateBalance) {
+      throw new Error(`Unexpected transfer money response structure: ${JSON.stringify(result)}`);
+    }
+    
+    return result.data.updateBalance;
+  }
+
+  /**
+   * Get user wallet information
+   * Uses backoffice GraphQL API
+   */
+  async getWallets(profileId: number): Promise<WalletInfo[]> {
+    if (!this.tokens.backofficeToken) {
+      await this.getBackOfficeToken();
+    }
+
+    const query = `
+      query getWallets($profileId: BigInteger!) {
+        wallets(profileId: $profileId) {
+          balance
+          currency
+          id
+        }
+      }
+    `;
+
+    const variables = {
+      profileId
+    };
+
+    const response = await this.request.post(`${this.config.backofficeUrl}/graphql`, {
+      headers: {
+        'Authorization': `Bearer ${this.tokens.backofficeToken}`,
+        'Content-Type': 'application/json'
+      },
+      data: {
+        operationName: 'getWallets',
+        variables,
+        query
+      }
+    });
+
+    if (!response.ok()) {
+      throw new Error(`Failed to get wallets: ${response.status()}`);
+    }
+
+    const result = await response.json();
+    
+    if (result.errors) {
+      throw new Error(`GraphQL errors in get wallets: ${JSON.stringify(result.errors)}`);
+    }
+    
+    if (!result.data || !result.data.wallets) {
+      throw new Error(`Unexpected get wallets response structure: ${JSON.stringify(result)}`);
+    }
+    
+    return result.data.wallets;
+  }
+
+  /**
+   * Remove money from user's wallet - convenience method
+   */
+  async removeMoney(walletId: number, amount: number, currency = 'CAD', comment = 'Testing - Remove money'): Promise<WalletInfo> {
+    return this.transferMoney(walletId, amount, currency, false, 'OTHER', comment);
+  }
+
+  /**
+   * Add money to user's wallet - convenience method
+   */
+  async addMoney(walletId: number, amount: number, currency = 'CAD', comment = 'Testing - Add money'): Promise<WalletInfo> {
+    return this.transferMoney(walletId, amount, currency, true, 'PLAYER_DEPOSIT', comment);
   }
 }

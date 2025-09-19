@@ -1,4 +1,4 @@
-import { APIRequestContext } from '@playwright/test';
+import { APIRequestContext, test } from '@playwright/test';
 import { BonusApiClient, BonusApiConfig } from './bonusApi';
 import { AleaApiClient, AleaApiConfig } from '../alea/aleaApi';
 
@@ -111,27 +111,33 @@ export class BonusApiFactory {
     aleaSecret?: string,
     aleaPlayerId?: string
   ): Promise<AleaApiClient> {
-    // Create BonusApiClient to get Bearer token
-    const bonusConfig: TestEnvironmentConfig = {
-      environment,
-      username,
-      password
-    };
-    
-    const bonusApi = this.create(request, bonusConfig);
-    
-    // Get Bearer token from Keycloak
-    const bearerToken = await bonusApi.getFrontOfficeToken();
-    console.log('🔑 Obtained Bearer token for session creation');
-    
-    // Create AleaApiClient
-    const aleaClient = this.createAleaClient(request, aleaBaseUrl, aleaSecret, aleaPlayerId);
-    
-    // Create game session with Bearer token
-    const sessionId = await aleaClient.createGameSession(bearerToken);
-    console.log('✅ AleaApiClient created with active session:', sessionId);
-    
-    return aleaClient;
+    return await test.step('Create AleaApiClient with authenticated session', async () => {
+      // Create BonusApiClient to get Bearer token
+      const bonusConfig: TestEnvironmentConfig = {
+        environment,
+        username,
+        password
+      };
+      
+      const bonusApi = this.create(request, bonusConfig);
+      
+      // Get Bearer token from Keycloak
+      const bearerToken = await test.step('Obtain Bearer token for session creation', async () => {
+        return await bonusApi.getFrontOfficeToken();
+      });
+      
+      // Create AleaApiClient
+      const aleaClient = this.createAleaClient(request, aleaBaseUrl, aleaSecret, aleaPlayerId);
+      
+      // Create game session with Bearer token
+      const sessionId = await aleaClient.createGameSession(bearerToken);
+      
+      await test.step(`AleaApiClient created with active session: ${sessionId}`, () => {
+        // Session creation completed
+      });
+      
+      return aleaClient;
+    });
   }
 
   /**

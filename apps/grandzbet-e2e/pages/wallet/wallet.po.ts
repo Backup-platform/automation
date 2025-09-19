@@ -5,6 +5,7 @@ import { clickElement } from '@test-utils/interactions';
 import { getElementText } from '@test-utils/text-extraction';
 import { assertElementContainsText } from '@test-utils/assertions';
 import { validateAllElementsVisibility, validateGroupsContainText } from '@test-utils/assertions.groups';
+import { step } from '@test-utils/decorators';
 
 export class Wallet {
     readonly page: Page;
@@ -13,7 +14,40 @@ export class Wallet {
         this.page = page;
     }   
 
-    // Locators
+    // New locators based on the provided HTML structure
+    private readonly balanceDropdownButton = compositeLocator(() =>
+        this.page.locator('div[aria-haspopup="menu"]').filter({ has: this.page.locator('span', { hasText: 'Balance' }) }), 'Balance Dropdown Button');
+
+    private readonly balanceDropdownMenu = compositeLocator(() =>
+        this.page.locator('[role="menu"][aria-labelledby]'), 'Balance Dropdown Menu');
+
+    // Dropdown menu content locators
+    private readonly dropdownMenu = compositeLocator(() =>
+        this.page.locator('div[role="menu"]'), 'Balance Dropdown Menu Content');
+
+    private readonly dropdownColumns = compositeLocator(() =>
+        this.dropdownMenu.locator().locator('div.flex.flex-col'), 'Dropdown Columns');
+
+    private readonly valuesColumn = compositeLocator(() =>
+        this.dropdownColumns.locator().nth(1), 'Values Column');
+
+    private readonly realMoneyFromDropdown = compositeLocator(() =>
+        this.valuesColumn.locator().locator('span').nth(0), 'Real Money Value from Dropdown');
+
+    private readonly bonusFromDropdown = compositeLocator(() =>
+        this.valuesColumn.locator().locator('span').nth(1), 'Casino Bonus Value from Dropdown');
+
+    private readonly totalFromDropdown = compositeLocator(() =>
+        this.valuesColumn.locator().locator('span').nth(3), 'Total Balance Value from Dropdown');
+
+    // Alternative locators for the collapsed balance display
+    private readonly collapsedBalanceContainer = compositeLocator(() =>
+        this.page.locator('div[data-state="closed"], div[data-state="open"]').filter({ has: this.page.locator('span', { hasText: 'Balance' }) }), 'Balance Container');
+
+    private readonly collapsedBalanceValue = compositeLocator(() =>
+        this.collapsedBalanceContainer.locator().locator('div.flex.flex-col.items-end').locator('span').nth(1), 'Collapsed Balance Value');
+
+    // Legacy locators (keeping for backward compatibility)
     private readonly walletBalanceSection = compositeLocator(() =>
         this.page.locator('.flex.flex-col.gap-4').filter({ has: this.page.locator('.flex.w-full.justify-end.gap-2') }), 'Wallet Balance Section');
 
@@ -218,4 +252,84 @@ export class Wallet {
     public validateAllBalanceElementsMapVisibility = async (softAssert = false): Promise<void> => {
         await validateAllElementsVisibility(this.walletBalanceElementsMap, softAssert);
     };
+
+    // New methods for dropdown-based balance reading
+    @step('Click balance dropdown button')
+    public async clickBalanceDropdown(): Promise<void> {
+        await clickElement(this.balanceDropdownButton);
+    }
+
+    @step('Open balance dropdown and wait for menu')
+    public async openBalanceDropdownAndWaitForMenu(): Promise<void> {
+        const dataState = await this.balanceDropdownButton.locator().getAttribute('data-state');
+        const isDropdownOpen = dataState === 'open';
+        
+        if (!isDropdownOpen) {
+            await this.clickBalanceDropdown();
+            await assertVisible(this.balanceDropdownMenu);
+        }
+    }
+
+    // Get balance from collapsed state (when dropdown is not expanded)
+    @step('Get balance from collapsed state')
+    public async getBalanceFromCollapsed(): Promise<string> {
+        return await this.collapsedBalanceValue.locator().textContent() || '0.00';
+    }
+
+    @step('Get real money balance from dropdown')
+    public async getRealMoneyFromDropdown(): Promise<string> {
+        try {
+            // Use shared method to open dropdown only if needed
+            await this.openBalanceDropdownAndWaitForMenu();
+            
+            // Wait for dropdown menu to be visible
+            await this.dropdownMenu.locator().waitFor({ state: 'visible', timeout: 5000 });
+            
+            // Get the Real Money value using composite locator
+            const realMoneyText = await this.realMoneyFromDropdown.locator().textContent();
+            
+            return realMoneyText || '0.00';
+            
+        } catch {
+            return '0.00';
+        }
+    }
+
+    @step('Get casino bonus balance from dropdown')
+    public async getBonusFromDropdown(): Promise<string> {
+        try {
+            // Use shared method to open dropdown only if needed
+            await this.openBalanceDropdownAndWaitForMenu();
+            
+            // Wait for dropdown menu to be visible
+            await this.dropdownMenu.locator().waitFor({ state: 'visible', timeout: 5000 });
+            
+            // Get the Casino Bonus value using composite locator
+            const bonusText = await this.bonusFromDropdown.locator().textContent();
+            
+            return bonusText || '0.00';
+            
+        } catch {
+            return '0.00';
+        }
+    }
+
+    @step('Get total balance from dropdown')
+    public async getTotalFromDropdown(): Promise<string> {
+        try {
+            // Use shared method to open dropdown only if needed
+            await this.openBalanceDropdownAndWaitForMenu();
+            
+            // Wait for dropdown menu to be visible
+            await this.dropdownMenu.locator().waitFor({ state: 'visible', timeout: 5000 });
+            
+            // Get the Total Balance value using composite locator
+            const totalText = await this.totalFromDropdown.locator().textContent();
+            
+            return totalText || '0.00';
+            
+        } catch {
+            return '0.00';
+        }
+    }
 }
