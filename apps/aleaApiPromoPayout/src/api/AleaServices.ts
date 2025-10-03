@@ -1,11 +1,11 @@
 import axios from 'axios';
-import { buildPromoBody } from '../helper/buildPromoBody';
-import type { PromoPayload } from '../helper/buildPromoBody';
-import { PromoType } from '../helper/promoTypes';
-import { computeSHA512Hash } from './crypto';
+import { buildPromoBody } from '../helper/buildPromoBody.js';
+import type { PromoPayload } from '../helper/buildPromoBody.js';
+import { PromoType } from '../helper/promoTypes.js';
+import { computeSHA512Hash } from './crypto.js';
 import dotenv from 'dotenv';
 import path from 'path';
-import type { BalanceResponse, PromoPayoutResponse } from '../helper/responseTypes';
+import type { BalanceResponse, PromoPayoutResponse } from '../helper/responseTypes.js';
 
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
@@ -81,19 +81,6 @@ export class Transactions {
                 playerId,
                 amount,
                 place,
-            };
-        } else if (promoType === PromoType.OPERATOR_FREE_SPIN) {
-            if (bonusId === undefined || cost === undefined) {
-                throw new Error('BonusId and Cost are required for Operator Free Spin promo type');
-            }
-
-            payload = {
-                id,
-                promoType,
-                playerId,
-                bonusId,
-                amount,
-                cost,
             };
         }
         else {

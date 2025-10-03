@@ -4,7 +4,6 @@ export enum PromoType {
   TOURNAMENT = 'TOURNAMENT',
   SPIN_GIFT = 'SPIN_GIFT',
   CASHBACK = 'CASHBACK',
-  OPERATOR_FREE_SPIN = 'OPERATOR_FREE_SPIN',
 }
 
 export function enumValues<T extends Record<string, string | number>>(e: T) {

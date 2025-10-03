@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { Transactions } from '../src/api/AleaServises.js';
+import { Transactions } from '../src/api/AleaServices.js';
 import 'dotenv/config';
 import { v4 as uuidv4 } from 'uuid';
 import { randomAmount, randomPlace } from '../src/helper/randomValus.js'
@@ -20,15 +20,13 @@ test.describe.serial('Transactions API Happy Path', () => {
       const promoId = uuidv4().toString();
       const amount = randomAmount();
       const balanceBefore = await transactions.getBalance(playerID);
-      const bonusId = process.env.BONUS_ID;
-      const cost = Number(process.env.COST);
 
       let place: string | undefined;
       if (promoType === PromoType.TOURNAMENT) {
         place = randomPlace();
       }
 
-      const result = await transactions.sendPromoPayout(promoType, playerID, amount, promoId, place, bonusId, cost)
+      const result = await transactions.sendPromoPayout(promoType, playerID, amount, promoId, place)
 
       expect(Number(result.realBalance)).toBeCloseTo(balanceBefore.realBalance + amount, 2);
       expect(Number(result.bonusBalance)).toBeCloseTo(balanceBefore.bonusBalance);
@@ -45,16 +43,14 @@ test.describe.serial('Transactions API Happy Path', () => {
       const promoId = uuidv4().toString();
       const amount = randomAmount();
       const balanceBefore = await transactions.getBalance(playerID);
-      const bonusId = process.env.BONUS_ID;
-      const cost = Number(process.env.COST);
 
       let place: string | undefined;
       if (promoType === PromoType.TOURNAMENT) {
         place = randomPlace();
       }
 
-      const result = await transactions.sendPromoPayout(promoType, playerID, amount, promoId, place, bonusId , cost)
-      const resultDuplicate = await transactions.sendPromoPayout(promoType, playerID, amount, promoId, place, bonusId , cost)
+      const result = await transactions.sendPromoPayout(promoType, playerID, amount, promoId, place)
+      const resultDuplicate = await transactions.sendPromoPayout(promoType, playerID, amount, promoId, place)
 
       expect(Number(result.realBalance)).toBeCloseTo(balanceBefore.realBalance + amount, 2);
       expect(Number(result.bonusBalance)).toBeCloseTo(balanceBefore.bonusBalance, 2);

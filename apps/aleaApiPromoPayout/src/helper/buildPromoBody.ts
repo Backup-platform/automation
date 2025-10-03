@@ -36,18 +36,8 @@ interface CashbackPayout { //ok
     amount: number;
 }
 
-interface OperatorFreeSpin {
-    id: string,
-    bonusId: string,
-    promoType: PromoType.OPERATOR_FREE_SPIN
-    playerId: string;
-    amount: number;
-    cost: number;
-}
-
 export type PromoPayload =
     | FreeSpinPayout
-    | OperatorFreeSpin
     | TournamentPayout
     | SpinGiftPayout
     | PrizePayout
@@ -73,18 +63,6 @@ export function buildPromoBody(payload: PromoPayload): any {
                 [getPromoKey(payload.promoType)]: {
                     campaignId: process.env.CAMPAIGN_ID || '',
                     gameId: Number(process.env.GAME_ID),
-                    amount: payload.amount,
-                    currency: process.env.CURRENCY || 'EUR',
-                },
-            };
-
-        case PromoType.OPERATOR_FREE_SPIN:
-            return {
-                ...base,
-                operatorFreeSpin: {
-                    bonusId: process.env.BONUS_ID || '',
-                    gameId: Number(process.env.GAME_ID),
-                    cost: Number(process.env.COST),
                     amount: payload.amount,
                     currency: process.env.CURRENCY || 'EUR',
                 },
