@@ -332,4 +332,90 @@ export class Wallet {
             return '0.00';
         }
     }
+
+    // ---------------- New Snapshot & Assertion Utilities ----------------
+
+    /**
+     * Normalize a currency string into numeric amount + currency code/symbol.
+     * Supports formats like:
+     *  - 10.00 CAD
+     *  - CAD 10.00
+     *  - €10.00
+     *  - 10,00 €
+     *  - 10.00 (no currency -> defaults to CAD if unspecified)
+     */
+    private parseCurrencyValue(raw: string): { amount: number; currency: string } {
+        const trimmed = (raw || '').trim();
+        if (!trimmed) return { amount: 0, currency: 'UNKNOWN' };
+
+        // Replace comma decimal with dot for normalization (e.g., 10,00 €)
+        const normalized = trimmed.replace(/,/g, '.');
+
+        // Detect euro symbol
+        const euro = /€/.test(normalized);
+        // Extract number (first match of digits + optional decimal)
+        const numberMatch = normalized.match(/(\d+\.?\d*)/);
+        const amount = numberMatch ? parseFloat(numberMatch[1]) : 0;
+
+        // Attempt to detect explicit 3-letter currency code
+        const codeMatch = normalized.match(/\b([A-Z]{3})\b/);
+    const currency = codeMatch ? codeMatch[1] : (euro ? 'EUR' : 'CAD');
+
+        return { amount, currency };
+    }
+
+    /**
+     * Take a unified snapshot of wallet balances (dropdown-based to ensure latest values).
+     */
+    public async snapshot(): Promise<{
+        real: number;
+        casinoBonus: number;
+        sportBonus: number;
+        total: number;
+        currency: string;
+    }> {
+        const realRaw = await this.getRealMoneyFromDropdown();
+        const bonusRaw = await this.getBonusFromDropdown();
+        const totalRaw = await this.getTotalFromDropdown();
+        // Sport bonus still from legacy section if needed
+        const sportRaw = await this.getSportBonusBalanceValue().catch(() => '0.00');
+
+        const realParsed = this.parseCurrencyValue(realRaw);
+        const bonusParsed = this.parseCurrencyValue(bonusRaw);
+        const totalParsed = this.parseCurrencyValue(totalRaw);
+        const sportParsed = this.parseCurrencyValue(sportRaw);
+
+        // Prefer real currency if non-zero else bonus currency else derived
+        const currency = realParsed.amount !== 0 ? realParsed.currency : (bonusParsed.amount !== 0 ? bonusParsed.currency : totalParsed.currency);
+
+        return {
+            real: realParsed.amount,
+            casinoBonus: bonusParsed.amount,
+            sportBonus: sportParsed.amount,
+            total: totalParsed.amount,
+            currency
+        };
+    }
+
+    /**
+     * Assert balances with optional tolerance. Only provided keys are asserted.
+     * Example: await wallet.assertBalances({ casinoBonus: 15, real: 0 }, { tolerance: 0.01 });
+     */
+    public async assertBalances(
+        expected: Partial<{ real: number; casinoBonus: number; sportBonus: number; total: number }>,
+        opts: { tolerance?: number } = {}
+    ): Promise<void> {
+        const { tolerance = 0 } = opts;
+        const snap = await this.snapshot();
+
+        await test.step('Assert wallet balances match expected', async () => {
+            for (const key of Object.keys(expected) as Array<keyof typeof expected>) {
+                const expectedValue = expected[key];
+                if (typeof expectedValue !== 'number') continue;
+                const actualValue = snap[key];
+                const pass = Math.abs(actualValue - expectedValue) <= tolerance;
+                expect(pass, `Balance mismatch for ${key}: expected ${expectedValue} ±${tolerance} but got ${actualValue}`).toBe(true);
+            }
+        });
+    }
 }

@@ -99,6 +99,18 @@ export class BonusApiClient {
    * Get authentication token for front office operations
    */
   async getFrontOfficeToken(): Promise<string> {
+    const requestPayload = {
+      client_id: 'frontoffice-client',
+      grant_type: 'password',
+      username: this.config.username,
+      password: '***' // masked for logging
+    };
+    
+    console.log('[BonusApi][getFrontOfficeToken] REQUEST', {
+      url: `${this.config.authUrl}/auth/realms/casino/protocol/openid-connect/token`,
+      payload: requestPayload
+    });
+
     const response = await this.request.post(`${this.config.authUrl}/auth/realms/casino/protocol/openid-connect/token`, {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
@@ -111,11 +123,28 @@ export class BonusApiClient {
       }
     });
 
+    console.log('[BonusApi][getFrontOfficeToken] RESPONSE', {
+      status: response.status(),
+      ok: response.ok(),
+      statusText: response.statusText()
+    });
+
     if (!response.ok()) {
-      throw new Error(`Failed to get front office token: ${response.status()}`);
+      let errorBody;
+      try {
+        errorBody = await response.text();
+      } catch {
+        errorBody = 'Could not read response body';
+      }
+      console.error('[BonusApi][getFrontOfficeToken] ERROR BODY', errorBody);
+      throw new Error(`Failed to get front office token: ${response.status()} - ${errorBody}`);
     }
 
     const data = await response.json();
+    console.log('[BonusApi][getFrontOfficeToken] SUCCESS', { 
+      hasAccessToken: !!data.access_token,
+      tokenLength: data.access_token?.length 
+    });
     this.tokens.accessToken = data.access_token;
     return data.access_token;
   }
@@ -161,6 +190,8 @@ export class BonusApiClient {
     if (!this.tokens.accessToken) {
       await this.getFrontOfficeToken();
     }
+
+    console.log('[BonusApi][fetchAllUserBonuses] START locale=', locale);
 
     const query = `
       query fetchUserBonuses($locale: String) {
@@ -299,6 +330,12 @@ export class BonusApiClient {
     }
 
     const result = await response.json();
+    console.log('[BonusApi][fetchAllUserBonuses] RECEIVED statuses:', {
+      active: result.data?.activeBonuses?.length,
+      issued: result.data?.issuedBonuses?.length,
+      pending: result.data?.pendingBonuses?.length,
+      freeSpinsWaiting: result.data?.freeSpinsWaitingBonuses?.length
+    });
     return result.data;
   }
 
@@ -900,7 +937,10 @@ export class BonusApiClient {
     paymentIqApi?: PaymentIqApiClient,
     waitTime?: number
   ): Promise<void> {
-    // Handle parameter overloading - if third parameter is a number, it's the old signature
+  console.log('[BonusApi][setupBonusQueue] START', { profileId: testData.profileId, currency: testData.currency, count: bonusSetup.length });
+  // Reset internal ordering tracker for a fresh queue setup
+  this._internalClaimOrdering = { claimedPendingIds: [] };
+  // Handle parameter overloading - if third parameter is a number, it's the old signature
     let aleaApi: AleaApiClient | undefined;
     let actualWaitTime = 500;
     
@@ -913,90 +953,220 @@ export class BonusApiClient {
       actualWaitTime = waitTime || 500;
     }
       
-      // Grant all bonuses first
-      for (let i = 0; i < bonusSetup.length; i++) {
-        const bonus = bonusSetup[i];
-        
-        await this.grantBonus({
-          bonusId: bonus.bonusId,
-          profileId: testData.profileId,
-          bonusAmount: bonus.amount,
-          comment: bonus.comment
+  // NEW APPROACH: Grant and claim bonuses ONE BY ONE in the desired order
+  // This ensures deterministic settlement order without race conditions
+  console.log('[BonusApi][setupBonusQueue] ONE-BY-ONE approach: grant, claim, settle, repeat');
+  
+  // Order: active first, then deposit pending, then other pendings (to ensure deposit is first in pending queue)
+  const orderedBonuses: typeof bonusSetup = [];
+  
+  // 1. Active bonuses first
+  orderedBonuses.push(...bonusSetup.filter(b => b.initialStatus === 'wagering'));
+  
+  // 2. Deposit pending bonuses next (priority in pending queue)
+  orderedBonuses.push(...bonusSetup.filter(b => b.initialStatus === 'pending' && b.bonusRequirement === 'deposit'));
+  
+  // 3. Other pending bonuses
+  orderedBonuses.push(...bonusSetup.filter(b => b.initialStatus === 'pending' && b.bonusRequirement !== 'deposit'));
+  
+  // 4. Available bonuses (no claiming needed)
+  orderedBonuses.push(...bonusSetup.filter(b => b.initialStatus === 'available'));
+  
+  console.log('[BonusApi][setupBonusQueue] Processing order:', orderedBonuses.map((b, i) => ({
+    index: i,
+    bonusId: b.bonusId,
+    amount: b.amount,
+    initialStatus: b.initialStatus,
+    requirement: b.bonusRequirement
+  })));
+  
+  for (let i = 0; i < orderedBonuses.length; i++) {
+    const bonus = orderedBonuses[i];
+    const shouldClaim = !bonus.initialStatus || bonus.initialStatus === 'wagering' || bonus.initialStatus === 'pending';
+    
+    console.log('[BonusApi][setupBonusQueue] [Step 1/3] Grant bonus', { 
+      index: i, 
+      bonusId: bonus.bonusId, 
+      amount: bonus.amount, 
+      initialStatus: bonus.initialStatus,
+      willClaim: shouldClaim
+    });
+    
+    // Step 1: Grant the bonus
+    await this.grantBonus({
+      bonusId: bonus.bonusId,
+      profileId: testData.profileId,
+      bonusAmount: bonus.amount,
+      comment: bonus.comment
+    });
+    
+    await new Promise(resolve => setTimeout(resolve, actualWaitTime));
+    
+    if (!shouldClaim) {
+      console.log('[BonusApi][setupBonusQueue] Bonus should stay AVAILABLE, skipping claim');
+      continue;
+    }
+    
+    // Step 2: Fetch and find the granted bonus
+    console.log('[BonusApi][setupBonusQueue] [Step 2/3] Fetch granted bonus for claiming');
+    const allBonuses = await this.fetchAllUserBonuses();
+    const grantedBonus = allBonuses.issuedBonuses?.find((b: UserBonus) => {
+      const bonusIdMatches = b.profileBonus.bonusId === bonus.bonusId;
+      const fixedMatches = b.profileBonus.fixedBonusAmount === bonus.amount;
+      const initialMatches = b.profileBonus.initialBonusAmount === bonus.amount;
+      return bonusIdMatches && (fixedMatches || initialMatches);
+    });
+    
+    if (!grantedBonus) {
+      console.warn('[BonusApi][setupBonusQueue] Could not find granted bonus in ISSUED list', { 
+        bonusId: bonus.bonusId, 
+        amount: bonus.amount,
+        issuedCount: allBonuses.issuedBonuses?.length 
+      });
+      continue;
+    }
+    
+    console.log('[BonusApi][setupBonusQueue] [Step 3/3] Claim bonus', { 
+      profileBonusId: grantedBonus.profileBonus.id,
+      bonusId: bonus.bonusId,
+      isDeposit: bonus.bonusRequirement === 'deposit'
+    });
+    
+    // Step 3: Claim the bonus
+    const isDepositBonus = bonus.bonusRequirement === 'deposit';
+    const canUsePaymentIQ = isDepositBonus && !!aleaApi && !!paymentIqApi;
+    
+    try {
+      if (canUsePaymentIQ && paymentIqApi && aleaApi) {
+        await paymentIqApi.claimDepositBonus(aleaApi, {
+          userId: testData.profileId.toString(),
+          profileBonusId: grantedBonus.profileBonus.id.toString(),
+          txAmount: bonus.amount.toString() + '.00',
+          txAmountCy: testData.currency || 'EUR'
         });
-        
-        await new Promise(resolve => setTimeout(resolve, actualWaitTime));
+      } else {
+        await this.performStandardClaimingOperation(grantedBonus, bonus, testData);
       }
-      
-      // Separate bonuses to be claimed vs those that should stay available
-      const bonusesToClaim = bonusSetup.filter(bonus => 
-        !bonus.initialStatus || bonus.initialStatus === 'wagering' || bonus.initialStatus === 'pending'
-      );
-      
-      // If no initialStatus specified, claim all bonuses (backward compatibility)
-      // If initialStatus specified, only claim non-available bonuses
-      if (bonusesToClaim.length > 0) {
-        
-        // Fetch granted bonuses and claim them in SETUP ORDER (not API return order)
-        const allBonuses = await this.fetchAllUserBonuses();
-        const grantedBonuses = allBonuses.issuedBonuses?.filter((bonus: UserBonus) => 
-          bonusesToClaim.some(setup => setup.bonusId === bonus.profileBonus.bonusId)
-        ) || [];
-        
-        // CRITICAL FIX: Claim bonuses in SETUP ORDER, not in API return order
-        // This ensures the first bonus in our setup becomes active, second becomes pending, etc.
-        for (let i = 0; i < bonusesToClaim.length; i++) {
-          const setupBonus = bonusesToClaim[i];
-          
-          // Find the EXACT matching bonus from granted bonuses (both bonusId AND amount must match)
-          const matchingBonus = grantedBonuses.find((b: UserBonus) => {
-            const bonusIdMatches = b.profileBonus.bonusId === setupBonus.bonusId;
-            const fixedMatches = b.profileBonus.fixedBonusAmount === setupBonus.amount;
-            const initialMatches = b.profileBonus.initialBonusAmount === setupBonus.amount;
-            const amountMatches = fixedMatches || initialMatches;
-            
-            return bonusIdMatches && amountMatches;
-          });
-          
-          if (matchingBonus) {
-            
-            // Check if this is a deposit bonus and we have the required APIs for PaymentIQ claiming
-            const isDepositBonus = setupBonus.bonusRequirement === 'deposit';
-            const canUsePaymentIQ = isDepositBonus && !!aleaApi && !!paymentIqApi;
-            
-            try {
-              if (canUsePaymentIQ) {
-                // Use PaymentIQ API for deposit bonus claiming (type-safe)
-                if (paymentIqApi && aleaApi) {
-                  await paymentIqApi.claimDepositBonus(aleaApi, {
-                    userId: testData.profileId.toString(),
-                    profileBonusId: matchingBonus.profileBonus.id.toString(),
-                    txAmount: setupBonus.amount.toString() + '.00',
-                    txAmountCy: testData.currency || 'EUR'
-                  });
-                }
-              } else {
-                // Use standard claiming method
-                await this.performStandardClaimingOperation(matchingBonus, setupBonus, testData);
-              }
-            } catch (claimingError) {
-              if (canUsePaymentIQ) {
-                // Fall back to standard claiming if PaymentIQ fails
-                await this.performStandardClaimingOperation(matchingBonus, setupBonus, testData);
-              } else {
-                throw claimingError;
-              }
+    } catch (claimingError) {
+      if (canUsePaymentIQ) {
+        console.warn('[BonusApi][setupBonusQueue] PaymentIQ claiming failed, fallback to standard', { 
+          bonusId: bonus.bonusId, 
+          error: (claimingError as Error).message 
+        });
+        await this.performStandardClaimingOperation(grantedBonus, bonus, testData);
+      } else {
+        throw claimingError;
+      }
+    }
+    
+    await new Promise(resolve => setTimeout(resolve, actualWaitTime));
+    
+    // Step 4: Wait for settlement
+    console.log('[BonusApi][setupBonusQueue] Waiting for settlement...');
+    try {
+      await this.waitForClaimSettlement({
+        setupBonus: bonus,
+        claimedProfileBonusId: grantedBonus.profileBonus.id,
+        initialStatus: bonus.initialStatus || 'pending',
+        previouslyClaimedPendingIds: this.internalClaimOrdering.claimedPendingIds,
+        timeoutMs: Math.max(12000, actualWaitTime * 24) // 12s timeout for settlement
+      });
+    } catch (e) {
+      console.warn('[BonusApi][setupBonusQueue] Settlement polling timeout', { 
+        index: i, 
+        bonusId: bonus.bonusId, 
+        error: (e as Error).message 
+      });
+    }
+    
+    // Track the claimed bonus
+    if ((bonus.initialStatus || 'pending') !== 'wagering') {
+      this.internalClaimOrdering.claimedPendingIds.push(grantedBonus.profileBonus.id);
+      console.log('[BonusApi][setupBonusQueue] Tracked as pending bonus', { 
+        profileBonusId: grantedBonus.profileBonus.id, 
+        totalPendings: this.internalClaimOrdering.claimedPendingIds.length 
+      });
+    } else {
+      this.internalClaimOrdering.activeId = grantedBonus.profileBonus.id;
+      console.log('[BonusApi][setupBonusQueue] Tracked as active bonus', { 
+        profileBonusId: grantedBonus.profileBonus.id 
+      });
+    }
+    
+    console.log('[BonusApi][setupBonusQueue] Bonus fully processed', { 
+      index: i, 
+      bonusId: bonus.bonusId, 
+      remaining: orderedBonuses.length - i - 1 
+    });
+  }
+  
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  console.log('[BonusApi][setupBonusQueue] COMPLETE');
+  }
+
+  /**
+   * Internal structure tracking ordering while claiming bonuses.
+   * We attach it lazily the first time setupBonusQueue runs in a test process.
+   */
+  private _internalClaimOrdering?: { activeId?: string; claimedPendingIds: string[] };
+
+  private get internalClaimOrdering(): { activeId?: string; claimedPendingIds: string[] } {
+    if (!this._internalClaimOrdering) {
+      this._internalClaimOrdering = { claimedPendingIds: [] } as { activeId?: string; claimedPendingIds: string[] };
+    }
+    return this._internalClaimOrdering;
+  }
+
+  /**
+   * Poll until the claimed bonus reaches its expected collection (active/pending) and status.
+   * Additionally verify ordering of pending bonuses matches claim order (index monotonicity).
+   */
+  private async waitForClaimSettlement(params: {
+    setupBonus: { bonusId: number; amount: number; initialStatus?: 'wagering' | 'pending' | 'available' };
+    claimedProfileBonusId: string;
+    initialStatus: 'wagering' | 'pending' | 'available';
+    previouslyClaimedPendingIds: string[];
+    timeoutMs: number;
+    pollIntervalMs?: number;
+  }): Promise<void> {
+    const { setupBonus, claimedProfileBonusId, initialStatus, previouslyClaimedPendingIds, timeoutMs, pollIntervalMs = 500 } = params;
+    const start = Date.now();
+    const targetIsActive = initialStatus === 'wagering';
+
+    while (Date.now() - start < timeoutMs) {
+      const all = await this.fetchAllUserBonuses();
+      // Determine presence
+  const activeList = all.activeBonuses || [];
+  const pendingList = all.pendingBonuses || [];
+
+      if (targetIsActive) {
+  const foundActive = activeList.find(b => b.profileBonus.id === claimedProfileBonusId);
+        if (foundActive && foundActive.profileBonus.status === 'ACTIVE') {
+          return; // Active settled
+        }
+      } else {
+  const foundPending = pendingList.find(b => b.profileBonus.id === claimedProfileBonusId);
+        if (foundPending && foundPending.profileBonus.status === 'PENDING') {
+          // Validate ordering: all previously claimed pending IDs appear before this one
+          const idOrder = pendingList.map(b => b.profileBonus.id);
+          const nextPos = idOrder.indexOf(claimedProfileBonusId);
+          const indicesValid = previouslyClaimedPendingIds.every((id, idx) => {
+            const pos = idOrder.indexOf(id);
+            if (pos === -1 || nextPos === -1) return false;
+            if (pos >= nextPos) return false; // must appear before the newly claimed one
+            if (idx > 0) {
+              const prevPos = idOrder.indexOf(previouslyClaimedPendingIds[idx - 1]);
+              if (prevPos === -1 || pos <= prevPos) return false; // maintain relative order
             }
-            
-            // Remove claimed bonus from the list to avoid duplicate claiming
-            const index = grantedBonuses.indexOf(matchingBonus);
-            grantedBonuses.splice(index, 1);
-            
-            await new Promise(resolve => setTimeout(resolve, actualWaitTime));
-          }
+            return true;
+          });
+          if (indicesValid) return; // Pending settled with correct relative ordering
         }
       }
-      
-      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      await new Promise(r => setTimeout(r, pollIntervalMs));
+    }
+    throw new Error(`Timeout waiting for claim settlement (bonusId=${setupBonus.bonusId}, profileBonusId=${claimedProfileBonusId}, target=${targetIsActive ? 'ACTIVE' : 'PENDING'})`);
   }
 
   /**
@@ -1050,6 +1220,7 @@ export class BonusApiClient {
     setupBonus: { bonusId: number; amount: number; comment: string }, 
     testData: { currency: string }
   ): Promise<void> {
+    console.log('[BonusApi][performStandardClaimingOperation] Claim standard', { bonusId: setupBonus.bonusId, amount: setupBonus.amount });
     // Add timeout to claiming process
     const claimPromise = this.claimProfileBonus(matchingBonus.profileBonus.id, testData.currency);
     const timeoutPromise = new Promise((_, reject) => 
@@ -1057,6 +1228,7 @@ export class BonusApiClient {
     );
     
     await Promise.race([claimPromise, timeoutPromise]);
+    console.log('[BonusApi][performStandardClaimingOperation] Claim success', { bonusId: setupBonus.bonusId });
   }
 
   /**
@@ -1093,6 +1265,17 @@ export class BonusApiClient {
       password
     };
 
+    console.log('[BonusApi][transferMoney] REQUEST', {
+      url: `${this.config.backofficeUrl}/graphql`,
+      walletId,
+      amount,
+      currency,
+      deposit,
+      reason,
+      comment,
+      hasBackofficeToken: !!this.tokens.backofficeToken
+    });
+
     const response = await this.request.post(`${this.config.backofficeUrl}/graphql`, {
       headers: {
         'Authorization': `Bearer ${this.tokens.backofficeToken}`,
@@ -1105,15 +1288,43 @@ export class BonusApiClient {
       }
     });
 
+    console.log('[BonusApi][transferMoney] RESPONSE', {
+      status: response.status(),
+      ok: response.ok(),
+      statusText: response.statusText()
+    });
+
     if (!response.ok()) {
-      throw new Error(`Failed to transfer money: ${response.status()}`);
+      let errorBody;
+      try {
+        errorBody = await response.text();
+      } catch {
+        errorBody = 'Could not read response body';
+      }
+      console.error('[BonusApi][transferMoney] ERROR BODY', errorBody);
+      throw new Error(`Failed to transfer money: ${response.status()} - ${errorBody}`);
     }
 
     const result = await response.json();
     
     if (result.errors) {
+      // Check if it's an authorization error and log at lower level
+      const isAuthError = result.errors.some((err: {extensions?: {code?: string; exception?: string}}) => 
+        err.extensions?.code === 'forbidden' || 
+        err.extensions?.exception?.includes('ForbiddenException')
+      );
+      
+      if (isAuthError) {
+        console.warn('[BonusApi][transferMoney] Authorization error - insufficient permissions');
+      } else {
+        console.log('[BonusApi][transferMoney] RESULT', JSON.stringify(result, null, 2));
+        console.error('[BonusApi][transferMoney] GraphQL ERRORS', result.errors);
+      }
+      
       throw new Error(`GraphQL errors in transfer money: ${JSON.stringify(result.errors)}`);
     }
+    
+    console.log('[BonusApi][transferMoney] RESULT', JSON.stringify(result, null, 2));
     
     if (!result.data || !result.data.updateBalance) {
       throw new Error(`Unexpected transfer money response structure: ${JSON.stringify(result)}`);
@@ -1127,6 +1338,7 @@ export class BonusApiClient {
    * Uses backoffice GraphQL API
    */
   async getWallets(profileId: number): Promise<WalletInfo[]> {
+    console.log('[BonusApi][getWallets] START profileId=', profileId);
     if (!this.tokens.backofficeToken) {
       await this.getBackOfficeToken();
     }
@@ -1161,7 +1373,8 @@ export class BonusApiClient {
       throw new Error(`Failed to get wallets: ${response.status()}`);
     }
 
-    const result = await response.json();
+  const result = await response.json();
+  console.log('[BonusApi][getWallets] RESULT count=', result.data?.wallets?.length);
     
     if (result.errors) {
       throw new Error(`GraphQL errors in get wallets: ${JSON.stringify(result.errors)}`);
@@ -1178,7 +1391,7 @@ export class BonusApiClient {
    * Remove money from user's wallet - convenience method
    */
   async removeMoney(walletId: number, amount: number, currency = 'CAD', comment = 'Testing - Remove money'): Promise<WalletInfo> {
-    return this.transferMoney(walletId, amount, currency, false, 'OTHER', comment);
+    return this.transferMoney(walletId, amount, currency, false, 'COMPENSATION', comment);
   }
 
   /**
@@ -1186,5 +1399,50 @@ export class BonusApiClient {
    */
   async addMoney(walletId: number, amount: number, currency = 'CAD', comment = 'Testing - Add money'): Promise<WalletInfo> {
     return this.transferMoney(walletId, amount, currency, true, 'PLAYER_DEPOSIT', comment);
+  }
+
+  /**
+   * Simplified helper to ensure a wallet reaches a target balance (single wallet scenario).
+   * - Fetches wallets for profile
+   * - Picks the first wallet (current assumption)
+   * - Computes delta and performs add/remove if above tolerance
+   * - Returns the final wallet info
+   * NOTE: This does NOT distinguish real vs bonus portions; it just normalizes total balance.
+   */
+  async ensureWalletBalance(
+    profileId: number,
+    targetBalance: number,
+    opts: { tolerance?: number; currency?: string; commentPrefix?: string } = {}
+  ): Promise<WalletInfo | undefined> {
+    const { tolerance = 0.01, currency = 'CAD', commentPrefix = 'Normalize wallet' } = opts;
+    try {
+      const wallets = await this.getWallets(profileId);
+      if (!wallets.length) {
+        console.warn('[BonusApi][ensureWalletBalance] No wallets found for profile', profileId);
+        return undefined;
+      }
+      const wallet = wallets[0];
+      const delta = +(targetBalance - wallet.balance).toFixed(2);
+      if (Math.abs(delta) <= tolerance) {
+        console.log('[BonusApi][ensureWalletBalance] Within tolerance', { balance: wallet.balance, targetBalance, tolerance });
+        return wallet;
+      }
+      if (delta > 0) {
+        console.log('[BonusApi][ensureWalletBalance] Adding funds', { delta });
+        return await this.addMoney(wallet.id, delta, currency, `${commentPrefix} +${delta}`);
+      } else {
+        console.log('[BonusApi][ensureWalletBalance] Removing funds', { delta });
+        return await this.removeMoney(wallet.id, Math.abs(delta), currency, `${commentPrefix} ${delta}`);
+      }
+    } catch (e) {
+      const errorMsg = (e as Error).message;
+      // Only log at warning level if it's not an authorization issue
+      if (errorMsg.includes('Authorization') || errorMsg.includes('forbidden')) {
+        console.log('[BonusApi][ensureWalletBalance] Skipping wallet normalization - insufficient permissions');
+      } else {
+        console.warn('[BonusApi][ensureWalletBalance] Failed to normalize wallet', { profileId, error: errorMsg });
+      }
+      return undefined;
+    }
   }
 }

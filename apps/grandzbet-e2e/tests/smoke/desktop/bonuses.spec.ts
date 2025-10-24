@@ -1,14 +1,20 @@
 import test, { expect } from '../../../pages/base/base.po';
+import { BonusPage, BonusBusiness } from '../../../pages/bonuses';
 
 test.beforeEach(async ({ page }) => {
   await page.goto(`${process.env.URL}`, { waitUntil: 'domcontentloaded' });
 });
 
 test.describe.skip('Basic Activation + Cancellation Tests', () => {
-  test('S1 - Cash-NoDeposit activation and cancellation', async ({ bonuses }) => {
+  test('S1 - Cash-NoDeposit activation and cancellation', async ({ page, bonusCard }) => {
+    // Create the POM layers
+    const bonusPage = new BonusPage(page);
+    const bonusBusiness = new BonusBusiness(bonusCard, bonusPage);
+    
     // Prerequisite: 0 bonuses
-    await bonuses.clickActivateByName(['Available Cash-NoDeposit']);
-    await bonuses.validateActiveTabContent();
+    // TODO: Implement these methods in BonusBusiness when smoke tests are enabled
+    // await bonusBusiness.clickActivateByName(['Available Cash-NoDeposit']);
+    // await bonusBusiness.validateActiveTabContent();
     // Action 1: Activate "Available Cash-NoDeposit becomes Active"
     // Action 2: Cancel active bonus
     // Result 1: Bonus becomes active/wagering
@@ -135,17 +141,27 @@ test.describe('Additional Smoke Tests', () => {
     // Validation: Tab filtering, bonus counts, ordering
   });
 
-  test('S6 - Card element validation for all bonus types', async ({ bonuses }) => {
+  test('S6 - Card element validation for all bonus types', async ({ page, bonusCard }) => {
+    // Create the POM layers
+    const bonusPage = new BonusPage(page);
+    const bonusBusiness = new BonusBusiness(bonusCard, bonusPage);
+    
     // Prerequisite: 4 available bonuses (1 of each type)
     // Action: Validate card elements + click "More Info" on each
     // Expected Result: All cards show correct UI elements and additional info
     // Validation: Card UI validation, button text (Claim vs Deposit), more info functionality
+    // TODO: Implement card element validation methods when smoke tests are enabled
   });
 
-  test('S7 - Rapid clicking protection on Claim button', async ({ bonuses }) => {
+  test('S7 - Rapid clicking protection on Claim button', async ({ page, bonusCard }) => {
+    // Create the POM layers
+    const bonusPage = new BonusPage(page);
+    const bonusBusiness = new BonusBusiness(bonusCard, bonusPage);
+    
     // Prerequisite: 1 "Available Cash-NoDeposit for rapid clicking test"
     // Action: Click Claim button rapidly 5+ times
     // Expected Result: Only one activation occurs
     // Validation: NoDeposit rapid click protection
+    // TODO: Implement rapid clicking protection test when smoke tests are enabled
   });
 });

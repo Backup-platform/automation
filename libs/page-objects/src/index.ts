@@ -1,6 +1,16 @@
 export * from './page-objects';
 
 // =============================================================================
+// Bonus System Configuration
+// =============================================================================
+
+/**
+ * Bonus system types, templates, and test scenarios
+ * Centralized bonus configuration for consistent testing
+ */
+export * from './bonuses';
+
+// =============================================================================
 // API Fixtures
 // =============================================================================
 

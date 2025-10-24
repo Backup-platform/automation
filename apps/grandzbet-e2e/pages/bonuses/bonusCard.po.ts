@@ -4,6 +4,10 @@ import { clickElement } from '@test-utils/interactions';
 import { assertVisible, assertNotVisible, assertElementContainsText } from '@test-utils/assertions';
 import { compositeLocator } from '@test-utils/core-types';
 
+/**
+ * Layer 1: BonusCard POM - Element Level
+ * Handles individual bonus card elements and basic interactions
+ */
 export class BonusCard {
     readonly page: Page;
 
@@ -12,7 +16,6 @@ export class BonusCard {
     }
 
     // Base selectors
-    private readonly containerSelector = '#profile-myBonuses';
     private readonly bonusCardSelector = '#profile-myBonuses div.rounded-2xl.bg-tertiary-secondary.p-4';
     private elementName = (cardNumber: number, element: string) => `Card ${cardNumber + 1}: ${element}`;
 
@@ -24,7 +27,11 @@ export class BonusCard {
         this.page.locator(this.bonusCardSelector).nth(index), 
         `${this.elementName(index, 'card')}`);
 
-    // Status indicators - using position-based selection for language independence
+    // Status indicators
+    public readonly statusElement = (index: number) => compositeLocator(() =>
+        this.page.locator(this.bonusCardSelector).nth(index).locator('span.bg-dark.text-2xs.font-bold').nth(1), 
+        `${this.elementName(index, 'status')}`);
+
     public readonly wageringStatus = (index: number) => compositeLocator(() =>
         this.page.locator(this.bonusCardSelector).nth(index).locator('span.bg-dark.text-2xs.font-bold').nth(1), 
         `${this.elementName(index, 'wagering status')}`);
@@ -37,7 +44,11 @@ export class BonusCard {
         this.page.locator(this.bonusCardSelector).nth(index).locator('span.bg-dark.text-2xs.font-bold').nth(1), 
         `${this.elementName(index, 'available status')}`);
 
-    // Button elements - context-specific styling
+    // Button elements
+    public readonly primaryButton = (index: number) => compositeLocator(() =>
+        this.page.locator(this.bonusCardSelector).nth(index).locator('button.bg-primary').first(), 
+        `${this.elementName(index, 'primary button')}`);
+
     public readonly enabledCancelButton = (index: number) => compositeLocator(() =>
         this.page.locator(this.bonusCardSelector).nth(index).locator('button.bg-secondary-secondary:not([disabled])').first(), 
         `${this.elementName(index, 'enabled cancel button')}`);
@@ -46,43 +57,11 @@ export class BonusCard {
         this.page.locator(this.bonusCardSelector).nth(index).locator('button.bg-secondary-secondary[disabled]').first(), 
         `${this.elementName(index, 'disabled cancel button')}`);
 
-    public readonly claimButton = (index: number) => compositeLocator(() =>
-        this.page.locator(this.bonusCardSelector).nth(index).locator('button.bg-primary').first(), 
-        `${this.elementName(index, 'claim button')}`);
-
-    public readonly depositButton = (index: number) => compositeLocator(() =>
-        this.page.locator(this.bonusCardSelector).nth(index).locator('button.bg-primary').first(), 
-        `${this.elementName(index, 'deposit button')}`);
-
-    public readonly primaryButton = (index: number) => compositeLocator(() =>
-        this.page.locator(this.bonusCardSelector).nth(index).locator('button.bg-primary').first(), 
-        `${this.elementName(index, 'primary button')}`);
-
     public readonly actionButton = (index: number) => compositeLocator(() => 
         this.page.locator(this.bonusCardSelector).nth(index).locator('button').first(), 
         `${this.elementName(index, 'action button')}`);
 
-    public readonly disabledActionButton = (index: number) => compositeLocator(() =>
-        this.page.locator(this.bonusCardSelector).nth(index).locator('button.bg-secondary-secondary[disabled]').first(), 
-        `${this.elementName(index, 'disabled action button')}`);
-
     // Card content elements
-    public readonly bonusType = (index: number) => compositeLocator(() => 
-        this.page.locator(this.bonusCardSelector).nth(index).locator('span.border-2.border-primary-secondary'), 
-        `${this.elementName(index, 'bonus type')}`);
-
-    public readonly bonusStatus = (index: number) => compositeLocator(() =>
-        this.page.locator(this.bonusCardSelector).nth(index).locator('span.bg-dark.text-2xs.font-bold').nth(1), 
-        `${this.elementName(index, 'bonus status')} `);
-
-    public readonly moreInfoButton = (index: number) => compositeLocator(() => 
-        this.page.locator(this.bonusCardSelector).nth(index).locator('p:has-text("More")'), 
-        `${this.elementName(index, 'more info button')}`);
-
-    public readonly cardImage = (index: number) => compositeLocator(() =>
-        this.page.locator(this.bonusCardSelector).nth(index).locator('img[alt="Bonus image"]'), 
-        `${this.elementName(index, 'image')}`);
-
     public readonly cardTitle = (index: number) => compositeLocator(() => 
         this.page.locator(this.bonusCardSelector).nth(index).locator('h5'),
         `${this.elementName(index, 'title')}`);
@@ -91,7 +70,15 @@ export class BonusCard {
         this.page.locator(this.bonusCardSelector).nth(index).locator('p.font-rubik.text-xs'),
         `${this.elementName(index, 'subtitle')}`);
 
-    // Wagering progress elements - only visible for wagering status
+    public readonly cardImage = (index: number) => compositeLocator(() =>
+        this.page.locator(this.bonusCardSelector).nth(index).locator('img[alt="Bonus image"]'), 
+        `${this.elementName(index, 'image')}`);
+
+    public readonly bonusType = (index: number) => compositeLocator(() => 
+        this.page.locator(this.bonusCardSelector).nth(index).locator('span.border-2.border-primary-secondary'), 
+        `${this.elementName(index, 'bonus type')}`);
+
+    // Progress elements (wagering cards only)
     public readonly progressBar = (index: number) => compositeLocator(() =>
         this.page.locator(this.bonusCardSelector).nth(index).locator('svg[width="247"]'), 
         `${this.elementName(index, 'progress bar')}`);
@@ -100,7 +87,7 @@ export class BonusCard {
         this.page.locator(this.bonusCardSelector).nth(index).locator('div.flex.items-center.gap-1.font-rubik.text-xs.font-normal:has-text("Wagered:")'), 
         `${this.elementName(index, 'progress text')}`);
 
-    // Warning elements - only visible for pending status
+    // Warning elements (pending cards only)
     public readonly warningMessage = (index: number) => compositeLocator(() =>
         this.page.locator(this.bonusCardSelector).nth(index).locator('p.flex.gap-2.font-rubik:has(svg path[fill="#DC373B"])').first(), 
         `${this.elementName(index, 'warning message')}`);
@@ -109,10 +96,13 @@ export class BonusCard {
         this.page.locator(this.bonusCardSelector).nth(index).locator('svg path[fill="#DC373B"]').first(), 
         `${this.elementName(index, 'warning icon')}`);
 
-    // Cancel confirmation dialog elements - visible after clicking cancel button
-    // Note: There may be dual dialogs (UI bug), using .first() to target the first one
+    public readonly moreInfoButton = (index: number) => compositeLocator(() => 
+        this.page.locator(this.bonusCardSelector).nth(index).locator('p:has-text("More")'), 
+        `${this.elementName(index, 'more info button')}`);
+
+    // Cancel confirmation dialog elements
     public readonly cancelDialog = compositeLocator(() =>
-        this.page.locator('div[role="dialog"][data-state="open"].bg-dark.text-white.border-error').first(), 
+        this.page.locator('div[role="dialog"][data-state="open"].bg-dark.text-white.border-white').first(), 
         'Cancel confirmation dialog');
 
     public readonly cancelDialogTitle = compositeLocator(() =>
@@ -132,77 +122,38 @@ export class BonusCard {
         'Cancel dialog No button');
 
     public readonly cancelDialogCloseButton = compositeLocator(() =>
-        this.page.locator('div[role="dialog"][data-state="open"] button:has(svg.lucide-x)').first(), 
+        this.page.locator('div[role="dialog"][data-state="open"] button.absolute.right-4.top-4:has(svg.lucide-x)'), 
         'Cancel dialog Close button');
 
-    // Details grid elements - for expanded card details
-    public readonly detailsGridContainer = compositeLocator(() => 
-        this.page.locator(`${this.containerSelector} div.grid.w-full.grid-cols-2.gap-4`), 
-        'Bonus details grid container');
-
-    public readonly minDepositCard = compositeLocator(() => 
-        this.page.locator(`${this.containerSelector} div.grid.w-full.grid-cols-2.gap-4 > div`).nth(0), 
-        'Min Deposit details card');
-
-    public readonly wageringCard = compositeLocator(() => 
-        this.page.locator(`${this.containerSelector} div.grid.w-full.grid-cols-2.gap-4 > div`).nth(1), 
-        'Wagering details card');
-
-    public readonly bonusTypeCard = compositeLocator(() => 
-        this.page.locator(`${this.containerSelector} div.grid.w-full.grid-cols-2.gap-4 > div`).nth(2), 
-        'Bonus Type details card');
-
-    public readonly validUntilCard = compositeLocator(() => 
-        this.page.locator(`${this.containerSelector} div.grid.w-full.grid-cols-2.gap-4 > div`).nth(3), 
-        'Valid Until details card');
-
-    public readonly bonusContentSection = compositeLocator(() => 
-        this.page.locator(`${this.containerSelector} div.flex.flex-col.gap-2`), 
-        'Bonus content section');
-
-    // Generic details grid - for expanded card details
-    public getDetailsGrid() {
-        return {
-            container: this.detailsGridContainer,
-            cards: {
-                minDeposit: this.minDepositCard,
-                wagering: this.wageringCard,
-                bonusType: this.bonusTypeCard,
-                validUntil: this.validUntilCard
-            },
-            content: this.bonusContentSection
-        };
+    // Utility methods (no decorators)
+    public async getCardCount(): Promise<number> {
+        return await this.bonusCards.locator().count();
     }
 
-    public getCardCount = async () => await this.bonusCards.locator().count();
-
-    @step('Get card text')
-    public async getCardText(index: number, element: 'title' | 'subtitle' | 'status' | 'type'): Promise<string> {
-        const elementMap = {
-            title: this.cardTitle(index),
-            subtitle: this.cardSubtitle(index),
-            status: this.bonusStatus(index),
-            type: this.bonusType(index)
-        };
-
-        const locator = elementMap[element];
-        const text = await locator.locator().textContent() || '';
-        return text;
+    public async getCardTitle(index: number): Promise<string> {
+        return await this.cardTitle(index).locator().textContent() || '';
     }
 
-    // Action methods based on bonus status
-    @step('Click more info button on card')
-    public async clickMoreInfo(index: number) {
-        await clickElement(this.moreInfoButton(index));
+    public async getCardSubtitle(index: number): Promise<string> {
+        return await this.cardSubtitle(index).locator().textContent() || '';
     }
 
+    public async getCardStatus(index: number): Promise<string> {
+        return await this.statusElement(index).locator().textContent() || '';
+    }
+
+    public async getCardType(index: number): Promise<string> {
+        return await this.bonusType(index).locator().textContent() || '';
+    }
+
+    // Simple wrapper actions with @step
     @step('Click primary button on card')
-    public async clickPrimaryButton(index: number) {
+    public async clickPrimaryButton(index: number): Promise<void> {
         await clickElement(this.primaryButton(index));
     }
 
-    @step('Click cancel bonus button on card')
-    public async clickCancelBonusButton(index: number) {
+    @step('Click cancel button on card')
+    public async clickCancelButton(index: number): Promise<void> {
         const enabledCount = await this.enabledCancelButton(index).locator().count();
         if (enabledCount > 0) {
             await clickElement(this.enabledCancelButton(index));
@@ -211,115 +162,109 @@ export class BonusCard {
         }
     }
 
-    // Cancel dialog action methods
+    @step('Click more info button on card')
+    public async clickMoreInfo(index: number): Promise<void> {
+        await clickElement(this.moreInfoButton(index));
+    }
+
+    // Cancel dialog actions
     @step('Click Yes on cancel confirmation dialog')
-    public async clickCancelDialogYes() {
-        // Force click needed due to dual dialog UI bug (pointer events interception)
+    public async clickCancelDialogYes(): Promise<void> {
         await clickElement(this.cancelDialogYesButton, { force: true });
     }
 
     @step('Click No on cancel confirmation dialog')
-    public async clickCancelDialogNo() {
-        // Force click needed due to dual dialog UI bug (pointer events interception)
+    public async clickCancelDialogNo(): Promise<void> {
         await clickElement(this.cancelDialogNoButton, { force: true });
     }
 
     @step('Click close on cancel confirmation dialog')
-    public async clickCancelDialogClose() {
-        // Force click needed due to dual dialog UI bug (pointer events interception)
+    public async clickCancelDialogClose(): Promise<void> {
         await clickElement(this.cancelDialogCloseButton, { force: true });
     }
 
-    // Validation methods based on bonus status
-    @step('Validate card basic elements are visible')
-    public async validateCardBasics(index: number, softAssert = false): Promise<void> {
+    // Element validation methods with @step
+    @step('Validate card basic elements visible')
+    public async validateCardBasicsVisible(index: number, softAssert = false): Promise<void> {
         await assertVisible(this.bonusCard(index), softAssert);
         await assertVisible(this.cardImage(index), softAssert);
         await assertVisible(this.cardTitle(index), softAssert);
         await assertVisible(this.cardSubtitle(index), softAssert);
+        await assertVisible(this.statusElement(index), softAssert);
     }
 
-    @step('Validate card details grid is visible')
-    public async validateDetailsGrid(softAssert = false): Promise<void> {
-        const details = this.getDetailsGrid();
-        await assertVisible(details.container, softAssert);
-        await assertVisible(details.cards.minDeposit, softAssert);
-        await assertVisible(details.cards.wagering, softAssert);
-        await assertVisible(details.cards.bonusType, softAssert);
-        await assertVisible(details.cards.validUntil, softAssert);
-        await assertVisible(details.content, softAssert);
-    }
-    
-
-    @step('Validate wagering bonus card elements')
-    public async validateWageringCard(index: number, softAssert = false): Promise<void> {
+    @step('Validate wagering card elements visible')
+    public async validateWageringCardElements(index: number, softAssert = false): Promise<void> {
         await assertVisible(this.wageringStatus(index), softAssert);
         await assertVisible(this.progressBar(index), softAssert);
         await assertVisible(this.progressText(index), softAssert);
-        await assertVisible(this.actionButton(index), softAssert);
         await assertVisible(this.enabledCancelButton(index), softAssert);
         
+        // These should NOT be visible for wagering cards
         await assertNotVisible(this.warningMessage(index), softAssert);
         await assertNotVisible(this.warningIcon(index), softAssert);
     }
 
-    @step('Validate pending bonus card elements')
-    public async validatePendingCard(index: number, softAssert = false): Promise<void> {
+    @step('Validate pending card elements visible')
+    public async validatePendingCardElements(index: number, softAssert = false): Promise<void> {
         await assertVisible(this.pendingStatus(index), softAssert);
-        await assertVisible(this.disabledActionButton(index), softAssert);
         await assertVisible(this.warningMessage(index), softAssert);
         await assertVisible(this.warningIcon(index), softAssert);
         await assertVisible(this.disabledCancelButton(index), softAssert);
         
+        // These should NOT be visible for pending cards
         await assertNotVisible(this.progressBar(index), softAssert);
         await assertNotVisible(this.progressText(index), softAssert);
     }
 
-    @step('Validate available bonus card elements')
-    public async validateAvailableCard(index: number, softAssert = false): Promise<void> {
+    @step('Validate available card elements visible')
+    public async validateAvailableCardElements(index: number, softAssert = false): Promise<void> {
         await assertVisible(this.availableStatus(index), softAssert);
-        await assertVisible(this.actionButton(index), softAssert);
         await assertVisible(this.primaryButton(index), softAssert);
         
+        // These should NOT be visible for available cards
         await assertNotVisible(this.progressBar(index), softAssert);
         await assertNotVisible(this.progressText(index), softAssert);
         await assertNotVisible(this.warningMessage(index), softAssert);
         await assertNotVisible(this.warningIcon(index), softAssert);
     }
 
-    @step('Validate cancel confirmation dialog elements')
-    public async validateCancelDialog(softAssert = false): Promise<void> {
+    @step('Validate cancel dialog visible')
+    public async validateCancelDialogVisible(softAssert = false): Promise<void> {
+        // Wait for dialog animation to complete (data-state="open" with animation)
+        await this.page.waitForTimeout(300);
         await assertVisible(this.cancelDialog, softAssert);
         await assertVisible(this.cancelDialogTitle, softAssert);
         await assertVisible(this.cancelDialogMessage, softAssert);
         await assertVisible(this.cancelDialogYesButton, softAssert);
         await assertVisible(this.cancelDialogNoButton, softAssert);
-        await assertVisible(this.cancelDialogCloseButton, softAssert);
+        // Close button check skipped - it's hidden on desktop viewports (flex lg:hidden)
+        // await assertVisible(this.cancelDialogCloseButton, softAssert);
     }
 
-    @step('Validate cancel dialog is not visible')
+    @step('Validate cancel dialog not visible')
     public async validateCancelDialogNotVisible(softAssert = false): Promise<void> {
         await assertNotVisible(this.cancelDialog, softAssert);
     }
 
-    // Text validation methods using index parameter
+    // Text validation methods
     @step('Validate card status text')
-    public async validateCardStatus(index: number, expectedText: string, softAssert = false): Promise<void> {
-        await assertElementContainsText(this.bonusStatus(index), expectedText, softAssert);
+    public async validateCardStatusText(index: number, expectedText: string, softAssert = false): Promise<void> {
+        await assertElementContainsText(this.statusElement(index), expectedText, softAssert);
     }
 
     @step('Validate card title text')
-    public async validateCardTitle(index: number, expectedText: string, softAssert = false): Promise<void> {
+    public async validateCardTitleText(index: number, expectedText: string, softAssert = false): Promise<void> {
         await assertElementContainsText(this.cardTitle(index), expectedText, softAssert);
     }
 
     @step('Validate card subtitle text')
-    public async validateCardSubtitle(index: number, expectedText: string, softAssert = false): Promise<void> {
+    public async validateCardSubtitleText(index: number, expectedText: string, softAssert = false): Promise<void> {
         await assertElementContainsText(this.cardSubtitle(index), expectedText, softAssert);
     }
 
     @step('Validate card type text')
-    public async validateCardType(index: number, expectedText: string, softAssert = false): Promise<void> {
+    public async validateCardTypeText(index: number, expectedText: string, softAssert = false): Promise<void> {
         await assertElementContainsText(this.bonusType(index), expectedText, softAssert);
     }
 }

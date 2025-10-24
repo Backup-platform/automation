@@ -124,11 +124,48 @@ export class AleaApiClient {
       });
       
       const responseBody = await response.text();
-      await expect(response.ok()).toBe(true);
       
-      const result = JSON.parse(responseBody);
+      // Log the raw response for debugging
+      console.log(`=== GraphQL Response Debug Info ===`);
+      console.log(`Status: ${response.status()}`);
+      console.log(`Status Text: ${response.statusText()}`);
+      console.log(`Headers: ${JSON.stringify(response.headers())}`);
+      console.log(`Raw Response Body: ${responseBody}`);
+      console.log(`Request URL: ${graphqlEndpoint}`);
+      console.log(`Bearer Token Present: ${bearerToken ? 'Yes' : 'No'}`);
+      console.log(`=== End Response Debug Info ===`);
+      
+      // Enhanced error handling with detailed diagnostics
+      if (!response.ok()) {
+        console.error(`GraphQL request failed with status ${response.status()}`);
+        console.error(`Response body: ${responseBody}`);
+        console.error(`Request URL: ${graphqlEndpoint}`);
+        console.error(`Bearer token: ${bearerToken ? 'Present' : 'Missing'}`);
+        throw new Error(`GraphQL request failed with status ${response.status()}: ${responseBody}`);
+      }
+      
+      let result;
+      try {
+        result = JSON.parse(responseBody);
+        console.log(`=== Parsed GraphQL Result ===`);
+        console.log(`Result: ${JSON.stringify(result, null, 2)}`);
+        console.log(`=== End Parsed Result ===`);
+      } catch (parseError) {
+        console.error(`Failed to parse GraphQL response as JSON: ${responseBody}`);
+        throw new Error(`Invalid JSON response from GraphQL endpoint: ${parseError}`);
+      }
       
       if (result.errors) {
+        console.error(`=== GraphQL Error Details ===`);
+        console.error(`- Query: ${mutation}`);
+        console.error(`- Variables: ${JSON.stringify(variables, null, 2)}`);
+        console.error(`- Bearer token: ${bearerToken ? 'Present' : 'Missing'}`);
+        console.error(`- Full Response: ${JSON.stringify(result, null, 2)}`);
+        console.error(`- Individual Errors:`);
+        result.errors.forEach((error: unknown, index: number) => {
+          console.error(`  Error ${index + 1}:`, JSON.stringify(error, null, 4));
+        });
+        console.error(`=== End GraphQL Error Details ===`);
         throw new Error(`GraphQL errors: ${JSON.stringify(result.errors)}`);
       }
       

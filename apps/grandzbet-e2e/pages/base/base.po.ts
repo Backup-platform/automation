@@ -16,8 +16,9 @@ import { Withdraw } from '../cashier/withdraw.po';
 import { PaymentIQ } from '../cashier/paymentIQ.po';
 import { Wallet } from '../wallet/wallet.po';
 import { PersonalInfo } from '../personalInfo/personal.info.po';
-import { BonusCard } from '../bonuses/bonusCard.po';
-import { Bonuses } from '../bonuses/bonuses.po';
+import { BonusCard } from '../bonuses/BonusCard.po';
+import { BonusPage } from '../bonuses/BonusPage.po';
+import { BonusBusiness } from '../bonuses/BonusBusiness.po';
 
 type pages = {
 	loginPage: LoginPage;
@@ -37,7 +38,8 @@ type pages = {
 	wallet: Wallet;
 	personalInfo: PersonalInfo;
 	bonusCard: BonusCard;
-	bonuses: Bonuses;
+	bonusPage: BonusPage;
+	bonusBusiness: BonusBusiness;
 }
 
 function createPageFixture<T>(PageObject: new (page: Page) => T) {
@@ -67,7 +69,10 @@ const test = apiTest.extend<pages>({
 	wallet: createPageFixture(Wallet),
 	personalInfo: createPageFixture(PersonalInfo),
 	bonusCard: createPageFixture(BonusCard),
-	bonuses: createPageFixture(Bonuses)
+	bonusPage: createPageFixture(BonusPage),
+	bonusBusiness: async ({ bonusCard, bonusPage }, use) => {
+		await use(new BonusBusiness(bonusCard, bonusPage));
+	}
 
 });
 

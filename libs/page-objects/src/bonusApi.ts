@@ -159,6 +159,7 @@ export class BonusApiClient {
     if (!this.tokens.accessToken) {
       await this.getFrontOfficeToken();
     }
+    console.log('[BonusApiClient][fetchAllUserBonuses] START locale=', locale);
 
     const query = `
       query fetchUserBonuses($locale: String) {
@@ -297,6 +298,12 @@ export class BonusApiClient {
     }
 
     const result = await response.json();
+    console.log('[BonusApiClient][fetchAllUserBonuses] RESULT counts', {
+      active: result?.data?.activeBonuses?.length,
+      issued: result?.data?.issuedBonuses?.length,
+      pending: result?.data?.pendingBonuses?.length,
+      fsWaiting: result?.data?.freeSpinsWaitingBonuses?.length
+    });
     return result.data;
   }
 
@@ -867,8 +874,10 @@ export class BonusApiClient {
     bonusSetup: Array<{ bonusId: number; amount: number; comment: string; initialStatus?: 'wagering' | 'pending' | 'available' }>,
     waitTime = 1000
   ): Promise<void> {
+    console.log('[BonusApiClient][setupBonusQueue] START', { profileId: testData.profileId, count: bonusSetup.length });
     // Grant all bonuses first
     for (const bonus of bonusSetup) {
+      console.log('[BonusApiClient][setupBonusQueue] Grant bonus', { bonusId: bonus.bonusId, amount: bonus.amount, initialStatus: bonus.initialStatus });
       await this.grantBonus({
         bonusId: bonus.bonusId,
         profileId: testData.profileId,
@@ -882,12 +891,14 @@ export class BonusApiClient {
     const bonusesToClaim = bonusSetup.filter(bonus => 
       !bonus.initialStatus || bonus.initialStatus === 'wagering' || bonus.initialStatus === 'pending'
     );
+    console.log('[BonusApiClient][setupBonusQueue] To claim', bonusesToClaim.map(b=>({bonusId:b.bonusId, amount:b.amount, initialStatus:b.initialStatus})));
     
     // If no initialStatus specified, claim all bonuses (backward compatibility)
     // If initialStatus specified, only claim non-available bonuses
     if (bonusesToClaim.length > 0) {
       // Fetch granted bonuses and claim them in SETUP ORDER (not API return order)
-      const allBonuses = await this.fetchAllUserBonuses();
+  const allBonuses = await this.fetchAllUserBonuses();
+  console.log('[BonusApiClient][setupBonusQueue] Issued fetched', allBonuses.issuedBonuses?.length);
       const grantedBonuses = allBonuses.issuedBonuses?.filter((bonus: UserBonus) => 
         bonusesToClaim.some(setup => setup.bonusId === bonus.profileBonus.bonusId)
       ) || [];
@@ -902,16 +913,19 @@ export class BonusApiClient {
         );
         
         if (matchingBonus) {
+          console.log('[BonusApiClient][setupBonusQueue] Claiming', { bonusId: setupBonus.bonusId, amount: setupBonus.amount });
           await this.claimProfileBonus(matchingBonus.profileBonus.id, testData.currency);
           
           // Remove claimed bonus from the list to avoid duplicate claiming
           const index = grantedBonuses.indexOf(matchingBonus);
           grantedBonuses.splice(index, 1);
           
+          console.log('[BonusApiClient][setupBonusQueue] Claimed; wait', waitTime);
           await new Promise(resolve => setTimeout(resolve, waitTime));
         }
       }
     }
+    console.log('[BonusApiClient][setupBonusQueue] COMPLETE');
   }
 
   /**
@@ -1022,6 +1036,7 @@ export class BonusApiClient {
    * Uses backoffice GraphQL API
    */
   async getWallets(profileId: number): Promise<WalletInfo[]> {
+    console.log('[BonusApiClient][getWallets] START', { profileId });
     if (!this.tokens.backofficeToken) {
       await this.getBackOfficeToken();
     }
@@ -1056,7 +1071,8 @@ export class BonusApiClient {
       throw new Error(`Failed to get wallets: ${response.status()}`);
     }
 
-    const result = await response.json();
+  const result = await response.json();
+  console.log('[BonusApiClient][getWallets] RESULT', { count: result?.data?.wallets?.length });
     
     if (result.errors) {
       throw new Error(`GraphQL errors in get wallets: ${JSON.stringify(result.errors)}`);

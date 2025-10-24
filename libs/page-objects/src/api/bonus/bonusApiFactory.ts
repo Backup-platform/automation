@@ -123,7 +123,9 @@ export class BonusApiFactory {
       
       // Get Bearer token from Keycloak
       const bearerToken = await test.step('Obtain Bearer token for session creation', async () => {
-        return await bonusApi.getFrontOfficeToken();
+        const token = await bonusApi.getFrontOfficeToken();
+        console.log(`Bearer token obtained: ${token ? 'Present' : 'Missing'}`);
+        return token;
       });
       
       // Create AleaApiClient
