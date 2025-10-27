@@ -91,14 +91,6 @@ export const createUIConfig = (appPath?: string): PlaywrightTestConfig => {
 				testMatch: '**/*.mobile.setup.ts',
 			},
 			{
-				name: 'setupDeskDev',
-				testMatch: '**/*.desktop.dev.setup.ts',
-			},
-			{
-				name: 'setupGuestDev',
-				testMatch: '**/*.auth.guest.dev.setup.ts',
-			},
-			{
 				name: 'desktop.1440',
 				testMatch: '**/*desktop/*',
 				use: {
@@ -117,17 +109,7 @@ export const createUIConfig = (appPath?: string): PlaywrightTestConfig => {
 					storageState: resolveStoragePath('playwright/.auth/mobileUser.json'),
 				},
 				dependencies: ['setupMobile', 'setupGuest'],
-			},
-			{
-				name: 'desktop.dev',
-				testMatch: '**/*desktop/*',
-				use: {
-					...devices['Desktop Chrome'],
-					storageState: resolveStoragePath('playwright/.auth/user.json'),
-					viewport: { width: 1440, height: 1024 },
-				},
-				dependencies: ['setupDeskDev', 'setupGuestDev'],
-			},
+			}
 		]
 	});
 };

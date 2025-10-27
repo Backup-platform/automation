@@ -21,14 +21,11 @@ const baseConfig = createUIConfig(__dirname);
 
 
 export default extendConfig(baseConfig, {
-	    use: {
-        // HTTP Basic Authentication for site access
-        httpCredentials: {
-            username: 'grandzbet', 
-            password: 'xK322`~e'  
-        },
-    },
-
+	// GrandZBet-specific overrides can go here
+	// For example, if you need different base URL:
+	// use: {
+	//   baseURL: 'https://grandzbet-specific-url.com',
+	// },
 	expect: {
 		timeout: 15 * 1000,
 	},
