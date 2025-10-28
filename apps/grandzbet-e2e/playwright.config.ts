@@ -26,6 +26,17 @@ export default extendConfig(baseConfig, {
 	// use: {
 	//   baseURL: 'https://grandzbet-specific-url.com',
 	// },
+
+	
+    use: {
+        // HTTP Basic Authentication for site access
+        httpCredentials: {
+            username: 'grandzbet', // Replace with your actual HTTP auth username
+            password: 'xK322`~e'  // Replace with your actual HTTP auth password
+        },
+    },
+
+	
 	expect: {
 		timeout: 15 * 1000,
 	},
