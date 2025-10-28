@@ -64,7 +64,6 @@ const test = base.extend<pages>({
 	wallet: createPageFixture(Wallet),
 	personalInfo: createPageFixture(PersonalInfo),
 	landingPageCarousel: createPageFixture(LandingPageCarousel)
-
 });
 
 export default test;
