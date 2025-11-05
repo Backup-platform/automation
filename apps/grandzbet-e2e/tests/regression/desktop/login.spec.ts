@@ -62,7 +62,7 @@ test.describe('Login Page Regression Tests - Desktop', () => {
        {
       scenario: `Empty both tabs`,
        username: '',
-     password: '',
+       password: '',
       error: 'password',
        },
     //      {

@@ -1,17 +1,9 @@
 import { Page } from '@playwright/test';
-import { 
-    step, 
-    stepParam, 
-    clickElement, 
-    assertVisible, 
-    fillInputField, 
-    assertEditable, 
-    assertCondition, 
-    callMethodIfDefined,
-    compositeLocator,
-    CompositeLocator,
-    selectDropdownOption
-} from '@test-utils/navigation.po';
+import { step, stepParam } from '@test-utils/decorators';
+import { clickElement, fillElement, performInteractionChain } from '@test-utils/interactions';
+import { assertVisible, assertEditable, assertElementState } from '@test-utils/assertions';
+import { executeIfDefined } from '@test-utils/utilities';
+import { compositeLocator, CompositeLocator } from '@test-utils/core-types';
 
 type Country = 'australia' | 'austria' | 'canada' | 'finland' | 'ghana' | 'gibraltar' | 'greece' | 
     'italy' | 'latvia' | 'new zealand' | 'norway' | 'singapore' | 'sweden';
@@ -83,16 +75,16 @@ export class SignUpStep3 {
         this.page.locator('button[role="checkbox"][aria-invalid="true"] ~ p.text-error'), 'Terms and conditions error');
 
     public fillCity = async (city: string) => 
-        await fillInputField(this.city, city);
+        await fillElement(this.city, city);
 
     public fillAddress = async (address: string) => 
-        await fillInputField(this.address, address);
+        await fillElement(this.address, address);
 
     public fillPostCode = async (postCode: string) => 
-        await fillInputField(this.zipCode, postCode);
+        await fillElement(this.zipCode, postCode);
 
     public fillPhoneNumber = async (phone: string) => 
-        await fillInputField(this.phoneNumberOptions, phone);
+        await fillElement(this.phoneNumberOptions, phone);
 
     public clickTermsAndConditionsCheckbox = async () => 
         await clickElement(this.termsAndConditionsCheckbox);
@@ -131,7 +123,7 @@ export class SignUpStep3 {
         await assertVisible(this.registerButton, softAssert);
 
     public validateRegisterButtonEnabled = async (expectedStatus: boolean, softAssert = false) =>
-        await assertCondition(this.registerButton.locator(), 'enabled', expectedStatus, this.registerButton.name, softAssert);
+        await assertElementState(this.registerButton, 'enabled', expectedStatus ? 'positive' : 'negative', this.registerButton.name, softAssert);
 
     public validateError = async (errorElement: CompositeLocator, softAssert = false) => {
         await assertVisible(errorElement, softAssert);
@@ -139,19 +131,17 @@ export class SignUpStep3 {
 
     public async selectCountry(countrySelected: string) {
         await this.page.waitForTimeout(2000); // Wait for the dropdown to be ready
-        await selectDropdownOption(
-            this.countryDropdown,
-            this.countryExpandedDropdown,
-            this.countryOption(countrySelected)
-        );
+        await performInteractionChain([
+            { element: this.countryDropdown, action: 'click' },
+            { element: this.countryOption(countrySelected), action: 'click', options: { preValidations: [{ type: 'visible' }] } }
+        ]);
     }
 
     public async selectCountryCode(countryCodeSelected: string) {
-        await selectDropdownOption(
-            this.phoneNumberDropdown,
-            this.phoneCodeExpandedDropdown,
-            this.phoneCodeOption(countryCodeSelected)
-        );
+        await performInteractionChain([
+            { element: this.phoneNumberDropdown, action: 'click' },
+            { element: this.phoneCodeOption(countryCodeSelected), action: 'click', options: { preValidations: [{ type: 'visible' }] } }
+        ]);
     }
 
     @stepParam((field: CompositeLocator) => `I validate visibility of ${field.name}`)
@@ -175,13 +165,13 @@ export class SignUpStep3 {
         if (country && city && address && postcode && countryCode && phone && checkbox) {
             await this.fillThirdStep(country, city, address, postcode, countryCode, phone);
         } else {
-            await callMethodIfDefined(country, this.selectCountry, 'set country', this);
-            await callMethodIfDefined(city, this.fillCity, 'set city', this);
-            await callMethodIfDefined(address, this.fillAddress, 'set address', this);
-            await callMethodIfDefined(postcode, this.fillPostCode, 'set postcode', this);
-            await callMethodIfDefined(countryCode, this.selectCountryCode, 'set country code', this);
-            await callMethodIfDefined(phone, this.fillPhoneNumber, 'set phone', this);
-            await callMethodIfDefined(checkbox, this.clickTermsAndConditionsCheckbox, 'check terms and conditions checkbox', this);
+            await executeIfDefined(country, this.selectCountry, this, { stepDescription: 'set country' });
+            await executeIfDefined(city, this.fillCity, this, { stepDescription: 'set city' });
+            await executeIfDefined(address, this.fillAddress, this, { stepDescription: 'set address' });
+            await executeIfDefined(postcode, this.fillPostCode, this, { stepDescription: 'set postcode' });
+            await executeIfDefined(countryCode, this.selectCountryCode, this, { stepDescription: 'set country code' });
+            await executeIfDefined(phone, this.fillPhoneNumber, this, { stepDescription: 'set phone' });
+            await executeIfDefined(checkbox, this.clickTermsAndConditionsCheckbox, this, { stepDescription: 'check terms and conditions checkbox' });
         }
     }
 

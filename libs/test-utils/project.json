@@ -6,7 +6,72 @@
     "build": {
       "executor": "@nx/js:tsc",
       "options": {
-        "tsConfig": "libs/test-utils/tsconfig.json"
+        "main": "libs/test-utils/src/index.ts",
+        "outputPath": "dist/libs/test-utils",
+        "tsConfig": "libs/test-utils/tsconfig.json",
+        "assets": ["libs/test-utils/*.md"]
+      }
+    },
+    "validate-helpers": {
+      "executor": "@nx/playwright:playwright",
+      "options": {
+        "config": "libs/test-utils/playwright.config.ts"
+      }
+    },
+    "validate-helpers:basic": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx playwright test --reporter=dot",
+        "cwd": "libs/test-utils"
+      }
+    },
+    "validate-helpers:verbose": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "set DEBUG_ASSERTIONS=basic&& npx playwright test --reporter=line --reporter=html",
+        "cwd": "libs/test-utils"
+      }
+    },
+    "validate-helpers:detailed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "set DEBUG_ASSERTIONS=detailed&& npx playwright test --reporter=list --reporter=html",
+        "cwd": "libs/test-utils"
+      }
+    },
+    "validate-helpers:ui": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx playwright test --ui",
+        "cwd": "libs/test-utils"
+      }
+    },
+    "validate-helpers:debug": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx playwright test --debug",
+        "cwd": "libs/test-utils"
+      }
+    },
+    "validate-helpers:headed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx playwright test --headed",
+        "cwd": "libs/test-utils"
+      }
+    },
+    "validate-helpers:report": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx playwright show-report",
+        "cwd": "libs/test-utils"
+      }
+    },
+    "validate-helpers:single": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "set DEBUG_ASSERTIONS=basic&& npx playwright test --reporter=line",
+        "cwd": "libs/test-utils"
       }
     }
   }

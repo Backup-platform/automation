@@ -1,13 +1,9 @@
 import { Page } from '@playwright/test';
-import { 
-    stepParam, 
-    assertEnabled, 
-    assertNotEnabled, 
-    assertVisible, 
-    clickElement, 
-    performNavigationClick,
-    compositeLocator,
-} from '@test-utils/navigation.po';
+import { stepParam } from '@test-utils/decorators';
+import { assertEnabled, assertNotEnabled, assertVisible } from '@test-utils/assertions';
+import { clickElement } from '@test-utils/interactions';
+import { performNavigationClick } from '@test-utils/navigation-helpers';
+import { compositeLocator } from '@test-utils/core-types';
 
 export class SignUpCommon {
     readonly page: Page;
@@ -61,11 +57,11 @@ export class SignUpCommon {
 	public validateLoginLinkEnabled = async (softAssert = false) => await assertEnabled(this.loginLink, softAssert);
 
     public async validateNavigationBack(expectedURL: string): Promise<void> {
-        await performNavigationClick(this.page, this.closeButton.locator(), `Back Button`, expectedURL);
+        await performNavigationClick(this.page, this.closeButton,  expectedURL);
     }
 
 	public async clickLoginLink(expectedURL: string): Promise<void> {
-		await performNavigationClick(this.page, this.loginLink.locator(), 'Login link', expectedURL);
+		await performNavigationClick(this.page, this.loginLink, expectedURL);
 	}
 
 	@stepParam((stepNumber: number) => `I validate Step Number: ${stepNumber} common elements`)

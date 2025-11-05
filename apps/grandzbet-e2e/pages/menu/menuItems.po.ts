@@ -1,10 +1,8 @@
 import { Page } from '@playwright/test';
-import {
-    step,
-    assertVisible,
-    clickElement,
-    assertNotVisible,
-} from '@test-utils/navigation.po';
+import { step } from '@test-utils/decorators';
+import { assertVisible, assertNotVisible } from '@test-utils/assertions';
+import { clickElement, retryUntilCondition } from '@test-utils/interactions';
+import { compositeLocator, CompositeLocator } from '@test-utils/core-types';
 
 export class MenuItems {
     readonly page: Page;
@@ -15,56 +13,87 @@ export class MenuItems {
     // Locators
 
     //Both
-    private readonly register = () => this.page.locator('.shadow-header button.min-w-max.inline-flex.bg-primary');
-    private readonly login = () => this.page.locator('button.bg-secondary-secondary:nth-child(2)');
-    private readonly balance = () => this.page.locator('.shadow-header div[id*=radix]');
-    private readonly myProfileButton = () => this.page.locator('.bg-tertiary-secondary.shadow-sm.text-greyLight');
+    private readonly register = compositeLocator(() => 
+        this.page.locator('.shadow-header button.min-w-max.inline-flex.bg-primary'), 'Register button');
+    private readonly login = compositeLocator(() => 
+        this.page.locator('button.bg-secondary-secondary:nth-child(2)'), 'Login button');
+    private readonly balance = compositeLocator(() => 
+        this.page.locator('.shadow-header div[id*=radix]'), 'Balance');
+    private readonly myProfileButton = compositeLocator(() => 
+        this.page.locator('.bg-tertiary-secondary.shadow-sm.text-greyLight'), 'My Profile button');
 
     //Desktop specific
-    private readonly depositDesktop = () => this.page.locator('.shadow-header [aria-haspopup=dialog].bg-primary');
-    private readonly myBetsButtonDesktop = () => this.page.locator('.shadow-header [aria-haspopup=dialog].bg-secondary-secondary');
-    private readonly burgerMenuButtonDesktop = () => this.page.locator('.shadow-header button.bg-tertiary-secondary.lg\\:flex');
-    private readonly logo = () => this.page.locator('[alt*="Website logo"].sm\\:block');
+    private readonly depositDesktop = compositeLocator(() => 
+        this.page.locator('.shadow-header [aria-haspopup=dialog].bg-primary'), 'Deposit button (Desktop)');
+    private readonly myBetsButtonDesktop = compositeLocator(() => 
+        this.page.locator('.shadow-header [aria-haspopup=dialog].bg-secondary-secondary'), 'My Bets button (Desktop)');
+    private readonly burgerMenuButtonDesktop = compositeLocator(() => 
+        this.page.locator('.shadow-header button.bg-tertiary-secondary.lg\\:flex'), 'Burger Menu button (Desktop)');
+    private readonly logo = compositeLocator(() => 
+        this.page.locator('[alt*="Website logo"].sm\\:block'), 'Website logo (Desktop)');
 
     //Mobile specific  
-    private readonly depositMobile = () => this.page.locator('.shadow-header span.bg-primary');
-    private readonly myBetsButtonMobile = () => this.page.locator('.shadow-header .rounded-none');
-    private readonly burgerMenuButtonMobile = () => this.page.locator('.shadow-header button.bg-tertiary-secondary.lg\\:hidden');
-    private readonly logoMobile = () => this.page.locator('[alt*="Website logo"].sm\\:hidden');
+    private readonly depositMobile = compositeLocator(() => 
+        this.page.locator('.shadow-header span.bg-primary'), 'Deposit button (Mobile)');
+    private readonly myBetsButtonMobile = compositeLocator(() => 
+        this.page.locator('.shadow-header .rounded-none'), 'My Bets button (Mobile)');
+    private readonly burgerMenuButtonMobile = compositeLocator(() => 
+        this.page.locator('.shadow-header button.bg-tertiary-secondary.lg\\:hidden'), 'Burger Menu button (Mobile)');
+    private readonly logoMobile = compositeLocator(() => 
+        this.page.locator('[alt*="Website logo"].sm\\:hidden'), 'Website logo (Mobile)');
 
     // Viewport-aware getters
-    private readonly deposit = async () => {
+    private readonly deposit = async (): Promise<CompositeLocator> => {
         const viewport = this.page.viewportSize();
-        return viewport && viewport.width >= 1024 ? this.depositDesktop() : this.depositMobile();
+        return viewport && viewport.width >= 1024 ? this.depositDesktop : this.depositMobile;
     };
-    private readonly myBetsButton = async () => {
+    private readonly myBetsButton = async (): Promise<CompositeLocator> => {
         const viewport = this.page.viewportSize();
-        return viewport && viewport.width >= 1024 ? this.myBetsButtonDesktop() : this.myBetsButtonMobile();
+        return viewport && viewport.width >= 1024 ? this.myBetsButtonDesktop : this.myBetsButtonMobile;
     };
-    private readonly burgerMenuButton = async () => {
+    private readonly burgerMenuButton = async (): Promise<CompositeLocator> => {
         const viewport = this.page.viewportSize();
-        return viewport && viewport.width >= 1024 ? this.burgerMenuButtonDesktop() : this.burgerMenuButtonMobile();
+        return viewport && viewport.width >= 1024 ? this.burgerMenuButtonDesktop : this.burgerMenuButtonMobile;
     };
        
-    private readonly logoElement = async () => {
+    private readonly logoElement = async (): Promise<CompositeLocator> => {
         const viewport = this.page.viewportSize();
-        return viewport && viewport.width >= 1024 ? this.logo() : this.logoMobile();
+        return viewport && viewport.width >= 1024 ? this.logo : this.logoMobile;
     };
 
     //Desktop only
-    private readonly searchImageDesktop = () => this.page.locator('.pointer-events-auto svg');
-    private readonly searchButtonDesktop = () => this.page.locator('.ml-auto .relative input');
+    private readonly searchImageDesktop = compositeLocator(() => 
+        this.page.locator('.pointer-events-auto svg'), 'Search image (Desktop)');
+    private readonly searchButtonDesktop = compositeLocator(() => 
+        this.page.locator('.ml-auto .relative input'), 'Search button (Desktop)');
+
+    // Result elements for validation after clicks
+    private readonly loginModal = compositeLocator(() => 
+        this.page.locator('form input[name="email"]').first(), 'Login modal');
+    private readonly profileMenu = compositeLocator(() => 
+        this.page.locator('[data-state="open"] section#my-profile-menu-links').first(), 'Profile menu');
 
     
     // Actions
-    public clickLogin = async () => await clickElement(this.login(), 'Login button');
-    public clickRegister = async () => await clickElement(this.register(), 'Register button');
-    public clickLogo = async () => await clickElement(await this.logoElement(), 'Website logo');
+    public clickLogin = async () => {
+        await retryUntilCondition(this.login, this.loginModal);
+    };
 
-    // Add navigation method that accepts target
-    public async navigateToPage(target: 'logo'): Promise<void> {
+    public clickRegister = async () => await clickElement(this.register);
+    public clickLogo = async () => await clickElement(await this.logoElement());
+
+    public clickMyProfileButton = async () => {
+        await retryUntilCondition(this.myProfileButton, this.profileMenu);
+    };
+
+    public clickDepositButton = async () => await clickElement(await this.deposit());
+    public clickBalanceButton = async () => await clickElement(this.balance);
+
+    public async navigateToPage(target: 'logo' | 'myProfile' | 'deposit'): Promise<void> {
         const navigationMap = {
-            'logo': () => this.clickLogo()
+            'logo': () => this.clickLogo(),
+            'myProfile': () => this.clickMyProfileButton(),
+            'deposit': () => this.clickDepositButton()
         } as const;
         
         await navigationMap[target]();
@@ -72,22 +101,22 @@ export class MenuItems {
 
     @step('I validate the menu items for a logged-in user')
     public async validateUserItems(softAssert = false): Promise<void> {
-        await assertVisible(this.myProfileButton(), 'My Profile button', softAssert);
-        await assertVisible(this.balance(), 'Balance button', softAssert);
-        await assertVisible(await this.deposit(), 'Deposit button', softAssert);
-        await assertVisible(await this.myBetsButton(), 'My Bets button', softAssert);
-        await assertVisible(await this.burgerMenuButton(), 'Burger Menu button', softAssert);
-        await assertNotVisible(this.login(), 'Login button', softAssert);
-        await assertNotVisible(this.register(), 'Register button', softAssert);
+        await assertVisible(this.myProfileButton, softAssert);
+        await assertVisible(this.balance, softAssert);
+        await assertVisible(await this.deposit(), softAssert);
+        await assertVisible(await this.myBetsButton(), softAssert);
+        await assertVisible(await this.burgerMenuButton(), softAssert);
+        await assertNotVisible(this.login, softAssert);
+        await assertNotVisible(this.register, softAssert);
     }
 
     @step('I validate the menu items for a Guest')
     public async validateGuestItems(softAssert = false): Promise<void> {
-        await assertVisible(this.login(), 'Login button', softAssert);
-        await assertVisible(this.register(), 'Register button', softAssert);
-        await assertNotVisible(this.myProfileButton(), 'My Profile button', softAssert);
-        await assertNotVisible(this.balance(), 'Balance button', softAssert);
-        await assertNotVisible(await this.deposit(), 'Deposit button', softAssert);
-        await assertNotVisible(await this.myBetsButton(), 'My Bets button', softAssert);
+        await assertVisible(this.login, softAssert);
+        await assertVisible(this.register, softAssert);
+        await assertNotVisible(this.myProfileButton, softAssert);
+        await assertNotVisible(this.balance, softAssert);
+        await assertNotVisible(await this.deposit(), softAssert);
+        await assertNotVisible(await this.myBetsButton(), softAssert);
     }
 }
