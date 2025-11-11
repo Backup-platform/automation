@@ -67,6 +67,11 @@ export const compositeLocator = (locator: () => Locator, name: string): Composit
     name
 });
 
+export const LandingPageTopGames= (locator: () => Locator, name: string): CompositeLocator => ({
+    locator,
+    name
+});
+
 /**
  * Creates a composite frame locator for iframe and frame interactions.
  * Similar to compositeLocator but specifically for frame-based elements.

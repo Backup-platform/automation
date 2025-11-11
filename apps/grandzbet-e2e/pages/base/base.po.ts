@@ -15,55 +15,57 @@ import { Withdraw } from '../cashier/withdraw.po';
 import { PaymentIQ } from '../cashier/paymentIQ.po';
 import { Wallet } from '../wallet/wallet.po';
 import { PersonalInfo } from '../personalInfo/personal.info.po';
+
+
 import { LandingPageCarousel } from '../landingPage/carousel.po';
+import { LandingPageTopGames } from '../landingPage/topGames.po';
 
 type pages = {
-	loginPage: LoginPage;
-	menuItems: MenuItems;
-	navigationItems: NavigationItems;
-	signUpStep1: SignUpStep1;
-	signUpStep2: SignUpStep2;
-	signUpStep3: SignUpStep3;
-	popupHandlers: PopupHandlers;
-	signUpCommon: SignUpCommon;
-	profileMenu: ProfileMenu;
-	profileMenuDesktop: ProfileMenuDesktop;
-	cashierGeneral: CashierGeneral;
-	deposit: Deposit;
-	withdraw: Withdraw;
-	paymentIQ: PaymentIQ;
-	wallet: Wallet;
-	personalInfo: PersonalInfo;
-	landingPageCarousel:LandingPageCarousel;
+  loginPage: LoginPage;
+  menuItems: MenuItems;
+  navigationItems: NavigationItems;
+  signUpStep1: SignUpStep1;
+  signUpStep2: SignUpStep2;
+  signUpStep3: SignUpStep3;
+  popupHandlers: PopupHandlers;
+  signUpCommon: SignUpCommon;
+  profileMenu: ProfileMenu;
+  profileMenuDesktop: ProfileMenuDesktop;
+  cashierGeneral: CashierGeneral;
+  deposit: Deposit;
+  withdraw: Withdraw;
+  paymentIQ: PaymentIQ;
+  wallet: Wallet;
+  personalInfo: PersonalInfo;
+  landingPageCarousel: LandingPageCarousel;
+  topGames: LandingPageTopGames; 
 }
 
 function createPageFixture<T>(PageObject: new (page: Page) => T) {
-	return async (
-		{ page }: { page: Page },
-		use: (fixture: T) => Promise<void>
-	): Promise<void> => {
-	  await use(new PageObject(page));
-	};
+  return async ({ page }: { page: Page }, use: (fixture: T) => Promise<void>): Promise<void> => {
+    await use(new PageObject(page));
+  };
 }
 
 const test = base.extend<pages>({
-	loginPage: createPageFixture(LoginPage),
-	menuItems: createPageFixture(MenuItems),
-	navigationItems: createPageFixture(NavigationItems),
-	signUpStep1: createPageFixture(SignUpStep1),
-	signUpStep2: createPageFixture(SignUpStep2),
-	signUpStep3: createPageFixture(SignUpStep3),
-	popupHandlers: createPageFixture(PopupHandlers),
-	signUpCommon: createPageFixture(SignUpCommon),
-	profileMenu: createPageFixture(ProfileMenu),
-	profileMenuDesktop: createPageFixture(ProfileMenuDesktop),
-	cashierGeneral: createPageFixture(CashierGeneral),
-	deposit: createPageFixture(Deposit),
-	withdraw: createPageFixture(Withdraw),
-	paymentIQ: createPageFixture(PaymentIQ),
-	wallet: createPageFixture(Wallet),
-	personalInfo: createPageFixture(PersonalInfo),
-	landingPageCarousel: createPageFixture(LandingPageCarousel)
+  loginPage: createPageFixture(LoginPage),
+  menuItems: createPageFixture(MenuItems),
+  navigationItems: createPageFixture(NavigationItems),
+  signUpStep1: createPageFixture(SignUpStep1),
+  signUpStep2: createPageFixture(SignUpStep2),
+  signUpStep3: createPageFixture(SignUpStep3),
+  popupHandlers: createPageFixture(PopupHandlers),
+  signUpCommon: createPageFixture(SignUpCommon),
+  profileMenu: createPageFixture(ProfileMenu),
+  profileMenuDesktop: createPageFixture(ProfileMenuDesktop),
+  cashierGeneral: createPageFixture(CashierGeneral),
+  deposit: createPageFixture(Deposit),
+  withdraw: createPageFixture(Withdraw),
+  paymentIQ: createPageFixture(PaymentIQ),
+  wallet: createPageFixture(Wallet),
+  personalInfo: createPageFixture(PersonalInfo),
+  landingPageCarousel: createPageFixture(LandingPageCarousel), 
+  topGames: createPageFixture(LandingPageTopGames),            
 });
 
 export default test;

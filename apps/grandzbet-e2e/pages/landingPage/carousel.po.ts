@@ -8,7 +8,14 @@ export class LandingPageCarousel {
     readonly page: Page;
     constructor(page: Page) {
         this.page = page;
+    };
+  }
+    export class LandingPageTopGames {
+    readonly page: Page;
+    constructor(page: Page) {
+        this.page = page;
     }
+
 
     // ---locators ---
     private readonly container = compositeLocator(() => this.page.locator('section#home-hero').first(), 'Carousel container');
