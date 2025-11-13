@@ -3,8 +3,9 @@ import path from 'path';
 import { MenuItems } from '../../../pages/menu/menuItems.po';
 import { NavigationItems } from '../../../pages/menu/navigationItems.po';
 
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({ page, popupHandlers }) => {
   await page.goto(`${process.env.URL}`, { waitUntil: 'load' });
+  await popupHandlers.handleAllPopups();
 });
 
 test.describe('Login Page Regression Tests - Desktop', () => {
@@ -22,43 +23,49 @@ test.describe('Login Page Regression Tests - Desktop', () => {
       password: string;
       error: 'email' | 'password' | 'credentials';
     }> = [
-      {
-        scenario: `Empty password`,
-        username: `${process.env.USER}`,
-        password: '',
-        error: 'password',
-      },
-      {
-        scenario: `Empty email`,
-        username: '',
-        password: `${process.env.PASS}`,
-        error: 'email',
-      },
-      {
-        scenario: `Wrong password`,
-        username: `${process.env.USER}`,
-        password: 'wrong_password',
-        error: 'credentials',
-      },
-      {
-        scenario: `Wrong email`,
-        username: `wrong_username@mail.com`,
-        password: `${process.env.PASS}`,
-        error: 'credentials',
-      },
-      {
-        scenario: `Invalid email`,
-        username: `wrong_username`,
-        password: `${process.env.PASS}`,
-        error: 'email',
-      },
-      //   { TODO: figure out how to handle this case
-      //     scenario: `Empty both`,
-      //     username: '',
-      //     password: '',
-      //     error: 'credentials',
-      //   }
-    ];
+        {
+          scenario: `Empty password`,
+          username: `${process.env.USER}`,
+          password: '',
+          error: 'password',
+        },
+        {
+          scenario: `Empty email`,
+          username: '',
+          password: `${process.env.PASS}`,
+          error: 'email',
+        },
+        {
+          scenario: `Wrong password`,
+          username: `${process.env.USER}`,
+          password: 'wrong_password',
+          error: 'credentials',
+        },
+        {
+          scenario: `Wrong email`,
+          username: `wrong_username@mail.com`,
+          password: `${process.env.PASS}`,
+          error: 'credentials',
+        },
+        {
+          scenario: `Invalid email`,
+          username: `wrong_username`,
+          password: `${process.env.PASS}`,
+          error: 'email',
+        },
+        {
+          scenario: `Empty both`,
+          username: '',
+          password: '',
+          error: 'email',
+        },
+        {
+          scenario: `Empty both tabs`,
+          username: '',
+          password: '',
+          error: 'password',
+        },
+      ];
     for (const fields of wrongCredentials) {
       test(`Validate ${fields.scenario} tab`, async ({
         loginPage,
@@ -80,25 +87,24 @@ test.describe('Login Page Regression Tests - Desktop', () => {
         navigationItems: NavigationItems;
       }) => Promise<void>;
     }> = [
-      {
-        scenario: 'LandingPage',
-        url: '',
-        navigate: async ({ menuItems }) => 
-          await menuItems.clickLogo(),
-      },
-      {
-        scenario: 'Casino',
-        url: '/games',
-        navigate: async ({ navigationItems }) =>
-          await navigationItems.clickCasinoButton(),
-      },
-      {
-        scenario: 'Promotions',
-        url: '/promotions',
-        navigate: async ({ navigationItems }) =>
-          await navigationItems.clickPromotionsButton(),
-      },
-    ];
+        {
+          scenario: 'LandingPage',
+          url: '',
+          navigate: async ({ menuItems }) => await menuItems.clickLogo(),
+        },
+        {
+          scenario: 'Casino',
+          url: '/games',
+          navigate: async ({ navigationItems }) =>
+            await navigationItems.clickCasinoButton(),
+        },
+        {
+          scenario: 'Promotions',
+          url: '/promotions',
+          navigate: async ({ navigationItems }) =>
+            await navigationItems.clickPromotionsButton(),
+        },
+      ];
     for (const { scenario, url, navigate } of navigationScenarios) {
       test(`Test return back to ${scenario}`, async ({
         loginPage,
