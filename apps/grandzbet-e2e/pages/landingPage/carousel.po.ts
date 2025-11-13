@@ -5,26 +5,23 @@ import { compositeLocator } from '@test-utils/core-types';
 import { clickElement } from '@test-utils/interactions';
 
 export class LandingPageCarousel {
-    readonly page: Page;
-    constructor(page: Page) {
-        this.page = page;
-    }
+  readonly page: Page;
+  constructor(page: Page) {
+    this.page = page;
+  }
 
-    // ---locators ---
-    private readonly container = compositeLocator(() => this.page.locator('section#home-hero').first(), 'Carousel container');
-    private readonly image = compositeLocator(() => this.page.locator('#home-hero img').first(), 'Carousel Image');
-    private readonly title = compositeLocator(() => this.page.locator('p.font-roboto.text-2xl.font-bold').first(), 'Carousel title');
-    private readonly subtitle = compositeLocator(() => this.page.locator('p.font-rubik.text-base.font-normal.text-greyLight').first(), 'Carousel subtitle');
-    private readonly tag = compositeLocator(() => this.page.locator('#tag').first(), 'Carousel tag');
-    private readonly dots = compositeLocator(() => this.page.locator('div.relative.flex-row.gap-2').first(), 'Carousel dots');
-    private readonly activeDot = compositeLocator(() => this.page.locator('div.flex-row.gap-2 button.bg-primary').first(), 'Carousel active dot');
-    private readonly ctaButton = compositeLocator(() => this.page.locator('#home-hero button').first(), 'Carousel cta button');
-    //private readonly allDots = compositeLocator(() => this.page.locator('div.flex-row.gap-2 button'),
-     // 'Carousel all dots'
-    //);
-    //private readonly element = compositeLocator(() => this.page.locator('#home-hero button').first(), 'Carousel cta button');
-    // --- assertions ---
-    @step('Carousel: Elements visibility')
+  // ---locators ---
+  private readonly container = compositeLocator(() => this.page.locator('section#home-hero').first(), 'Carousel container');
+  private readonly image = compositeLocator(() => this.page.locator('#home-hero img').first(), 'Carousel Image');
+  private readonly title = compositeLocator(() => this.page.locator('p.font-roboto.text-2xl.font-bold').first(), 'Carousel title');
+  private readonly subtitle = compositeLocator(() => this.page.locator('p.font-rubik.text-base.font-normal.text-greyLight').first(), 'Carousel subtitle');
+  private readonly tag = compositeLocator(() => this.page.locator('#tag').first(), 'Carousel tag');
+  private readonly dots = compositeLocator(() => this.page.locator('div.relative.flex-row.gap-2').first(), 'Carousel dots');
+  private readonly activeDot = compositeLocator(() => this.page.locator('div.flex-row.gap-2 button.bg-primary').first(), 'Carousel active dot');
+  private readonly ctaButton = compositeLocator(() => this.page.locator('#home-hero button').first(), 'Carousel cta button');
+
+  // --- assertions ---
+  @step('Carousel: Elements visibility')
   public async validateElementsVisible(softAssert = false): Promise<void> {
     await assertVisible(this.container, softAssert);
     await assertVisible(this.image, softAssert);
@@ -36,19 +33,16 @@ export class LandingPageCarousel {
     await assertVisible(this.ctaButton, softAssert);
   }
 
+  // --- actions ---
+  public async clickActiveDot(): Promise<void> {
+    await clickElement(this.activeDot);
+  }
 
-// --- actions ---
+  public async clickCtaButton(): Promise<void> {
+    await this.ctaButton.locator().click();
+  }
 
-
-public async clickActiveDot(): Promise<void> {
-  await clickElement(this.activeDot);
-}
-
-
-public async clickCtaButton(): Promise<void> {
-  await this.ctaButton.locator().click();
-}
-public async getActiveDotIndex(): Promise<number> {
+  public async getActiveDotIndex(): Promise<number> {
     const active = this.activeDot.locator();
     return await active.evaluate((el) => {
       const parent = el.parentElement;
@@ -56,32 +50,33 @@ public async getActiveDotIndex(): Promise<number> {
       return Array.from(parent.children).indexOf(el);
     });
   }
-   public async swipeLeft(): Promise<void> {
+
+  public async swipeLeft(): Promise<void> {
     const box = await this.container.locator().boundingBox();
     if (!box) throw new Error('Carousel container not visible for swipe.');
 
     const startX = box.x + (box.width * 0.75);
-    const endX   = box.x + (box.width * 0.25);
-    const y      = box.y + (box.height * 0.5);
+    const endX = box.x + (box.width * 0.25);
+    const y = box.y + (box.height * 0.5);
 
     await this.page.mouse.move(startX, y);
     await this.page.mouse.down();
     await this.page.mouse.move(endX, y, { steps: 20 });
     await this.page.mouse.up();
   }
-public async swipeRight(): Promise<void> {
+
+  public async swipeRight(): Promise<void> {
     const box = await this.container.locator().boundingBox();
     if (!box) throw new Error('Carousel container not visible for swipe.');
 
     const startX = box.x + (box.width * 0.25);
-    const endX   = box.x + (box.width * 0.75);
-    const y      = box.y + (box.height * 0.5);
+    const endX = box.x + (box.width * 0.75);
+    const y = box.y + (box.height * 0.5);
 
     await this.page.mouse.move(startX, y);
     await this.page.mouse.down();
     await this.page.mouse.move(endX, y, { steps: 20 });
     await this.page.mouse.up();
   }
-
 }
-    
+
