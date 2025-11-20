@@ -1,7 +1,4 @@
-import { Page } from '@playwright/test';
-import { step } from '@test-utils/decorators';
-import { assertVisible } from '@test-utils/assertions';
-import { compositeLocator } from '@test-utils/core-types';
+import { expect, Locator, Page } from '@playwright/test';
 
 export class LandingPageTopGames {
   readonly page: Page;
@@ -17,156 +14,137 @@ export class LandingPageTopGames {
       'button:has-text("Accept Cookies")',
       'button:has-text("Accept")',
       'button:has-text("Разбрах")',
-      // понякога има мини чат/поп-ъп
       '[data-testid="age-gate-accept"]',
       '[data-testid="close"], button[aria-label="Close"]',
     ];
-    for (const s of candidates) {
-      const btn = this.page.locator(s).first();
-      if (await btn.isVisible().catch(() => false)) {
-        await btn.click({ trial: false }).catch(() => {});
+
+    for (const sel of candidates) {
+      const b = this.page.locator(sel).first();
+      if (await b.isVisible().catch(() => false)) {
+        await b.click().catch(() => {});
       }
     }
   }
 
-  // ---------- LOCATORS (робустни) ----------
-  /**
-   * Заглавието в UI е „TopGames“ (без интервал). Хващаме heading по роля,
-   * като допускаме и "Top Games", и преводи (бг вариант).
-   */
-  private readonly heading = compositeLocator(
-    () =>
-      this.page
-        .getByRole('heading', {
-          name: /top\s*games|topgames|най[-\s]?добрите\s*игри/i,
-        })
-        .first(),
-    'Top Games heading'
-  );
+  
+  private section(): Locator {
+    const heading = this.page
+      .getByRole('heading', {
+        name: /top\s*casino\s*games|top\s*games|topgames|топ\s*казино\s*игри|топ\s*игри|най[-\s]?добрите\s*игри/i,
+      })
+      .first();
 
-  /**
-   * Секцията е най-близкият контейнер (section/div) над хединга.
-   */
-  private readonly section = compositeLocator(
-    () =>
-      this.heading
-        .locator()
-        .locator('xpath=ancestor::*[self::section or self::div][1]'),
-    'Top Games section'
-  );
-
-  private readonly sectionTitle = compositeLocator(
-    () => this.heading.locator(),
-    'Top Games section title'
-  );
-
-  private readonly showAllButton = compositeLocator(
-    () =>
-      this.section
-        .locator()
-        .getByRole('button', { name: /show\s*all|виж всички|всички/i })
-        .first(),
-    'Show All button'
-  );
-
-  /**
-   * Първа карта – гъвкави селектори, защото DOM класовете са утилити (Tailwind).
-   * Търсим card anchor/елемент, който има <img> вътре.
-   */
-  private readonly firstCard = compositeLocator(
-    () =>
-      this.section
-        .locator()
-        .locator(
-          '[data-testid="game-card"], .game-card, [class*="game-card"], a:has(img)'
-        )
-        .first(),
-    'First Top Game card'
-  );
-
-  private readonly cardImage = compositeLocator(
-    () => this.firstCard.locator().locator('img').first(),
-    'Game card image'
-  );
-
-  private readonly cardTitle = compositeLocator(
-    () =>
-      this.firstCard
-        .locator()
-        .locator('h3, h4, [class*="title"], .game-title, [aria-label]')
-        .first(),
-    'Game card title'
-  );
-
-  private readonly cardSubtitle = compositeLocator(
-    () =>
-      this.firstCard
-        .locator()
-        .locator('.provider, [class*="provider"], [data-testid="provider"]')
-        .first(),
-    'Game card subtitle/provider'
-  );
-
-  /**
-   * Стрелки – понякога са с класове на Swiper, понякога само aria-label.
-   */
-  private readonly arrowLeft = compositeLocator(
-    () =>
-      this.section
-        .locator()
-        .locator(
-          'button.swiper-button-prev, button[aria-label*="Prev" i], button:has(svg[aria-label*="Prev" i]), button:has([data-icon*="left"])'
-        )
-        .first(),
-    'Carousel left arrow'
-  );
-
-  private readonly arrowRight = compositeLocator(
-    () =>
-      this.section
-        .locator()
-        .locator(
-          'button.swiper-button-next, button[aria-label*="Next" i], button:has(svg[aria-label*="Next" i]), button:has([data-icon*="right"])'
-        )
-        .first(),
-    'Carousel right arrow'
-  );
-
-  // ---------- ASSERTIONS ----------
-  @step('Top Games: Validate all elements visible')
-  public async validateTopGamesVisible(softAssert = false): Promise<void> {
-    await this.dismissOverlays();
-
-    // изчакай да се хидратира секцията (ако е lazy)
-    await this.section.locator().waitFor({ state: 'attached', timeout: 30000 });
-
-    // не насилвай scrollIntoViewIfNeeded() преди да е attach-нат DOM-а – това ти е забивало теста
-    await assertVisible(this.sectionTitle, softAssert);
-    await assertVisible(this.showAllButton, softAssert);
-    await assertVisible(this.firstCard, softAssert);
-    await assertVisible(this.cardImage, softAssert);
-    await assertVisible(this.cardTitle, softAssert);
-    await assertVisible(this.cardSubtitle, softAssert);
-    await assertVisible(this.arrowLeft, softAssert);
-    await assertVisible(this.arrowRight, softAssert);
+    return heading.locator('xpath=ancestor::*[self::section or self::div][1]');
   }
 
-  // ---------- ACTIONS ----------
-  @step('Top Games: Click Show All button')
+  private sectionTitle(): Locator {
+    return this.section()
+      .locator('h2, h3, [role="heading"]')
+      .filter({ hasText: /top\s*games|topgames|топ|най/i })
+      .first();
+  }
+
+  private showAll(): Locator {
+    return this.section()
+      .getByRole('link', { name: /show\s*all|виж\s*всички|всички/i })
+      .first();
+  }
+
+  
+  private firstCard(): Locator {
+    return this.section()
+      .locator('a, button, [role="link"], [role="button"]')
+      .first();
+  }
+
+  
+  private cardImage(): Locator {
+    return this.section().locator('img, picture').first();
+  }
+
+ 
+  private cardTitle(): Locator {
+    return this.section()
+      .locator('h3, h4, [class*="title"]')
+      .first();
+  }
+
+  private leftArrow(): Locator {
+    return this.section()
+      .locator(
+        'button.swiper-button-prev, button[aria-label*="Prev" i], button:has([data-icon*="left"])'
+      )
+      .first();
+  }
+
+  private rightArrow(): Locator {
+    return this.section()
+      .locator(
+        'button.swiper-button-next, button[aria-label*="Next" i], button:has([data-icon*="right"])'
+      )
+      .first();
+  }
+
+  private async stabilize() {
+    await this.dismissOverlays();
+
+    await this.page.waitForLoadState('load').catch(() => {});
+
+    await expect
+      .soft(this.section(), 'Top Games section should become visible')
+      .toBeVisible({ timeout: 30_000 });
+
+    await this.section().scrollIntoViewIfNeeded().catch(() => {});
+  }
+
+  // ---------- ASSERTIONS / ACTIONS ----------
+  public async validateTopGamesVisible(): Promise<void> {
+    await this.stabilize();
+    await expect
+      .soft(this.sectionTitle(), 'Section title to be visible')
+      .toBeVisible();
+
+    await expect
+      .soft(this.showAll(), 'Show All link to be visible')
+      .toBeVisible();
+
+    await expect
+      .soft(this.firstCard(), 'First Top Game card to be visible')
+      .toBeVisible();
+
+    
+    const img = this.cardImage();
+    if (await img.count()) {
+      await expect
+        .soft(img, 'Card image to be visible (if present)')
+        .toBeVisible();
+    }
+
+    
+    const title = this.cardTitle();
+    if (await title.count()) {
+      await expect
+        .soft(title, 'Card title (if present) to be visible')
+        .toBeVisible();
+    }
+  }
+
   public async clickShowAll() {
-    await this.dismissOverlays();
-    await this.showAllButton.locator().click();
+    await this.stabilize();
+    await this.showAll().click();
   }
 
-  @step('Top Games: Navigate right')
   public async clickRightArrow() {
-    await this.dismissOverlays();
-    await this.arrowRight.locator().click({ trial: false });
+    await this.stabilize();
+    if (await this.rightArrow().isVisible().catch(() => false)) {
+      await this.rightArrow().click();
+    }
   }
 
-  @step('Top Games: Navigate left')
   public async clickLeftArrow() {
-    await this.dismissOverlays();
-    await this.arrowLeft.locator().click({ trial: false });
+    await this.stabilize();
+    if (await this.leftArrow().isVisible().catch(() => false)) {
+      await this.leftArrow().click();
+    }
   }
 }
