@@ -1,5 +1,11 @@
-import { BonusTemplate, BonusTestInstance, BonusTestCase } from './bonusTypes';
-import { BonusStatusType, FrontendObservableStateType, BonusActionType } from './bonusConstants';
+import {
+  BonusTemplate,
+  BonusTestInstance,
+  BonusTestCase,
+  type BonusStatusType,
+  type FrontendObservableStateType,
+  type BonusActionType
+} from './bonusTypes';
 
 /**
  * Factory function to create a bonus test instance.

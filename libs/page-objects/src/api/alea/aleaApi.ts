@@ -385,15 +385,39 @@ export class AleaApiClient {
 
       const hash = computeHash(payload, this.getSecretForBrand());
 
+      console.log('🔍 [placeBet] 📤 FULL REQUEST PAYLOAD:', JSON.stringify(payload, null, 2));
+      console.log('🔍 [placeBet] Hash:', hash.substring(0, 30) + '...');
+      console.log('🔍 [placeBet] URL:', `${this.config.baseUrl}/brandId/${this.config.brandId}/transactions`);
+
       const response = await this.request.post(`${this.config.baseUrl}/brandId/${this.config.brandId}/transactions`, {
         data: payload,
         headers: this.buildHeaders(hash)
       });
 
       const responseBody = await response.text();
+      
+      console.log('🔍 [placeBet] 📥 RESPONSE:', {
+        status: response.status(),
+        ok: response.ok(),
+        body: responseBody
+      });
+      
+      if (!response.ok()) {
+        console.error('❌ Alea API bet placement failed:', {
+          status: response.status(),
+          statusText: response.statusText(),
+          responseBody: responseBody
+        });
+      }
       await expect(response.ok()).toBe(true);
 
-      return JSON.parse(responseBody);
+      const parsedResponse = JSON.parse(responseBody);
+      
+      if (parsedResponse.id === null) {
+        console.error('⚠️ [placeBet] Transaction returned null ID! Full response:', parsedResponse);
+      }
+
+      return parsedResponse;
     });
   }
 
@@ -535,15 +559,22 @@ export class AleaApiClient {
     const winDescription = winAmount ? ` and win ${winAmount} CAD` : '';
     
     return await test.step(`Execute betting cycle: bet ${betAmount} CAD${winDescription}${cycleDescription}`, async () => {
+      console.log(`[executeBettingCycle] 📤 REQUEST: betAmount=${betAmount}, winAmount=${winAmount}, roundStatus=${roundStatus}, cycleNumber=${cycleNumber}`);
+      
       const betResponse = await this.placeBet({ amount: betAmount, roundStatus });
+      
+      console.log(`[executeBettingCycle] 📥 BET RESPONSE:`, JSON.stringify(betResponse, null, 2));
+      
       const { roundId, integratorRoundId } = this.extractRoundAndBalanceInfo(betResponse);
       
       if (cycleNumber) {
         this.logBalanceFromResponse(betResponse, 'bet', cycleNumber);
       }
       
-      if (winAmount !== undefined && roundStatus === 'IN_PROGRESS') {
+      if (winAmount !== undefined ) {
+        console.log(`[executeBettingCycle] 📤 WIN REQUEST: winAmount=${winAmount}, roundId=${roundId}`);
         const winResponse = await this.processWin({ amount: winAmount, roundId, integratorRoundId });
+        console.log(`[executeBettingCycle] 📥 WIN RESPONSE:`, JSON.stringify(winResponse, null, 2));
         
         if (cycleNumber) {
           this.logBalanceFromResponse(winResponse, 'win', cycleNumber);

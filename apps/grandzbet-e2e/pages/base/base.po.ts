@@ -70,8 +70,8 @@ const test = apiTest.extend<pages>({
 	personalInfo: createPageFixture(PersonalInfo),
 	bonusCard: createPageFixture(BonusCard),
 	bonusPage: createPageFixture(BonusPage),
-	bonusBusiness: async ({ bonusCard, bonusPage }, use) => {
-		await use(new BonusBusiness(bonusCard, bonusPage));
+	bonusBusiness: async ({ bonusCard, bonusPage, bonusApi, aleaApi, paymentIqApi }, use) => {
+		await use(new BonusBusiness(bonusCard, bonusPage, bonusApi, aleaApi, paymentIqApi));
 	}
 
 });

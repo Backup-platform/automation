@@ -1,10 +1,18 @@
-import type { BonusActionType, BonusStatusType, FrontendObservableStateType } from './bonusConstants';
-
+export type BonusActionType = 'cancel' | 'zero_out' | 'wagering_success' | 'do_nothing';
+export type BonusStatusType = 'available' | 'wagering' | 'pending';
+export type FrontendObservableStateType = 'available' | 'wagering' | 'pending' | 'removed';
 export type BonusRequirement = 'deposit' | 'no_deposit';
 export type BonusType = 'cash' | 'free_spins';
 export type WageringModel = 'sticky' | 'non_sticky' | 'no_wager';
 
-export type { BonusActionType, BonusStatusType, FrontendObservableStateType };
+export const BonusTemplateKey = {
+  NO_DEPOSIT_CASH: 'NO_DEPOSIT_CASH',
+  DEPOSIT_CASH: 'DEPOSIT_CASH',
+  DEPOSIT_FREE_SPINS: 'DEPOSIT_FREE_SPINS',
+  NO_DEPOSIT_FREE_SPINS: 'NO_DEPOSIT_FREE_SPINS'
+} as const;
+
+export type BonusTemplateKeyType = typeof BonusTemplateKey[keyof typeof BonusTemplateKey];
 
 export interface BonusTemplate {
   id: number;

@@ -5,18 +5,5 @@ export {
   getBonusTemplateById,
   getBonusTemplatesByRequirement,
   getBonusTemplatesByType,
-  createLocalBonusTestInstance,
-  type LegacyBonusTestCase, 
-  type PendingQueueTestCase 
+  createLocalBonusTestInstance
 } from './bonusTestScenarios';
-
-// Export bonus test utilities (environment setup + test helpers)
-export { 
-  prepareBonusScenario,
-  refreshBonusPage,
-  logServerBonuses,
-  findActiveBonus,
-  findNextActiveBonus,
-  assertFinalBonuses,
-  cleanupRealMoneyViaAPI
-} from './bonusTestUtilities';

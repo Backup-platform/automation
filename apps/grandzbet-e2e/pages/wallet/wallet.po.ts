@@ -14,31 +14,56 @@ export class Wallet {
         this.page = page;
     }   
 
-    // New locators based on the provided HTML structure
+    // New locators based on the updated HTML structure
     private readonly balanceDropdownButton = compositeLocator(() =>
         this.page.locator('div[aria-haspopup="menu"]').filter({ has: this.page.locator('span', { hasText: 'Balance' }) }), 'Balance Dropdown Button');
 
     private readonly balanceDropdownMenu = compositeLocator(() =>
-        this.page.locator('[role="menu"][aria-labelledby]'), 'Balance Dropdown Menu');
+        this.page.locator('[role="menu"][data-state="open"]'), 'Balance Dropdown Menu');
 
-    // Dropdown menu content locators
-    private readonly dropdownMenu = compositeLocator(() =>
-        this.page.locator('div[role="menu"]'), 'Balance Dropdown Menu Content');
+    // Active Bonus Progress Section - identified by having a progress bar (svg) and border-primary
+    private readonly activeBonusSection = compositeLocator(() =>
+        this.balanceDropdownMenu.locator().locator('div.w-bonusCard').filter({ has: this.page.locator('div.border-primary') }), 'Active Bonus Section');
 
-    private readonly dropdownColumns = compositeLocator(() =>
-        this.dropdownMenu.locator().locator('div.flex.flex-col'), 'Dropdown Columns');
+    private readonly activeBonusTitle = compositeLocator(() =>
+        this.activeBonusSection.locator().locator('h4.font-roboto'), 'Active Bonus Title');
 
-    private readonly valuesColumn = compositeLocator(() =>
-        this.dropdownColumns.locator().nth(1), 'Values Column');
+    private readonly activeBonusSubtitle = compositeLocator(() =>
+        this.activeBonusSection.locator().locator('p.font-rubik.text-large-note').first(), 'Active Bonus Subtitle');
+
+    private readonly activeBonusExpiryDate = compositeLocator(() =>
+        this.activeBonusSection.locator().locator('p.font-rubik.text-large-note').nth(1), 'Active Bonus Expiry Date');
+
+    private readonly activeBonusProgressBar = compositeLocator(() =>
+        this.activeBonusSection.locator().locator('svg'), 'Active Bonus Progress Bar');
+
+    private readonly activeBonusWageredText = compositeLocator(() =>
+        this.activeBonusSection.locator().locator('span.text-primary'), 'Active Bonus Wagered Progress');
+
+    // Current Balance Section - identified by having the deposit button (works with or without active bonus)
+    private readonly currentBalanceSection = compositeLocator(() =>
+        this.balanceDropdownMenu.locator().locator('div.w-bonusCard').filter({ has: this.page.locator('button.bg-primary') }), 'Current Balance Section');
+
+    private readonly balanceLabelsColumn = compositeLocator(() =>
+        this.currentBalanceSection.locator().locator('div.flex.flex-col.gap-0\\.5').first(), 'Balance Labels Column');
+
+    private readonly balanceValuesColumn = compositeLocator(() =>
+        this.currentBalanceSection.locator().locator('div.flex.flex-col.gap-0\\.5.items-end'), 'Balance Values Column');
 
     private readonly realMoneyFromDropdown = compositeLocator(() =>
-        this.valuesColumn.locator().locator('span').nth(0), 'Real Money Value from Dropdown');
+        this.balanceValuesColumn.locator().locator('span').nth(0), 'Real Money Value from Dropdown');
 
     private readonly bonusFromDropdown = compositeLocator(() =>
-        this.valuesColumn.locator().locator('span').nth(1), 'Casino Bonus Value from Dropdown');
+        this.balanceValuesColumn.locator().locator('span').nth(1), 'Casino Bonus Value from Dropdown');
+
+    private readonly sportBonusFromDropdown = compositeLocator(() =>
+        this.balanceValuesColumn.locator().locator('span').nth(2), 'Sport Bonus Value from Dropdown');
 
     private readonly totalFromDropdown = compositeLocator(() =>
-        this.valuesColumn.locator().locator('span').nth(3), 'Total Balance Value from Dropdown');
+        this.balanceValuesColumn.locator().locator('span.text-primary'), 'Total Balance Value from Dropdown');
+
+    private readonly dropdownDepositButton = compositeLocator(() =>
+        this.currentBalanceSection.locator().locator('button.bg-primary'), 'Deposit Button from Dropdown');
 
     // Alternative locators for the collapsed balance display
     private readonly collapsedBalanceContainer = compositeLocator(() =>
@@ -254,13 +279,11 @@ export class Wallet {
     };
 
     // New methods for dropdown-based balance reading
-    @step('Click balance dropdown button')
-    public async clickBalanceDropdown(): Promise<void> {
+    private async clickBalanceDropdown(): Promise<void> {
         await clickElement(this.balanceDropdownButton);
     }
 
-    @step('Open balance dropdown and wait for menu')
-    public async openBalanceDropdownAndWaitForMenu(): Promise<void> {
+    private async openBalanceDropdownAndWaitForMenu(): Promise<void> {
         const dataState = await this.balanceDropdownButton.locator().getAttribute('data-state');
         const isDropdownOpen = dataState === 'open';
         
@@ -271,66 +294,61 @@ export class Wallet {
     }
 
     // Get balance from collapsed state (when dropdown is not expanded)
-    @step('Get balance from collapsed state')
-    public async getBalanceFromCollapsed(): Promise<string> {
+    private async getBalanceFromCollapsed(): Promise<string> {
         return await this.collapsedBalanceValue.locator().textContent() || '0.00';
     }
 
-    @step('Get real money balance from dropdown')
-    public async getRealMoneyFromDropdown(): Promise<string> {
+    private async getRealMoneyFromDropdown(): Promise<string> {
+        const realMoneyText = await this.realMoneyFromDropdown.locator().textContent();
+        return realMoneyText || '0.00';
+    }
+
+    private async getBonusFromDropdown(): Promise<string> {
+        const bonusText = await this.bonusFromDropdown.locator().textContent();
+        return bonusText || '0.00';
+    }
+
+    private async getSportBonusFromDropdown(): Promise<string> {
+        const sportBonusText = await this.sportBonusFromDropdown.locator().textContent();
+        return sportBonusText || '0.00';
+    }
+
+    private async getTotalFromDropdown(): Promise<string> {
+        const totalText = await this.totalFromDropdown.locator().textContent();
+        return totalText || '0.00';
+    }
+
+    // Active Bonus Progress methods
+    public async getActiveBonusTitle(): Promise<string> {
         try {
-            // Use shared method to open dropdown only if needed
             await this.openBalanceDropdownAndWaitForMenu();
-            
-            // Wait for dropdown menu to be visible
-            await this.dropdownMenu.locator().waitFor({ state: 'visible', timeout: 5000 });
-            
-            // Get the Real Money value using composite locator
-            const realMoneyText = await this.realMoneyFromDropdown.locator().textContent();
-            
-            return realMoneyText || '0.00';
-            
+            await this.balanceDropdownMenu.locator().waitFor({ state: 'visible', timeout: 5000 });
+            const titleText = await this.activeBonusTitle.locator().textContent();
+            return titleText || '';
         } catch {
-            return '0.00';
+            return '';
         }
     }
 
-    @step('Get casino bonus balance from dropdown')
-    public async getBonusFromDropdown(): Promise<string> {
+    public async getActiveBonusWageredProgress(): Promise<string> {
         try {
-            // Use shared method to open dropdown only if needed
             await this.openBalanceDropdownAndWaitForMenu();
-            
-            // Wait for dropdown menu to be visible
-            await this.dropdownMenu.locator().waitFor({ state: 'visible', timeout: 5000 });
-            
-            // Get the Casino Bonus value using composite locator
-            const bonusText = await this.bonusFromDropdown.locator().textContent();
-            
-            return bonusText || '0.00';
-            
+            await this.balanceDropdownMenu.locator().waitFor({ state: 'visible', timeout: 5000 });
+            const progressText = await this.activeBonusWageredText.locator().textContent();
+            return progressText || '';
         } catch {
-            return '0.00';
+            return '';
         }
     }
 
-    @step('Get total balance from dropdown')
-    public async getTotalFromDropdown(): Promise<string> {
-        try {
-            // Use shared method to open dropdown only if needed
-            await this.openBalanceDropdownAndWaitForMenu();
-            
-            // Wait for dropdown menu to be visible
-            await this.dropdownMenu.locator().waitFor({ state: 'visible', timeout: 5000 });
-            
-            // Get the Total Balance value using composite locator
-            const totalText = await this.totalFromDropdown.locator().textContent();
-            
-            return totalText || '0.00';
-            
-        } catch {
-            return '0.00';
-        }
+    public async validateActiveBonusSectionVisible(softAssert = false): Promise<void> {
+        await this.openBalanceDropdownAndWaitForMenu();
+        await assertVisible(this.activeBonusSection, softAssert);
+    }
+
+    public async validateCurrentBalanceSectionVisible(softAssert = false): Promise<void> {
+        await this.openBalanceDropdownAndWaitForMenu();
+        await assertVisible(this.currentBalanceSection, softAssert);
     }
 
     // ---------------- New Snapshot & Assertion Utilities ----------------
@@ -366,35 +384,40 @@ export class Wallet {
 
     /**
      * Take a unified snapshot of wallet balances (dropdown-based to ensure latest values).
+     * Opens dropdown once and reads all balance values efficiently.
      */
-    public async snapshot(): Promise<{
+    public async getSnapshot(): Promise<{
         real: number;
         casinoBonus: number;
         sportBonus: number;
         total: number;
         currency: string;
     }> {
-        const realRaw = await this.getRealMoneyFromDropdown();
-        const bonusRaw = await this.getBonusFromDropdown();
-        const totalRaw = await this.getTotalFromDropdown();
-        // Sport bonus still from legacy section if needed
-        const sportRaw = await this.getSportBonusBalanceValue().catch(() => '0.00');
+        return await test.step('Read wallet balances', async () => {
+            // Open dropdown once for all balance reads
+            await this.openBalanceDropdownAndWaitForMenu();
+            
+            // Read all values in parallel now that dropdown is open
+            const [realRaw, bonusRaw, sportRaw, totalRaw] = await Promise.all([
+                this.getRealMoneyFromDropdown(),
+                this.getBonusFromDropdown(),
+                this.getSportBonusFromDropdown(),
+                this.getTotalFromDropdown()
+            ]);
 
-        const realParsed = this.parseCurrencyValue(realRaw);
-        const bonusParsed = this.parseCurrencyValue(bonusRaw);
-        const totalParsed = this.parseCurrencyValue(totalRaw);
-        const sportParsed = this.parseCurrencyValue(sportRaw);
+            const realParsed = this.parseCurrencyValue(realRaw);
+            const bonusParsed = this.parseCurrencyValue(bonusRaw);
+            const sportParsed = this.parseCurrencyValue(sportRaw);
+            const totalParsed = this.parseCurrencyValue(totalRaw);
 
-        // Prefer real currency if non-zero else bonus currency else derived
-        const currency = realParsed.amount !== 0 ? realParsed.currency : (bonusParsed.amount !== 0 ? bonusParsed.currency : totalParsed.currency);
-
-        return {
-            real: realParsed.amount,
-            casinoBonus: bonusParsed.amount,
-            sportBonus: sportParsed.amount,
-            total: totalParsed.amount,
-            currency
-        };
+            return {
+                real: realParsed.amount,
+                casinoBonus: bonusParsed.amount,
+                sportBonus: sportParsed.amount,
+                total: totalParsed.amount,
+                currency: realParsed.currency || bonusParsed.currency || 'CAD'
+            };
+        });
     }
 
     /**
@@ -406,9 +429,13 @@ export class Wallet {
         opts: { tolerance?: number } = {}
     ): Promise<void> {
         const { tolerance = 0 } = opts;
-        const snap = await this.snapshot();
+        const snap = await this.getSnapshot();
 
-        await test.step('Assert wallet balances match expected', async () => {
+        const expectedStr = Object.entries(expected)
+            .map(([k, v]) => `${k}=${v}`)
+            .join(', ');
+        
+        await test.step(`Assert wallet contains: ${expectedStr}`, async () => {
             for (const key of Object.keys(expected) as Array<keyof typeof expected>) {
                 const expectedValue = expected[key];
                 if (typeof expectedValue !== 'number') continue;
@@ -416,6 +443,9 @@ export class Wallet {
                 const pass = Math.abs(actualValue - expectedValue) <= tolerance;
                 expect(pass, `Balance mismatch for ${key}: expected ${expectedValue} ±${tolerance} but got ${actualValue}`).toBe(true);
             }
+            
+            // Close the dropdown after reading balances to avoid blocking subsequent interactions
+            await this.page.keyboard.press('Escape');
         });
     }
 }

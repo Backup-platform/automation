@@ -62,9 +62,7 @@ export async function assertElementState(
         }
     };
 
-    await test.step(message, async () => {
-        await assertionMap[assertionType][mode]();
-    });
+    await assertionMap[assertionType][mode]();
 }
 
 /**

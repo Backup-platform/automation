@@ -8,16 +8,12 @@ export type {
   TestData,
   BonusActionType,
   BonusStatusType,
-  FrontendObservableStateType
+  FrontendObservableStateType,
+  BonusTemplateKeyType
 } from './bonusTypes';
 
 export { 
-  BonusAction,
-  BonusTemplateKey,
-  BonusStatus,
-  FrontendObservableState,
-  type BonusTemplateKeyType
-} from './bonusConstants';
+  BonusTemplateKey
+} from './bonusTypes';
 
 export * from './bonusTemplates';
-export * from './migrationHelpers';

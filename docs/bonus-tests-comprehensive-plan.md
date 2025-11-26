@@ -55,17 +55,7 @@ This document contains the complete test plan for bonus functionality, organized
 - **Expected Result:** Each tab shows correct bonuses with proper filtering
 - **Validation:** Tab filtering, bonus counts, ordering
 
-#### S6 - Card element validation for all bonus types
-- **Prerequisite:** 4 available bonuses (1 of each type)
-- **Action:** Validate card elements + click "More Info" on each
-- **Expected Result:** All cards show correct UI elements and additional info
-- **Validation:** Card UI validation, button text (Claim vs Deposit), more info functionality
 
-#### S7 - Rapid clicking protection on Claim button
-- **Prerequisite:** 1 "Available Cash-NoDeposit for rapid clicking test"
-- **Action:** Click Claim button rapidly 5+ times
-- **Expected Result:** Only one activation occurs
-- **Validation:** NoDeposit rapid click protection
 
 ---
 

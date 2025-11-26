@@ -3,7 +3,6 @@ export { BonusCard } from './BonusCard.po';
 export { BonusPage } from './BonusPage.po';
 export { 
     BonusBusiness, 
-    type BonusTab, 
-    type BonusCardStatus, 
     type BonusSetupItem 
 } from './BonusBusiness.po';
+export type { BonusTab, BonusCardStatus } from './types';

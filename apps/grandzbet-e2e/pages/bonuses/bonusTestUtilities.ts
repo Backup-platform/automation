@@ -1,10 +1,10 @@
 import { test, expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
-import type { BonusTestCase } from './bonusTestScenarios';
-import type { BonusApiClient } from '@sbt-monorepo/page-objects';
-import type { BonusPage } from '../../pages/bonuses/BonusPage.po';
-import type { BonusBusiness } from '../../pages/bonuses/BonusBusiness.po';
-import type { Wallet } from '../../pages/wallet/wallet.po';
+import type { BonusTestCase } from '../../test-data/bonuses/bonusTestScenarios';
+import type { BonusApiClient, AleaApiClient, AleaTransactionResponse } from '@sbt-monorepo/page-objects';
+import type { BonusPage } from './BonusPage.po';
+import type { BonusBusiness } from './BonusBusiness.po';
+import type { Wallet } from '../wallet/wallet.po';
 
 interface PrepareBonusScenarioOptions {
   bonusApi: BonusApiClient;
@@ -27,7 +27,7 @@ export async function prepareBonusScenario({
   profileId,
   cancelExisting = true,
   waitForUi = true,
-  waitMs = 1000, // Reduced from 2500ms - refreshBonusPage handles additional sync
+  waitMs = 3000, // Increased to 3000ms to allow deposit bonuses to settle properly
   aleaApi,
   paymentIqApi
 }: PrepareBonusScenarioOptions): Promise<void> {
@@ -107,11 +107,10 @@ export async function prepareBonusScenario({
 /**
  * Refresh bonus page with proper wait times for UI synchronization
  */
-export async function refreshBonusPage(bonusPage: BonusPage, page: Page): Promise<void> {
+export async function refreshBonusPage(bonusPage: BonusPage): Promise<void> {
   await test.step('Refresh bonus page', async () => {
     await bonusPage.ensureOnBonusesPage();
-    await page.reload({ waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(1500);
+    await bonusPage.page.reload({ waitUntil: 'domcontentloaded' });
   });
 }
 
@@ -216,7 +215,9 @@ export async function assertFinalBonuses(
 }
 
 /**
- * Clean up real money from wallet via API before bonus testing
+ * Clean up real money from wallet via API before bonus testing.
+ * This is typically called internally by zeroOutBonus with cleanupRealMoney option,
+ * but can also be called directly when you need to remove real money at the start of a test.
  */
 export async function cleanupRealMoneyViaAPI(
   bonusApi: BonusApiClient,
@@ -252,4 +253,187 @@ export async function cleanupRealMoneyViaAPI(
   });
 }
 
+export function isDepositCashBonus(bonus: BonusTestCase['bonuses'][number]): boolean {
+  return bonus.template.bonusRequirement === 'deposit' && bonus.template.bonusType === 'cash';
+}
+
+/**
+ * Zero out a bonus by placing losing bets.
+ * 
+ * @param aleaApi - Alea API client for placing bets
+ * @param bonusApi - Optional Bonus API client for polling bonus state changes
+ * @param options - Configuration options
+ * @param options.cleanupRealMoney - If true, removes real money via API before betting (default: false)
+ * @param options.testData - Required when cleanupRealMoney is true, contains profileId for API cleanup
+ * @param options.wallet - Required when cleanupRealMoney is true, for UI refresh after cleanup
+ * @param options.pollInterval - Polling check interval in milliseconds (default: 2000)
+ * @param options.pollTimeout - Total polling timeout in milliseconds (default: 20000)
+ * 
+ * @example
+ * // Zero out no-deposit bonus with polling
+ * await zeroOutBonus(aleaApi, bonusApi, { pollInterval: 2000, pollTimeout: 20000 });
+ * 
+ * // Zero out deposit bonus (removes real money first)
+ * await zeroOutBonus(aleaApi, bonusApi, { 
+ *   cleanupRealMoney: true, 
+ *   testData: { profileId: 123 }, 
+ *   wallet,
+ *   pollInterval: 2000, 
+ *   pollTimeout: 20000 
+ * });
+ */
+export async function zeroOutBonus(
+  aleaApi: AleaApiClient,
+  bonusApi?: BonusApiClient,
+  options?: { 
+    cleanupRealMoney?: boolean;
+    testData?: { profileId: number };
+    wallet?: Wallet;
+    pollInterval?: number; 
+    pollTimeout?: number;
+  }
+): Promise<void> {
+  const cleanupRealMoney = options?.cleanupRealMoney ?? false;
+  const pollInterval = options?.pollInterval || 2000;
+  const pollTimeout = options?.pollTimeout || 20000;
+  
+  await test.step('Zero out bonus by betting', async () => {
+    // Clean up real money via API if requested (for deposit bonuses)
+    if (cleanupRealMoney) {
+      if (!bonusApi || !options?.testData || !options?.wallet) {
+        throw new Error('[zeroOutBonus] cleanupRealMoney requires bonusApi, testData, and wallet parameters');
+      }
+      await cleanupRealMoneyViaAPI(bonusApi, options.testData, options.wallet);
+    }
+    
+    // Check Alea session balances
+    console.log(`[zeroOutBonus] Checking Alea session balance...`);
+    const balance = await aleaApi.getBalance();
+    const realBalance = balance.realBalance || 0;
+    const bonusBalance = balance.bonusBalance || 0;
+    console.log(`[zeroOutBonus] Alea session has: ${realBalance} CAD real + ${bonusBalance} CAD bonus`);
+    
+    const totalBetAmount = realBalance + bonusBalance;
+    if (totalBetAmount === 0) {
+      console.log(`[zeroOutBonus] ⚠️ No funds to bet - both real and bonus are 0`);
+      return;
+    }
+    
+    // Place losing bet to zero out all funds (real money is bet first, then bonus)
+    console.log(`[zeroOutBonus] Placing losing bet of ${totalBetAmount} CAD (${realBalance} real + ${bonusBalance} bonus)...`);
+    const result = await aleaApi.executeBettingCycle(totalBetAmount, 0, 1, 'COMPLETED') as AleaTransactionResponse & { realBalance?: number; bonusBalance?: number; bonusAmount?: number };
+    console.log(`[zeroOutBonus] 📋 API Response: id=${result.id}, realAmount=${result.realAmount}, bonusAmount=${result.bonusAmount}`);
+    console.log(`[zeroOutBonus] Note: id=null is expected (Alea doesn't process programmatic bonus bets), waiting for backend to process...`)
+    
+    // Poll for bonus state change if bonusApi provided
+    if (bonusApi) {
+      console.log(`[zeroOutBonus] 🔄 Polling for next bonus activation (interval: ${pollInterval}ms, timeout: ${pollTimeout}ms)...`);
+      
+      // Capture initial state
+      const initialBonuses = await bonusApi.fetchAllUserBonuses();
+      const initialActiveCount = initialBonuses.activeBonuses?.length || 0;
+      const initialPendingCount = initialBonuses.pendingBonuses?.length || 0;
+      console.log(`[zeroOutBonus] Initial state: active=${initialActiveCount}, pending=${initialPendingCount}`);
+      
+      // Poll for next bonus activation (pending count should decrease as one activates)
+      await bonusApi.pollForBonusStateChange(
+        (bonuses) => {
+          const activeCount = bonuses.activeBonuses?.length || 0;
+          const pendingCount = bonuses.pendingBonuses?.length || 0;
+          // Wait for pending to decrease (meaning one activated) OR all bonuses removed
+          const pendingDecreased = pendingCount < initialPendingCount;
+          const allRemoved = activeCount === 0 && pendingCount === 0;
+          return pendingDecreased || allRemoved;
+        },
+        {
+          timeout: pollTimeout,
+          interval: pollInterval,
+          errorMessage: `Timeout waiting for next bonus activation (active=${initialActiveCount}, pending=${initialPendingCount} → pending should decrease)`,
+          stepName: `Poll for next bonus activation (timeout: ${pollTimeout}ms, interval: ${pollInterval}ms)`
+        }
+      );
+      
+      // Log final state with detailed bonus information
+      const finalBonuses = await bonusApi.fetchAllUserBonuses();
+      const finalActiveCount = finalBonuses.activeBonuses?.length || 0;
+      const finalPendingCount = finalBonuses.pendingBonuses?.length || 0;
+      console.log(`[zeroOutBonus] ✅ State changed: active=${initialActiveCount}→${finalActiveCount}, pending=${initialPendingCount}→${finalPendingCount}`);
+      
+      // Log detailed active bonus information
+      if (finalBonuses.activeBonuses && finalBonuses.activeBonuses.length > 0) {
+        finalBonuses.activeBonuses.forEach((bonus, idx) => {
+          console.log(`[zeroOutBonus] Active bonus ${idx + 1}:`, {
+            bonusId: bonus.bonusId,
+            profileBonusId: bonus.profileBonus?.id,
+            fixedAmount: bonus.profileBonus?.fixedBonusAmount,
+            initialAmount: bonus.profileBonus?.initialBonusAmount,
+            status: bonus.profileBonus?.status
+          });
+        });
+      }
+      
+      // Log pending bonuses
+      if (finalBonuses.pendingBonuses && finalBonuses.pendingBonuses.length > 0) {
+        console.log(`[zeroOutBonus] Remaining pending bonuses: ${finalBonuses.pendingBonuses.length}`);
+        finalBonuses.pendingBonuses.forEach((bonus, idx) => {
+          console.log(`[zeroOutBonus] Pending bonus ${idx + 1}:`, {
+            bonusId: bonus.bonusId,
+            profileBonusId: bonus.profileBonus?.id,
+            fixedAmount: bonus.profileBonus?.fixedBonusAmount,
+            initialAmount: bonus.profileBonus?.initialBonusAmount
+          });
+        });
+      }
+    } else {
+      console.log(`[zeroOutBonus] ⚠️ No bonusApi provided, skipping polling. Consider adding wait time for backend processing.`);
+    }
+  });
+}
+
+export async function completeWageringRequirement(
+  aleaApi: AleaApiClient,
+  activeBonus: BonusTestCase['bonuses'][number],
+  bonusPage?: { refresh: () => Promise<void> }
+): Promise<void> {
+  // Use creditedAmount for DEPOSIT_CASH bonuses (actual bonus granted), otherwise use amount
+  const bonusAmount = activeBonus.creditedAmount ?? activeBonus.amount;
+  
+  await test.step(`Complete wagering requirement for ${bonusAmount} CAD bonus`, async () => {
+    console.log(`[WAGERING] Starting wagering for ${bonusAmount} CAD bonus`);
+    console.log(`[WAGERING] Bonus details: amount=${activeBonus.amount}, creditedAmount=${activeBonus.creditedAmount}, using=${bonusAmount}`);
+    
+    // First bet: reaches 50% wagering
+    await test.step(`First bet: ${bonusAmount} CAD (reaches 50% wagering)`, async () => {
+      await aleaApi.executeBettingCycle(bonusAmount, bonusAmount, 1, 'COMPLETED');
+    });
+    
+    // Second bet: completes wagering to 100%
+    await test.step(`Second bet: ${bonusAmount} CAD (completes wagering to 100%)`, async () => {
+      await aleaApi.executeBettingCycle(bonusAmount, bonusAmount, 2, 'COMPLETED');
+    });
+    
+    // Wait for bonus conversion and next bonus activation
+    await test.step('Wait for bonus conversion and next bonus activation', async () => {
+      console.log('[WAGERING] Waiting 5s for bonus conversion and next bonus activation...');
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      if (bonusPage) {
+        await bonusPage.refresh();
+      }
+    });
+  });
+}
+
+export async function assertWalletAfterWageringSuccess(
+  wallet: Wallet,
+  testCase: BonusTestCase
+): Promise<void> {
+  await test.step('Validate wallet balances after wagering success', async () => {
+    // After successful wagering, the next pending bonus should become active
+    const target = testCase.bonuses.find(b => b.statusAfterAction === 'wagering');
+    expect(target, 'Expected exactly one newly active (wagering) bonus after wagering success').toBeDefined();
+    const assuredTarget = target as BonusTestCase['bonuses'][number];
+    const expectedCredited = getCreditedAmount(assuredTarget);
+    await wallet.assertBalances({ casinoBonus: expectedCredited }, { tolerance: BALANCE_TOLERANCE });
+  });
+}
 

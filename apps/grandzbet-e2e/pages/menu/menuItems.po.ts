@@ -20,7 +20,7 @@ export class MenuItems {
     private readonly balance = compositeLocator(() => 
         this.page.locator('.shadow-header div[id*=radix]'), 'Balance');
     private readonly myProfileButton = compositeLocator(() => 
-        this.page.locator('.bg-tertiary-secondary.shadow-sm.text-greyLight'), 'My Profile button');
+        this.page.locator('button[aria-haspopup="dialog"].bg-tertiary-secondary.p-2:has(svg path[d*="M7 8C5.5625"])'), 'My Profile button');
 
     //Desktop specific
     private readonly depositDesktop = compositeLocator(() => 

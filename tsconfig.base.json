@@ -14,16 +14,11 @@
     "importHelpers": true,
     "baseUrl": ".",
     "paths": {
-      // your test-utils lib: barrel entry and also deep imports
-      "@test-utils": ["libs/test-utils/src/index.ts"],
-      "@test-utils/*": ["libs/test-utils/src/*"],
-
-      // your page-objects lib
+      "@pages/*": ["apps/spaceFortuna-e2e/pages/*"],
       "@sbt-monorepo/page-objects": ["libs/page-objects/src/index.ts"],
       "@sbt-monorepo/page-objects/*": ["libs/page-objects/src/*"],
-
-      // any in-repo app aliases you use
-      "@pages/*": ["apps/spaceFortuna-e2e/pages/*"]
+      "@test-utils": ["libs/test-utils/src/index.ts"],
+      "@test-utils/*": ["libs/test-utils/src/*"]
     },
     "types": ["node", "@playwright/test"]
   }

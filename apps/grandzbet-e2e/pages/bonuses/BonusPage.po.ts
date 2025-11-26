@@ -1,11 +1,12 @@
-import { Page, expect } from '@playwright/test';
+import { Page, expect, test } from '@playwright/test';
 import { step } from '@test-utils/decorators';
 import { clickElement } from '@test-utils/interactions';
 import { assertVisible } from '@test-utils/assertions';
 import { compositeLocator } from '@test-utils/core-types';
 import { MenuItems } from '../menu/menuItems.po';
 import { ProfileMenu } from '../menu/profileMenu.po';
-import { BonusCard } from './BonusCard.po';
+import { BONUS_STATUS_TO_TAB } from './types';
+import type { BonusCardStatus, BonusTab } from './types';
 
 /**
  * Layer 2: BonusPage POM - Page Level
@@ -22,28 +23,26 @@ export class BonusPage {
         this.profileMenu = new ProfileMenu(page);
     }
 
-    // Navigation methods
     public async goto(): Promise<void> {
-        // Use full navigation path to reliably open profile menu then click My Bonuses
         await this.navigateToMyBonuses();
     }
 
-    // Base selectors
     private readonly containerSelector = '#profile-myBonuses';
-    // Updated tab selector: original used gap-4 which no longer exists; relax to any flex container under profile-myBonuses having buttons
     private readonly tabSelector = '#profile-myBonuses div.flex button';
-    
-    // Tab attributes for validation
     private readonly activeTabAttribute = 'bg-secondary-primary';
+    private readonly cardContainerSelector = '#profile-myBonuses div.rounded-2xl.bg-tertiary-secondary.p-4';
+    private readonly statusBadgeMap: Record<BonusCardStatus, string> = {
+        available: 'span.bg-dark.text-2xs.font-bold.font-rubik.text-white',
+        wagering: 'span.bg-dark.text-2xs.font-bold.font-rubik.text-primary',
+        pending: 'span.bg-dark.text-2xs.font-bold.font-rubik.text-warning'
+    };
 
-    // Container and header elements
     public readonly bonusesContainer = compositeLocator(() => 
         this.page.locator(this.containerSelector), 'My Bonuses container');
 
     public readonly pageTitle = compositeLocator(() => 
         this.page.locator('#profile-myBonuses h3.font-roboto.text-2xl.font-bold'), 'My Bonuses title');
 
-    // Tab elements (order: Available, Active, Pending)
     public readonly availableTab = compositeLocator(() => 
         this.page.locator(this.tabSelector).nth(0), 'Available tab');
 
@@ -53,14 +52,24 @@ export class BonusPage {
     public readonly pendingTab = compositeLocator(() => 
         this.page.locator(this.tabSelector).nth(2), 'Pending tab');
 
-    // Navigation actions with @step
+    public readonly cardsInAvailableTab = compositeLocator(() => 
+        this.page.locator(`${this.cardContainerSelector}:has(${this.statusBadgeMap.available})`),
+        'Bonus cards in Available tab');
+
+    public readonly cardsInActiveTab = compositeLocator(() => 
+        this.page.locator(`${this.cardContainerSelector}:has(${this.statusBadgeMap.wagering})`),
+        'Bonus cards in Active tab');
+
+    public readonly cardsInPendingTab = compositeLocator(() => 
+        this.page.locator(`${this.cardContainerSelector}:has(${this.statusBadgeMap.pending})`),
+        'Bonus cards in Pending tab');
+
     @step('Navigate to My Bonuses page')
     public async navigateToMyBonuses(): Promise<void> {
         await this.menuItems.clickMyProfileButton();
         await this.profileMenu.clickMyBonusesButton();
     }
 
-    // Utility to ensure we are on bonuses page (id container exists); otherwise navigate
     public async ensureOnBonusesPage(): Promise<void> {
         const container = this.page.locator(this.containerSelector);
         if (!(await container.first().isVisible())) {
@@ -68,55 +77,24 @@ export class BonusPage {
         }
     }
 
-    // Lightweight synchronization to ensure we're on the page and tabs are visible
     @step('Synchronize Bonuses page state')
     public async sync(): Promise<void> {
         await this.ensureOnBonusesPage();
         await this.validateTabsVisible();
     }
 
-    @step('Click available tab')
-    public async clickAvailableTab(): Promise<void> {
-        await clickElement(this.availableTab);
+    @step('Refresh bonus page')
+    public async refresh(): Promise<void> {
+        await this.ensureOnBonusesPage();
+        await this.page.reload({ waitUntil: 'domcontentloaded' });
+        await this.page.waitForLoadState('load');
     }
 
-    @step('Click active tab')
-    public async clickActiveTab(): Promise<void> {
-        await clickElement(this.activeTab);
-    }
-
-    @step('Click pending tab')
-    public async clickPendingTab(): Promise<void> {
-        await clickElement(this.pendingTab);
-    }
-
-    // Tab show helpers with assertion that the tab is active
-    @step('Show Available tab')
-    public async showAvailableTab(): Promise<void> {
-        await this.clickAvailableTab();
-        await expect(await this.isTabActive('available'), 'Available tab should be active').toBe(true);
-    }
-
-    @step('Show Active tab')
-    public async showActiveTab(): Promise<void> {
-        await this.clickActiveTab();
-        await expect(await this.isTabActive('active'), 'Active tab should be active').toBe(true);
-    }
-
-    @step('Show Pending tab')
-    public async showPendingTab(): Promise<void> {
-        await this.clickPendingTab();
-        await expect(await this.isTabActive('pending'), 'Pending tab should be active').toBe(true);
-    }
-
-    // Page element validation with @step
     @step('Validate page elements visible')
     public async validatePageElementsVisible(softAssert = false): Promise<void> {
         await assertVisible(this.bonusesContainer, softAssert);
         await assertVisible(this.pageTitle, softAssert);
-        await assertVisible(this.availableTab, softAssert);
-        await assertVisible(this.activeTab, softAssert);
-        await assertVisible(this.pendingTab, softAssert);
+        await this.validateTabsVisible(softAssert);
     }
 
     @step('Validate tabs visible')
@@ -126,7 +104,6 @@ export class BonusPage {
         await assertVisible(this.pendingTab, softAssert);
     }
 
-    // Utility methods (no decorators)
     public async getCurrentActiveTabIndex(): Promise<number | null> {
         const tabs = [this.availableTab, this.activeTab, this.pendingTab];
         
@@ -139,7 +116,7 @@ export class BonusPage {
         return null;
     }
 
-    public async getCurrentActiveTab(): Promise<'available' | 'active' | 'pending' | null> {
+    public async getCurrentActiveTab(): Promise<BonusTab | null> {
         const activeIndex = await this.getCurrentActiveTabIndex();
         switch (activeIndex) {
             case 0: return 'available';
@@ -149,7 +126,7 @@ export class BonusPage {
         }
     }
 
-    public async isTabActive(tab: 'available' | 'active' | 'pending'): Promise<boolean> {
+    public async isTabActive(tab: BonusTab): Promise<boolean> {
         const tabElement = tab === 'available' ? this.availableTab : 
                           tab === 'active' ? this.activeTab : 
                           this.pendingTab;
@@ -158,24 +135,30 @@ export class BonusPage {
         return tabClasses.includes(this.activeTabAttribute);
     }
 
-    // Card utilities (operate on current tab)
-    @step('Get card count in current tab')
-    public async getCardCountInCurrentTab(): Promise<number> {
-        const card = new BonusCard(this.page);
-        return await card.getCardCount();
+    public getCardsInTab(tab: BonusTab): typeof this.cardsInActiveTab {
+        const cardLocators = {
+            active: this.cardsInActiveTab,
+            pending: this.cardsInPendingTab,
+            available: this.cardsInAvailableTab
+        };
+        return cardLocators[tab];
     }
 
-    @step('Check if a bonus card exists in current tab by name')
-    public async hasBonusCard(nameOrSubstring: string): Promise<boolean> {
-        const card = new BonusCard(this.page);
-        const count = await card.getCardCount();
-        for (let i = 0; i < count; i++) {
-            const title = (await card.getCardTitle(i)).toLowerCase();
-            const subtitle = (await card.getCardSubtitle(i)).toLowerCase();
-            if (title.includes(nameOrSubstring.toLowerCase()) || subtitle.includes(nameOrSubstring.toLowerCase())) {
-                return true;
-            }
-        }
-        return false;
+    public async syncTab(status: BonusCardStatus): Promise<void> {
+        const tabKey = BONUS_STATUS_TO_TAB[status];
+        await this.clickTab(tabKey);
+        await expect(await this.isTabActive(tabKey), `${tabKey} tab should be active`).toBe(true);
+    }
+
+    public async clickTab(tab: BonusTab): Promise<void> {
+        const tabs = {
+            active: this.activeTab,
+            pending: this.pendingTab,
+            available: this.availableTab
+        };
+        await clickElement(tabs[tab]);
+        // Tab switching is client-side, use domcontentloaded instead of full 'load'
+        await this.page.waitForLoadState('domcontentloaded');
+        await this.page.waitForTimeout(500); // Small wait for UI to update
     }
 }
