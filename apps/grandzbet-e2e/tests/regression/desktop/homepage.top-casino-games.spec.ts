@@ -1,5 +1,7 @@
 import test from '../../../pages/base/base.po';
+import { expect } from '@playwright/test';
 import path from 'path';
+
 
 test.beforeEach(async ({ page }) => {
   await page.goto(process.env.URL as string, { waitUntil: 'domcontentloaded' });
@@ -21,7 +23,8 @@ test.describe('Landing Page - Top Casino Games', () => {
     await topGames.validateTopGamesVisible();
     await topGames.clickShowAll();
     await page.waitForLoadState('domcontentloaded');
-    //await expect(page).toHaveURL(/\/casino/i);
+
+    await expect(page).toHaveURL(/\/games\/slots\/popular/i);
   });
 
   test('Member: Validate Top Games elements visible', async ({
@@ -34,11 +37,12 @@ test.describe('Landing Page - Top Casino Games', () => {
     await loginPage.validatePageElementsVisible();
     await loginPage.actionLogin(`${process.env.USER}`, `${process.env.PASS}`);
     await page.waitForLoadState('domcontentloaded');
+
     await menuItems.validateUserItems();
     await topGames.validateTopGamesVisible();
   });
 
-  test.only('Member: Show All button navigates correctly', async ({
+  test('Member: Show All button navigates correctly', async ({
     loginPage,
     menuItems,
     topGames,
@@ -46,10 +50,13 @@ test.describe('Landing Page - Top Casino Games', () => {
   }) => {
     await menuItems.clickLogin();
     await loginPage.actionLogin(`${process.env.USER}`, `${process.env.PASS}`);
+    await page.waitForLoadState('domcontentloaded');
+
     await menuItems.validateUserItems();
     await topGames.clickShowAll();
     await page.waitForLoadState('domcontentloaded');
-    //await expect(page).toHaveURL(/\/casino/i);
+
+    await expect(page).toHaveURL(/\/games\/slots\/popular/i);
   });
 
   test('Guest: Carousel arrows are clickable', async ({ topGames }) => {
@@ -62,9 +69,12 @@ test.describe('Landing Page - Top Casino Games', () => {
     loginPage,
     menuItems,
     topGames,
+    page,
   }) => {
     await menuItems.clickLogin();
     await loginPage.actionLogin(`${process.env.USER}`, `${process.env.PASS}`);
+    await page.waitForLoadState('domcontentloaded');
+
     await menuItems.validateUserItems();
     await topGames.validateTopGamesVisible();
     await topGames.clickRightArrow();
