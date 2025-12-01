@@ -13,7 +13,6 @@ export class LandingPageTopGames {
       '[data-testid="cookie-accept"]',
       'button:has-text("Accept Cookies")',
       'button:has-text("Accept")',
-      'button:has-text("Разбрах")',
       '[data-testid="age-gate-accept"]',
       '[data-testid="close"], button[aria-label="Close"]',
     ];
@@ -26,11 +25,10 @@ export class LandingPageTopGames {
     }
   }
 
-  
   private section(): Locator {
     const heading = this.page
       .getByRole('heading', {
-        name: /top\s*casino\s*games|top\s*games|topgames|топ\s*казино\s*игри|топ\s*игри|най[-\s]?добрите\s*игри/i,
+        name: /top\s*casino\s*games|top\s*games|topgames/i,
       })
       .first();
 
@@ -40,29 +38,26 @@ export class LandingPageTopGames {
   private sectionTitle(): Locator {
     return this.section()
       .locator('h2, h3, [role="heading"]')
-      .filter({ hasText: /top\s*games|topgames|топ|най/i })
+      .filter({ hasText: /top\s*casino\s*games|top\s*games|topgames/i })
       .first();
   }
 
   private showAll(): Locator {
     return this.section()
-      .getByRole('link', { name: /show\s*all|виж\s*всички|всички/i })
+      .getByRole('link', { name: /show\s*all|all\s*games?/i })
       .first();
   }
 
-  
   private firstCard(): Locator {
     return this.section()
       .locator('a, button, [role="link"], [role="button"]')
       .first();
   }
 
-  
   private cardImage(): Locator {
     return this.section().locator('img, picture').first();
   }
 
- 
   private cardTitle(): Locator {
     return this.section()
       .locator('h3, h4, [class*="title"]')
@@ -100,6 +95,7 @@ export class LandingPageTopGames {
   // ---------- ASSERTIONS / ACTIONS ----------
   public async validateTopGamesVisible(): Promise<void> {
     await this.stabilize();
+
     await expect
       .soft(this.sectionTitle(), 'Section title to be visible')
       .toBeVisible();
@@ -112,7 +108,6 @@ export class LandingPageTopGames {
       .soft(this.firstCard(), 'First Top Game card to be visible')
       .toBeVisible();
 
-    
     const img = this.cardImage();
     if (await img.count()) {
       await expect
@@ -120,7 +115,6 @@ export class LandingPageTopGames {
         .toBeVisible();
     }
 
-    
     const title = this.cardTitle();
     if (await title.count()) {
       await expect
